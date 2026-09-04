@@ -179,7 +179,7 @@ print(round(w[t.instrument_id.isin(
 EOF
 ```
 
-Must print **`42.1344`**.
+Must print **`42.134`** (the fourth decimal may vary — float summation order).
 
 If it doesn't, something is wrong with the data or the environment. Fix it
 now — every spec below assumes this number.
@@ -283,7 +283,7 @@ Commit after each: `git commit -m "spec 00N: <name>"`
 
 ```bash
 pytest tests/ -v
-# test_lookthrough_cl0019          42.1344
+# test_lookthrough_cl0019          42.134 ± 0.001
 # test_lookthrough_cl0014          29.46
 # test_mandate_cl0003_inherited    71.46 vs 10-30, class=inherited
 # test_mandate_cl0019_clean        no breach, compliance_clean=True

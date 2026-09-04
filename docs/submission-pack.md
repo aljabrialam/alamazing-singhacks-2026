@@ -81,10 +81,22 @@ Architecture diagram (Mermaid). Pipeline stages. Where the LLM sits
 and, more importantly, where it doesn't.
 
 ## Why you can trust it
-- Every claim traces to source rows — screenshot the evidence drawer
-- Explanations grounded in event_log.csv, authoritative over model memory
-- Deterministic: findings computed at build time, committed, reproducible
-- The RM accepts, edits or dismisses. Nothing reaches a client unreviewed.
+- **Nothing the model produces is a figure.** Every number is a pandas
+  computation — reproducible, and the same class of calculation as the
+  bank's existing portfolio system.
+- Every claim traces to source rows — screenshot the evidence panel.
+  This is checkability, not just accuracy: an auditor wants a wrong answer
+  they can trace, not a correct black box.
+- Explanations grounded in `event_log.csv`, authoritative over model memory
+- Deterministic — findings computed at build time and committed. Screenshot
+  `test_findings_are_deterministic` passing.
+- The RM keeps, rejects or annotates. Nothing reaches a client unreviewed.
+- **What is not automatic:** the judgement about which findings matter, and
+  the modelling choice of treating a worst-of basket as full exposure. Both
+  stated on the uncertainty screen.
+- **How you would prove it in production:** shadow mode for a quarter,
+  every finding logged against the RM's decision, yielding measured
+  precision. That is the confusion matrix a bank would require.
 
 ## Running this in a bank
 - Client data never leaves the pipeline; the model receives derived

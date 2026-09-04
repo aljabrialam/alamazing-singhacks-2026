@@ -43,7 +43,7 @@ Everything else is reference. Open it when a step points you there.
 |---|---|---|
 | 1 | `pipeline/load.py` | All 12 files joined, indexed by client_id |
 | 2 | `pipeline/diff.py` | Any client, any two snapshots, per-instrument delta |
-| 3 | **Reproduce 42.13%** | Your code prints CL-0019 look-through = 42.13 |
+| 3 | **Reproduce 42.13%** | Your code prints CL-0019 look-through = 42.134 |
 
 **Task 3 is the gate.** If your pipeline produces that number from the raw
 files, the rest is assembly. Do not build a screen tonight.
@@ -56,7 +56,7 @@ CL-0019, snapshot 2026-08-26, sum of weight_pct for:
   SYN-ST-0104  Pacific Orient Shipping Ltd               11.4113
   SYN-EQ-0008  Global Energy Majors Equity Fund           8.9364
   SYN-SP-0505  Fixed Coupon Note ref. Basket C           12.9018
-                                                    = 42.1344
+                                                    = 42.134 ± 0.001
 ```
 
 SYN-SP-0505 belongs in that set because its `underlying_reference` names

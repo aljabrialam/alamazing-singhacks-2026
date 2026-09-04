@@ -115,7 +115,7 @@ script **before any feature work begins**. No UI, no abstraction, no error
 handling.
 
 The spine for this project is one number: **the pipeline produces
-42.1344 for CL-0019 from the raw files.** That is the look-through
+42.134 (± 0.001) for CL-0019 from the raw files.** That is the look-through
 concentration on which the entire product rests. Six lines of pandas
 prove it.
 
@@ -220,11 +220,11 @@ Required assertions, non-negotiable:
 
 | Test | Asserts |
 |---|---|
-| `test_lookthrough_cl0019` | 42.1344 |
-| `test_lookthrough_cl0014` | 29.46 (Golden Harbour across three asset classes) |
+| `test_lookthrough_cl0019` | 42.134 ± 0.001 |
+| `test_lookthrough_cl0014` | 29.46 ± 0.01 (Golden Harbour across three asset classes) |
 | `test_mandate_cl0003_inherited` | Equity 71.46 vs 10–30, classification `inherited` |
 | `test_mandate_cl0019_clean` | No breach; `compliance_clean` is True |
-| `test_scenario_cl0019` | −2.5m, −7.8% |
+| `test_scenario_cl0019` | −2.5m ± 0.1m, −7.8% ± 0.2 |
 | `test_findings_are_deterministic` | Two builds, identical output |
 
 **What is NOT tested**: UI rendering, error paths outside the demo script,
@@ -459,7 +459,7 @@ much of the remaining work is complete.
 
 | Gate | When | Passes when | Tag |
 |---|---|---|---|
-| **G1 — Data** | Fri 21:00 | Spec 000 Definition of Done met; 42.1344 reproduced from raw files | `g1` |
+| **G1 — Data** | Fri 21:00 | Spec 000 Definition of Done met; 42.134 reproduced from raw files | `g1` |
 | **G2 — Findings** | Sat 13:00 | Specs 001–005 done; all six required assertions green | `g2` |
 | **G3 — Screens** | Sat 16:00 | Three screens render real findings; deployed and reachable from a phone on mobile data | `g3` |
 | **G4 — Shipped** | Sat 17:45 | Rehearsed three times, video recorded, README written, submitted | `g4` |
@@ -527,7 +527,7 @@ of existing guidance. PATCH marks wording and clarification only.
 
 **Open clarifications**: NONE. Every figure this project asserts has been
 computed from `data/` and recorded in `.alamazing/findings.md`. Every
-scope question is closed in Principle XII. Any new open question found
+scope question is closed in Principle XIII. Any new open question found
 during the build MUST be closed within ten minutes with a recorded
 assumption, per Principle II.
 

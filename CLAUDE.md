@@ -93,8 +93,3 @@ cd web && npm run dev
 ## Deadlines
 
 Code freeze 16:00 Sat. Submit by 18:00 Sat — lateness is penalised.
-
-<!-- SPECKIT START -->
-For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan
-<!-- SPECKIT END -->

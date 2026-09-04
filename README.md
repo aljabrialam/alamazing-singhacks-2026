@@ -57,24 +57,3 @@ Priscilla's note reads: *we have not modelled this.*
 
 Full workings, plus Margarethe Voss-Brenner and Lau Chi Ming, in
 `specs/001-divergence-engine/findings.md`.
-                                 ███████╗██████╗ ███████╗ ██████╗██╗███████╗██╗   ██╗                                 
-                                 ██╔════╝██╔══██╗██╔════╝██╔════╝██║██╔════╝╚██╗ ██╔╝                                 
-                                 ███████╗██████╔╝█████╗  ██║     ██║█████╗   ╚████╔╝                                  
-                                 ╚════██║██╔═══╝ ██╔══╝  ██║     ██║██╔══╝    ╚██╔╝                                   
-                                 ███████║██║     ███████╗╚██████╗██║██║        ██║                                    
-                                 ╚══════╝╚═╝     ╚══════╝ ╚═════╝╚═╝╚═╝        ╚═╝                                    
-                                                                                                                      
-                                  GitHub Spec Kit - Spec-Driven Development Toolkit                                   
-
-╭───────────────────────────────────────────── Specify CLI Information ──────────────────────────────────────────────╮
-│                                                                                                                    │
-│     CLI Version    0.11.7.dev0                                                                                     │
-│                                                                                                                    │
-│          Python    3.14.7                                                                                          │
-│        Platform    Darwin                                                                                          │
-│    Architecture    arm64                                                                                           │
-│      OS Version    Darwin Kernel Version 24.3.0: Thu Jan  2 20:22:58 PST 2025;                                     │
-│                    root:xnu-11215.81.4~3/RELEASE_ARM64_T8132                                                       │
-│                                                                                                                    │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-

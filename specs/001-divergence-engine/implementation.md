@@ -190,7 +190,7 @@ d = diff(b, 'CL-0019', '2026-02-27', '2026-08-26')
 ```python
 EXPOSURE = ['SYN-EQ-0025','SYN-ST-0104','SYN-EQ-0008','SYN-SP-0505']
 w = client_weights(b.holdings, 'CL-0019', TODAY)
-print(w[w.instrument_id.isin(EXPOSURE)].w.sum())   # → 42.1344
+print(w[w.instrument_id.isin(EXPOSURE)].w.sum())   # → 42.1343 or 42.1344
 ```
 
 If your pipeline produces that from the raw files, everything after is
@@ -575,3 +575,24 @@ load → diff → [GATE: 42.13%] → events → D3 → D1 → D2 → D4 → D5 �
 ```
 
 Never start step N+1 until step N's verify block passes.
+
+---
+
+## Float tolerance — read before writing any test
+
+Sums over floats vary in the last decimal with summation order and pandas
+version. The gate figure computed on a clean run is **42.1343** or
+**42.1344** depending on how the division is ordered.
+
+**Assert with tolerance, never equality.**
+
+```python
+import pytest
+
+def test_lookthrough_cl0019(book):
+    assert look_through_total(book, 'CL-0019') == pytest.approx(42.134, abs=0.001)
+```
+
+Applies to every integration assertion in Article VIII. An equality assert
+on a float sum is a test that fails for a reason that has nothing to do
+with the code.

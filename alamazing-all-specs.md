@@ -15,7 +15,7 @@ Setup commands are in `RUN-SHEET.md`. Governance is in
 
 | Block | Spec | Model? | Gate |
 |---|---|---|---|
-| 0 | The spine — reproduce 42.1344 | — | before anything |
+| 0 | The spine — reproduce 42.134 | — | before anything |
 | 1 | `/speckit.constitution` | — | — |
 | 2 | 000 data layer | no | G1 |
 | 3 | 001 look-through concentration | no | G2 |
@@ -41,7 +41,9 @@ print(round(w[t.instrument_id.isin(
     ['SYN-EQ-0025','SYN-ST-0104','SYN-EQ-0008','SYN-SP-0505'])].sum(), 4))
 ```
 
-Must print `42.1344`. If it doesn't, stop — everything downstream assumes it.
+Must print `42.1343` or `42.1344` — the fourth decimal varies with float
+summation order. Anything else means something is wrong; stop, because
+everything downstream assumes this number.
 
 ---
 
@@ -119,7 +121,7 @@ script **before any feature work begins**. No UI, no abstraction, no error
 handling.
 
 The spine for this project is one number: **the pipeline produces
-42.1344 for CL-0019 from the raw files.** That is the look-through
+42.134 (± 0.001) for CL-0019 from the raw files.** That is the look-through
 concentration on which the entire product rests. Six lines of pandas
 prove it.
 
@@ -224,11 +226,11 @@ Required assertions, non-negotiable:
 
 | Test | Asserts |
 |---|---|
-| `test_lookthrough_cl0019` | 42.1344 |
-| `test_lookthrough_cl0014` | 29.46 (Golden Harbour across three asset classes) |
+| `test_lookthrough_cl0019` | 42.134 ± 0.001 |
+| `test_lookthrough_cl0014` | 29.46 ± 0.01 (Golden Harbour across three asset classes) |
 | `test_mandate_cl0003_inherited` | Equity 71.46 vs 10–30, classification `inherited` |
 | `test_mandate_cl0019_clean` | No breach; `compliance_clean` is True |
-| `test_scenario_cl0019` | −2.5m, −7.8% |
+| `test_scenario_cl0019` | −2.5m ± 0.1m, −7.8% ± 0.2 |
 | `test_findings_are_deterministic` | Two builds, identical output |
 
 **What is NOT tested**: UI rendering, error paths outside the demo script,
@@ -415,7 +417,7 @@ A specification is not complete until all of the following hold:
 7. Anything it could not determine is recorded in `unsure_about` rather
    than omitted or guessed (Principle X).
 8. It is committed with its spec number in the message and, where it
-   closes a gate, tagged (Principle XIV).
+   closes a gate, tagged (Principle XV).
 
 A specification missing any one of these is not done, regardless of how
 much of the remaining work is complete.
@@ -426,7 +428,7 @@ much of the remaining work is complete.
 
 | Gate | When | Passes when | Tag |
 |---|---|---|---|
-| **G1 — Data** | Fri 21:00 | Spec 000 Definition of Done met; 42.1344 reproduced from raw files | `g1` |
+| **G1 — Data** | Fri 21:00 | Spec 000 Definition of Done met; 42.134 reproduced from raw files | `g1` |
 | **G2 — Findings** | Sat 13:00 | Specs 001–005 done; all six required assertions green | `g2` |
 | **G3 — Screens** | Sat 16:00 | Three screens render real findings; deployed and reachable from a phone on mobile data | `g3` |
 | **G4 — Shipped** | Sat 17:45 | Rehearsed three times, video recorded, README written, submitted | `g4` |
@@ -494,7 +496,7 @@ of existing guidance. PATCH marks wording and clarification only.
 
 **Open clarifications**: NONE. Every figure this project asserts has been
 computed from `data/` and recorded in `.alamazing/findings.md`. Every
-scope question is closed in Principle XII. Any new open question found
+scope question is closed in Principle XIII. Any new open question found
 during the build MUST be closed within ten minutes with a recorded
 assumption, per Principle II.
 
@@ -571,7 +573,7 @@ feature and none will be added.
 
 ACCEPTANCE
 - len(holdings)==1015, len(clients)==20, len(portfolios)==24, len(notes)==28
-- client_weights('CL-0019','2026-08-26') summed over SYN-EQ-0025, SYN-ST-0104, SYN-EQ-0008, SYN-SP-0505 equals 42.1344
+- client_weights('CL-0019','2026-08-26') summed over SYN-EQ-0025, SYN-ST-0104, SYN-EQ-0008, SYN-SP-0505 equals 42.134 +/- 0.001. Assert with tolerance, never equality — float summation order varies by pandas version.
 - events_touching('CL-0019','2026-02-27','2026-08-26') includes 2026-03-04 and 2026-08-05
 - book.imperfections is non-empty
 - No I/O or model calls in any function except load_all
@@ -607,8 +609,8 @@ COMPLIANCE-CLEAN FLAG
 Set compliance_clean=True when every mandate band is respected AND no single position exceeds max_single_position_pct. Check this explicitly. It must be visible in the UI, not merely stated in the pitch.
 
 ACCEPTANCE
-- CL-0019: shipping+energy theme = 42.13%, compliance_clean=True, duplicate underlying names SYN-ST-0104 and SYN-EQ-0008
-- CL-0019 trajectory across snapshots: 29.41, 29.50, 34.08, 41.07, 42.13
+- CL-0019: shipping+energy theme = 42.134% (tolerance 0.001), compliance_clean=True, duplicate underlying names SYN-ST-0104 and SYN-EQ-0008
+- CL-0019 trajectory across snapshots: 29.41, 29.50, 34.08, 41.07, 42.13 (each ± 0.01)
 - CL-0014: Golden Harbour = 29.46% across SYN-FI-0207 (12.87), SYN-ST-0106 (9.54), SYN-SP-0503 (7.05) — one name, three asset classes
 - Every finding carries evidence rows
 - Pure and deterministic. No model call.
@@ -643,7 +645,7 @@ CRITICAL SEPARATION
 The model produces claims. Plain code tests them. The model never decides whether a claim is violated. Reuse look_through from spec 001 for avoid_sector checks.
 
 ACCEPTANCE
-- CL-0019 objectives yield a claim with check=avoid_sector, target=shipping, producing a finding at 42.13%
+- CL-0019 objectives yield a claim with check=avoid_sector, target=shipping, producing a finding at 42.134%
 - Claims also extracted from N-025 and N-026
 - CL-0003 note N-005 yields a reduce_risk claim ("never taken a risk with money", "something safe and boring")
 - Every finding quotes the client's own words and cites the source note_id
