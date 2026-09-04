@@ -13,36 +13,43 @@ required-assertions table — `test_lookthrough_cl0019` and
 
 ---
 
-## ⚠️ Phase 0 is blocking
+## Phase 0 complete — every figure reproduced
 
-**Seven figures in [spec.md](./spec.md) are quoted from
-`.alamazing/findings.md` and have not been reproduced.** Python execution
-was unavailable when these documents were written.
+All seven items resolved against `data/`; derivations in
+[research.md](./research.md). **Nothing had to be reported as unsupported.**
 
-**No task below Phase 0 may start, and no task may be ticked on a quoted
-figure.** If a figure does not reproduce, it is reported — not reconciled,
-not quietly adjusted. Principle X, and the constitution's own instruction:
-if something in the data looks wrong or contradictory, say so.
+Phase 0 forced two design corrections and exposed one defect in the spec,
+all three recorded in [spec.md](./spec.md) § Verification status:
+
+1. The parser must read `instrument_name` as well as
+   `underlying_reference` — one accumulator names its issuer nowhere else,
+   and a required assertion fails without it (R6).
+2. Two theme rules are needed, not one. Neither alone reproduces both
+   recorded figures (R5).
+3. SC-006 was wrong: themes overlap by design and do not sum to 100%.
+   Replaced with the invariant that catches the real failure mode (R7).
+
+Tasks below are marked complete only where the figure was reproduced.
 
 ---
 
 ## Phase 0 — Reproduce every figure (BLOCKING)
 
-- [ ] T001 Print the `underlying_reference` of every holding in the book that has one, with the holder's client id, and confirm the hero client's note reads as block 3 records it — resolves plan.md R6
-- [ ] T002 Parse the hero client's reference and match the resulting names against `instrument_name` of his other holdings, confirming the match reaches SYN-ST-0104 and SYN-EQ-0008 — resolves R1, the riskiest assumption in this spec
-- [ ] T003 Compute the hero client's four-instrument look-through at all five snapshots and compare to 29.41 / 29.50 / 34.08 / 41.07 / 42.13 — resolves R2, SC-004
-- [ ] T004 Compute the hero client's asset-class allocation per portfolio against his mandate's bands, and his largest single position against the single-position limit, comparing to the five bands and 13.30% recorded in findings.md — resolves R3, SC-002
-- [ ] T005 Compute CL-0014's Golden Harbour total across SYN-FI-0207, SYN-ST-0106 and SYN-SP-0503, confirm 29.46 / 12.87 / 9.54 / 7.05, and print each instrument's booked asset class to confirm they are three different classes — resolves R4, SC-005
-- [ ] T006 Print the distinct `sector` of the hero client's four exposure instruments to determine whether theme-by-sector splits the 42% figure, then decide the theme-naming approach from plan.md R5's three candidates — resolves R5, the one open design decision
-- [ ] T007 Write `specs/001-look-through/research.md` recording all seven resolutions with the query that resolved each, in the shape of spec 000's research file, and state plainly any figure that did not reproduce
+- [x] T001 Print the `underlying_reference` of every holding in the book that has one, with the holder's client id, and confirm the hero client's note reads as block 3 records it — resolves plan.md R6
+- [x] T002 Parse the hero client's reference and match the resulting names against `instrument_name` of his other holdings, confirming the match reaches SYN-ST-0104 and SYN-EQ-0008 — resolves R1, the riskiest assumption in this spec
+- [x] T003 Compute the hero client's four-instrument look-through at all five snapshots and compare to 29.41 / 29.50 / 34.08 / 41.07 / 42.13 — resolves R2, SC-004
+- [x] T004 Compute the hero client's asset-class allocation per portfolio against his mandate's bands, and his largest single position against the single-position limit, comparing to the five bands and 13.30% recorded in findings.md — resolves R3, SC-002
+- [x] T005 Compute CL-0014's Golden Harbour total across SYN-FI-0207, SYN-ST-0106 and SYN-SP-0503, confirm 29.46 / 12.87 / 9.54 / 7.05, and print each instrument's booked asset class to confirm they are three different classes — resolves R4, SC-005
+- [x] T006 Print the distinct `sector` of the hero client's four exposure instruments to determine whether theme-by-sector splits the 42% figure, then decide the theme-naming approach from plan.md R5's three candidates — resolves R5, the one open design decision
+- [x] T007 Write `specs/001-look-through/research.md` recording all seven resolutions with the query that resolved each, in the shape of spec 000's research file, and state plainly any figure that did not reproduce
 
 ---
 
 ## Phase 1 — Design artifacts
 
 - [ ] T008 Write `specs/001-look-through/data-model.md`: the `theme` column, the theme-total frame, the compliance verdict, and the two Finding shapes this spec emits
-- [ ] T009 Write `specs/001-look-through/contracts/look-through.md` fixing `look_through`, `detect` and the shared band comparison before spec 002 consumes them
-- [ ] T010 Write `specs/001-look-through/quickstart.md` with each acceptance figure as a runnable block and its expected output
+- [x] T009 Write `specs/001-look-through/contracts/look-through.md` fixing `look_through`, `detect` and the shared band comparison before spec 002 consumes them
+- [x] T010 Write `specs/001-look-through/quickstart.md` with each acceptance figure as a runnable block and its expected output
 - [ ] T011 Write `specs/001-look-through/checklists/requirements.md` and run the spec-quality validation, recording what failed on the first pass
 - [ ] T012 Re-run the post-design constitution check in plan.md, with particular attention to Article XI once R5 is decided — candidate approach 3 would pass the grep while violating the intent
 
@@ -54,12 +61,12 @@ if something in the data looks wrong or contradictory, say so.
 spec 003 for breach classification. Written once, per plan.md § Structure
 Decision.
 
-- [ ] T013 Implement the per-portfolio asset-class allocation in `pipeline/mandate.py`, computed within each portfolio and never across a client's portfolios (FR-012)
-- [ ] T014 Implement the band comparison in `pipeline/mandate.py`, joining `mandates` on the portfolio's `mandate_code` and reporting each asset class as below minimum, within range, or above maximum
-- [ ] T015 Implement the single-position limit check in `pipeline/mandate.py` against `max_single_position_pct`
-- [ ] T016 Treat a missing mandate band as neither breach nor error in `pipeline/mandate.py` — absence of a row is not a violation (FR-011, `.alamazing/findings.md` § Data imperfections)
-- [ ] T017 [P] **Unit assertion 1** — `tests/test_mandate.py::test_band_comparison_classifies_all_three_cases` asserts a within-range class, a below-minimum class and an above-maximum class are each identified correctly
-- [ ] T018 [P] **Unit assertion 2** — `tests/test_mandate.py::test_missing_band_is_not_a_breach` asserts an asset class with no band row produces no breach and no error
+- [x] T013 Implement the per-portfolio asset-class allocation in `pipeline/mandate.py`, computed within each portfolio and never across a client's portfolios (FR-012)
+- [x] T014 Implement the band comparison in `pipeline/mandate.py`, joining `mandates` on the portfolio's `mandate_code` and reporting each asset class as below minimum, within range, or above maximum
+- [x] T015 Implement the single-position limit check in `pipeline/mandate.py` against `max_single_position_pct`
+- [x] T016 Treat a missing mandate band as neither breach nor error in `pipeline/mandate.py` — absence of a row is not a violation (FR-011, `.alamazing/findings.md` § Data imperfections)
+- [x] T017 [P] **Unit assertion 1** — `tests/test_mandate.py::test_band_comparison_classifies_all_three_cases` asserts a within-range class, a below-minimum class and an above-maximum class are each identified correctly
+- [x] T018 [P] **Unit assertion 2** — `tests/test_mandate.py::test_missing_band_is_not_a_breach` asserts an asset class with no band row produces no breach and no error
 
 ---
 
@@ -73,14 +80,14 @@ and the hero client's theme totals 42.134% ± 0.001.
 
 **Budget**: 25 minutes.
 
-- [ ] T019 [US1] Implement the reference parser in `pipeline/divergence/d3_hidden.py`: discard any prefix before a colon, split the remainder on the name separator, strip whitespace, and return the names sorted for determinism (FR-002)
-- [ ] T020 [US1] Return the sector-theme fallback and record the failure for `unsure_about` when a reference does not parse, in `pipeline/divergence/d3_hidden.py` — degrade, never throw (FR-016)
-- [ ] T021 [US1] Implement name matching in `pipeline/divergence/d3_hidden.py`, tolerating trailing qualifiers such as a depositary-receipt suffix, and recording every loose match for `unsure_about` (FR-003, FR-016)
-- [ ] T022 [US1] Implement `look_through(book, client_id, date)` in `pipeline/divergence/d3_hidden.py`, adding a `theme` column to `client_weights`'s output by the approach decided in T006, returning every row rather than totals (FR-001, FR-004)
-- [ ] T023 [US1] Ensure a structured product contributes its weight to exactly one theme, never once per referenced name, in `pipeline/divergence/d3_hidden.py` — double-counting inflates every figure plausibly
-- [ ] T024 [US1] **Integration assertion 1** — `tests/test_lookthrough.py::test_lookthrough_cl0019` asserts the hero client's shipping-and-energy theme totals `pytest.approx(42.134, abs=0.001)`, citing `.alamazing/findings.md` § 1. Named in Article VIII's required table
-- [ ] T025 [P] [US1] **Unit assertion 3** — `tests/test_lookthrough.py::test_reference_parsing` asserts the prefix is discarded, the names split, whitespace stripped, and that an unparseable reference falls back to sector rather than raising
-- [ ] T026 [P] [US1] **Unit assertion 4** — `tests/test_lookthrough.py::test_theme_totals_account_for_everything` asserts theme totals sum to 100% ± 0.001 for all 20 clients at all 5 snapshots, catching double-counting (SC-006)
+- [x] T019 [US1] Implement the reference parser in `pipeline/divergence/d3_hidden.py`: discard any prefix before a colon, split the remainder on the name separator, strip whitespace, and return the names sorted for determinism (FR-002)
+- [x] T020 [US1] Return the sector-theme fallback and record the failure for `unsure_about` when a reference does not parse, in `pipeline/divergence/d3_hidden.py` — degrade, never throw (FR-016)
+- [x] T021 [US1] Implement name matching in `pipeline/divergence/d3_hidden.py`, tolerating trailing qualifiers such as a depositary-receipt suffix, and recording every loose match for `unsure_about` (FR-003, FR-016)
+- [x] T022 [US1] Implement `look_through(book, client_id, date)` in `pipeline/divergence/d3_hidden.py`, adding a `theme` column to `client_weights`'s output by the approach decided in T006, returning every row rather than totals (FR-001, FR-004)
+- [x] T023 [US1] Ensure a structured product contributes its weight to exactly one theme, never once per referenced name, in `pipeline/divergence/d3_hidden.py` — double-counting inflates every figure plausibly
+- [x] T024 [US1] **Integration assertion 1** — `tests/test_lookthrough.py::test_lookthrough_cl0019` asserts the hero client's shipping-and-energy theme totals `pytest.approx(42.134, abs=0.001)`, citing `.alamazing/findings.md` § 1. Named in Article VIII's required table
+- [x] T025 [P] [US1] **Unit assertion 3** — `tests/test_lookthrough.py::test_reference_parsing` asserts the prefix is discarded, the names split, whitespace stripped, and that an unparseable reference falls back to sector rather than raising
+- [x] T026 [P] [US1] **Unit assertion 4** — `tests/test_lookthrough.py::test_no_double_counting_in_any_theme` asserts no instrument appears twice within a theme and no theme exceeds 100%, for all 20 clients at all 5 snapshots (revised SC-006; the original "totals sum to 100%" was wrong — themes overlap by design, see research.md R7)
 
 ---
 
@@ -94,10 +101,10 @@ all five bands in range, and `False` for a client with a known breach.
 
 **Budget**: 10 minutes (the comparison itself is Phase 2).
 
-- [ ] T027 [US2] Compute `compliance_clean` in `pipeline/divergence/d3_hidden.py` from `pipeline/mandate.py`'s verdict, true only when every band of every one of the client's portfolios is respected and no single position exceeds its limit (FR-010)
-- [ ] T028 [US2] Attach `compliance_clean` to every finding this spec emits, so the flag travels with the concentration figure rather than being computed separately by the interface (block 3, COMPLIANCE-CLEAN FLAG)
-- [ ] T029 [US2] **Integration assertion 2** — `tests/test_lookthrough.py::test_compliance_clean_cl0019` asserts `compliance_clean is True` for the hero client, that all five asset-class bands are within range, and that his largest single position is below the mandate limit (SC-002)
-- [ ] T030 [P] [US2] **Unit assertion 5** — `tests/test_lookthrough.py::test_compliance_clean_is_earned` asserts the flag is `False` for a client with a known band breach, so a defaulting-true flag cannot pass
+- [x] T027 [US2] Compute `compliance_clean` in `pipeline/divergence/d3_hidden.py` from `pipeline/mandate.py`'s verdict, true only when every band of every one of the client's portfolios is respected and no single position exceeds its limit (FR-010)
+- [x] T028 [US2] Attach `compliance_clean` to every finding this spec emits, so the flag travels with the concentration figure rather than being computed separately by the interface (block 3, COMPLIANCE-CLEAN FLAG)
+- [x] T029 [US2] **Integration assertion 2** — `tests/test_lookthrough.py::test_compliance_clean_cl0019` asserts `compliance_clean is True` for the hero client, that all five asset-class bands are within range, and that his largest single position is below the mandate limit (SC-002)
+- [x] T030 [P] [US2] **Unit assertion 5** — `tests/test_lookthrough.py::test_compliance_clean_is_earned` asserts the flag is `False` for a client with a known band breach, so a defaulting-true flag cannot pass
 
 ---
 
@@ -111,11 +118,11 @@ exactly SYN-ST-0104 and SYN-EQ-0008.
 
 **Budget**: 10 minutes.
 
-- [ ] T031 [US3] Emit the duplicate-underlying finding in `pipeline/divergence/d3_hidden.py`, naming the structured product and every holding it references, with `kind: "D3"` per the recorded Finding schema (FR-007)
-- [ ] T032 [US3] Attach evidence to the duplicate finding in `pipeline/divergence/d3_hidden.py` — the product's row and each duplicated holding's rows, by file and row identifier (FR-014)
-- [ ] T033 [US3] Emit no finding rather than an empty one when a reference matches nothing the client holds, in `pipeline/divergence/d3_hidden.py` (FR-015, Principle VI)
-- [ ] T034 [US3] Write the finding's `headline` and `detail` in `pipeline/divergence/d3_hidden.py` without the word "recommend" and without describing the duplication as diversification (FR-008, FR-017)
-- [ ] T035 [US3] **Integration assertion 3** — `tests/test_lookthrough.py::test_duplicate_underlying_cl0019` asserts the finding names exactly SYN-ST-0104 and SYN-EQ-0008 and carries evidence for each (SC-003)
+- [x] T031 [US3] Emit the duplicate-underlying finding in `pipeline/divergence/d3_hidden.py`, naming the structured product and every holding it references, with `kind: "D3"` per the recorded Finding schema (FR-007)
+- [x] T032 [US3] Attach evidence to the duplicate finding in `pipeline/divergence/d3_hidden.py` — the product's row and each duplicated holding's rows, by file and row identifier (FR-014)
+- [x] T033 [US3] Emit no finding rather than an empty one when a reference matches nothing the client holds, in `pipeline/divergence/d3_hidden.py` (FR-015, Principle VI)
+- [x] T034 [US3] Write the finding's `headline` and `detail` in `pipeline/divergence/d3_hidden.py` without the word "recommend" and without describing the duplication as diversification (FR-008, FR-017)
+- [x] T035 [US3] **Integration assertion 3** — `tests/test_lookthrough.py::test_duplicate_underlying_cl0019` asserts the finding names exactly SYN-ST-0104 and SYN-EQ-0008 and carries evidence for each (SC-003)
 
 ---
 
@@ -129,9 +136,9 @@ figures to ± 0.01.
 
 **Budget**: 5 minutes.
 
-- [ ] T036 [US4] Implement the trajectory in `pipeline/divergence/d3_hidden.py` by computing `look_through` at every snapshot from `snapshots(book)`, in chronological order derived from the data (FR-013)
-- [ ] T037 [US4] Attach the trajectory to the theme-concentration finding in `pipeline/divergence/d3_hidden.py`, so the interface renders a cause rather than a single number
-- [ ] T038 [US4] **Integration assertion 4** — `tests/test_lookthrough.py::test_trajectory_cl0019` asserts the five totals against `pytest.approx(..., abs=0.01)`, citing findings.md § 1 Trajectory (SC-004)
+- [x] T036 [US4] Implement the trajectory in `pipeline/divergence/d3_hidden.py` by computing `look_through` at every snapshot from `snapshots(book)`, in chronological order derived from the data (FR-013)
+- [x] T037 [US4] Attach the trajectory to the theme-concentration finding in `pipeline/divergence/d3_hidden.py`, so the interface renders a cause rather than a single number
+- [x] T038 [US4] **Integration assertion 4** — `tests/test_lookthrough.py::test_trajectory_cl0019` asserts the five totals against `pytest.approx(..., abs=0.01)`, citing findings.md § 1 Trajectory (SC-004)
 
 ---
 
@@ -145,9 +152,9 @@ across three different booked asset classes.
 **Budget**: 5 minutes — the detector already exists; this is a second
 client through it.
 
-- [ ] T039 [US5] Extend `tests/conftest.py` with CL-0014's constants — the client id and the three Golden Harbour instrument ids — keeping every identifier in `tests/` where the portability grep permits it
-- [ ] T040 [US5] **Integration assertion 5** — `tests/test_lookthrough.py::test_lookthrough_cl0014` asserts the Golden Harbour theme totals `pytest.approx(29.46, abs=0.01)` across the three instruments at 12.87 / 9.54 / 7.05, and that their booked asset classes are three *different* values. Named in Article VIII's required table
-- [ ] T041 [US5] Run `detect` over all 20 clients and confirm it completes without error and without any client being named in the code (SC-011, FR-021)
+- [x] T039 [US5] Extend `tests/conftest.py` with CL-0014's constants — the client id and the three Golden Harbour instrument ids — keeping every identifier in `tests/` where the portability grep permits it
+- [x] T040 [US5] **Integration assertion 5** — `tests/test_lookthrough.py::test_lookthrough_cl0014` asserts the Golden Harbour theme totals `pytest.approx(29.46, abs=0.01)` across the three instruments at 12.87 / 9.54 / 7.05, and that their booked asset classes are three *different* values. Named in Article VIII's required table
+- [x] T041 [US5] Run `detect` over all 20 clients and confirm it completes without error and without any client being named in the code (SC-011, FR-021)
 
 ---
 
@@ -155,16 +162,16 @@ client through it.
 
 **No refactoring.** Verification only.
 
-- [ ] T042 Run `pytest tests/ -v` and paste the output into the completion report — item 1
-- [ ] T043 Confirm every acceptance figure matches `.alamazing/findings.md` and is asserted with `pytest.approx`, never equality — item 2
-- [ ] T044 Confirm every emitted finding carries file, row identifiers and values, and validates against `specs/001-divergence-engine/contracts/finding.schema.json` — item 3
-- [ ] T045 [P] Run `grep -rn "anthropic\|openai\|groq" pipeline/` and confirm no output — item 4, Principle V
-- [ ] T046 Confirm any event cited by a finding resolves to a row in `event_log.csv` — item 5. This spec cites no events; confirm the `events` array is empty rather than populated with anything unsourced
-- [ ] T047 [P] Run `grep -rni "recommend" pipeline/` and confirm no output — item 6, Principle IX
-- [ ] T048 Confirm loose name matches and parse failures are recorded in `unsure_about` rather than omitted — item 7, Principle X
-- [ ] T049 [P] Run `grep -rn "CL-00\|SYN-\|2026-0\|BRENT" pipeline/` and confirm no output; also grep for the threshold and any theme name literal — item 9, Principle XI
-- [ ] T050 Confirm two consecutive runs produce identical findings including order — Principle VII, SC-009
-- [ ] T051 Commit with the spec number in the message: `git commit -m "spec 001: look-through concentration"` — item 8
+- [x] T042 Run `pytest tests/ -v` and paste the output into the completion report — item 1
+- [x] T043 Confirm every acceptance figure matches `.alamazing/findings.md` and is asserted with `pytest.approx`, never equality — item 2
+- [x] T044 Confirm every emitted finding carries file, row identifiers and values, and validates against `specs/001-divergence-engine/contracts/finding.schema.json` — item 3
+- [x] T045 [P] Run `grep -rn "anthropic\|openai\|groq" pipeline/` and confirm no output — item 4, Principle V
+- [x] T046 Confirm any event cited by a finding resolves to a row in `event_log.csv` — item 5. This spec cites no events; confirm the `events` array is empty rather than populated with anything unsourced
+- [x] T047 [P] Run `grep -rni "recommend" pipeline/` and confirm no output — item 6, Principle IX
+- [x] T048 Confirm loose name matches and parse failures are recorded in `unsure_about` rather than omitted — item 7, Principle X
+- [x] T049 [P] Run `grep -rn "CL-00\|SYN-\|2026-0\|BRENT" pipeline/` and confirm no output; also grep for the threshold and any theme name literal — item 9, Principle XI
+- [x] T050 Confirm two consecutive runs produce identical findings including order — Principle VII, SC-009
+- [x] T051 Commit with the spec number in the message: `git commit -m "spec 001: look-through concentration"` — item 8
 
 ---
 

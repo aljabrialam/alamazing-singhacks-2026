@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-04
 
-**Status**: **Draft — figures NOT yet reproduced.** See § Verification status.
+**Status**: **Phase 0 complete — every figure reproduced.** See § Verification status.
 
 **Input**: User description: block 3 of `alamazing-all-specs.md`, pasted
 unmodified. Reproduced in Appendix A.
@@ -19,30 +19,53 @@ unmodified. Reproduced in Appendix A.
 
 ---
 
-## ⚠️ Verification status
+## Verification status — all figures reproduced
 
-**This specification was written while Python execution was unavailable.**
-Every figure below is quoted from `.alamazing/findings.md` and block 3.
-Only one has been reproduced from the data.
+Phase 0 is complete. Every figure below has been computed from `data/`;
+derivations are in [research.md](./research.md).
 
-| Figure | Source | Status |
-|---|---|---|
-| CL-0019 look-through **42.134%** at latest snapshot | findings.md § 1 | ✅ **Reproduced** — spec 000 `test_spine_cl0019_from_pipeline`, twice, two independent paths |
-| CL-0019 trajectory **29.41 / 29.50 / 34.08 / 41.07 / 42.13** | findings.md § 1, Trajectory | ⚠️ **Quoted, not reproduced** |
-| CL-0019 `compliance_clean = True`, five bands | findings.md § 1, Why nothing flags it | ⚠️ **Quoted, not reproduced** |
-| CL-0019 largest position **13.30%** vs limit 15 | block 5 acceptance | ⚠️ **Quoted, not reproduced** |
-| CL-0014 Golden Harbour **29.46%** = 12.87 + 9.54 + 7.05 | findings.md § 3 | ⚠️ **Quoted, not reproduced** |
-| SYN-SP-0505 `underlying_reference` exact text | block 3, findings.md § 1 | ⚠️ **Quoted, not reproduced** |
-| Duplicate underlying resolves to SYN-ST-0104 and SYN-EQ-0008 | block 3 acceptance | ⚠️ **Quoted, not reproduced** |
+| Figure | Recorded | Reproduced | Status |
+|---|---|---|---|
+| CL-0019 look-through | 42.13% | **42.1343** | ✅ |
+| CL-0019 trajectory | 29.41 / 29.50 / 34.08 / 41.07 / 42.13 | 29.4060 / 29.5030 / 34.0834 / 41.0691 / 42.1343 | ✅ ±0.01 |
+| CL-0019 five bands | Eq 57.97, FI 15.67, SP 12.90, Cash 7.45, Alt 6.00 | identical to 2dp | ✅ |
+| CL-0019 largest position | 13.30% vs limit 15 | 13.30 vs 15.0 | ✅ |
+| CL-0019 `compliance_clean` | True | **True** | ✅ |
+| CL-0014 Golden Harbour | 29.46% = 12.87 + 9.54 + 7.05 | **29.4527**, same constituents | ✅ ±0.01 |
+| CL-0014 three asset classes | three | Fixed Income, Equity, Structured Products | ✅ |
+| Duplicate underlying | SYN-ST-0104, SYN-EQ-0008 | exactly those two | ✅ |
 
-**No task in [tasks.md](./tasks.md) may be marked complete on a quoted
-figure.** Phase 0 of the plan reproduces all seven before implementation
-starts, and any that does not reproduce is reported rather than
-reconciled — Principle X, and the constitution's own instruction that if
-something in the data looks wrong or contradictory, say so.
+**Nothing had to be reported as unsupported.** The data backs every number
+in `.alamazing/findings.md` that this spec asserts.
 
-Recorded under Principle II: this is a stated assumption closing an open
-question inside the ten-minute cap, not a guess presented as fact.
+### Two corrections Phase 0 forced
+
+Recorded here rather than silently applied, because both change what the
+implementation must do:
+
+**1. The parser must read `instrument_name`, not only
+`underlying_reference`.** Block 3 says a holding "resolves to the names in
+that reference". For CL-0014's accumulator there is **no name in the
+reference at all** — it carries strike, knock-out and double-up mechanics,
+and the issuer appears only in the instrument name
+(`"Accumulator ref. Golden Harbour Properties Ltd, 12M"`). A parser
+following block 3 literally cannot find Golden Harbour, and
+`test_lookthrough_cl0014` — a named required assertion in Article VIII —
+fails. FR-002 is amended accordingly. See [research.md](./research.md) R6.
+
+**2. There are two theme rules, not one.** Neither single rule reproduces
+both recorded figures: sector-based gives CL-0019 its 42.13% but CL-0014
+49.03%; issuer-based gives CL-0014 its 29.45% but CL-0019 33.25%. On
+inspection `.alamazing/findings.md` describes them as different kinds of
+finding — "stated objective vs look-through exposure" for one, "one name
+held three ways" for the other. Both are emitted. See
+[research.md](./research.md) R5.
+
+**And one defect in this spec, now fixed:** SC-006 originally required
+theme totals to sum to 100% of client value. That is wrong — the two rules
+overlap by design, so a holding can belong to two themes and the totals
+*should* exceed 100%. Replaced below with the invariant that actually
+catches the failure mode.
 
 ---
 
@@ -270,19 +293,39 @@ across three named instruments in three different asset classes.
 - **FR-001**: The system MUST resolve every holding to a theme, where a
   holding with no underlying reference resolves from its own sector and a
   holding with one resolves from the names that reference contains.
-- **FR-002**: The system MUST parse an underlying reference by discarding
-  any descriptive prefix before a colon, splitting the remainder on the
-  separator between names, and trimming whitespace from each result.
+- **FR-002**: The system MUST recover referenced names from **two**
+  sources: an underlying reference, by discarding any descriptive prefix
+  before a colon and splitting the remainder on the separator between
+  names; **and** the instrument's own name, by taking what follows a
+  reference marker up to the first comma. Whitespace MUST be trimmed from
+  each result. *(Amended after Phase 0 — CL-0014's accumulator carries no
+  name in its reference, only in its instrument name. See
+  [research.md](./research.md) R6.)*
+- **FR-002a**: Where neither source yields a name — a reference describing
+  a category rather than an issuer, such as "three Asian banking majors" —
+  the holding MUST fall back to its sector theme and the unresolved
+  reference MUST be recorded in `unsure_about`.
 - **FR-003**: The system MUST match each parsed name against the
   instrument names of the client's other holdings, tolerating trailing
   qualifiers such as depositary-receipt suffixes.
 - **FR-004**: The system MUST total resolved exposure by theme at
   **client** level, computed from the client-level weights established in
   spec 000 and never from the per-portfolio weight column.
+- **FR-004a**: The system MUST resolve themes under **two rules**, and MUST
+  emit findings for both. A **sector theme** comprises every holding whose
+  sector matches the sector of any referenced name, plus the referencing
+  product. An **issuer theme** comprises the specific holdings the
+  referenced names match, plus the referencing product. *(Added after
+  Phase 0 — neither rule alone reproduces both recorded figures. See
+  [research.md](./research.md) R5.)*
 - **FR-005**: The system MUST flag any theme exceeding a threshold
   supplied as a parameter, defaulting to 25% of client-level value.
 - **FR-006**: The system MUST emit a theme-concentration finding naming the
-  theme, its total, and every holding contributing to it.
+  theme, its rule, its total, and every holding contributing to it.
+- **FR-006a**: A theme's name MUST be derived from the data — a sector
+  theme from the joined sector values as they appear in the files, an
+  issuer theme from the matched name as parsed. No theme name may be
+  written in the pipeline (Principle XI).
 - **FR-007**: The system MUST emit a duplicate-underlying finding when a
   structured product references names the client already holds outright,
   naming the product and each duplicated holding.
@@ -362,9 +405,14 @@ across three named instruments in three different asset classes.
   0.01**, comprising **SYN-FI-0207** 12.87%, **SYN-ST-0106** 9.54% and
   **SYN-SP-0503** 7.05%, each ± 0.01, across three different booked asset
   classes.
-- **SC-006**: Theme totals account for 100% ± 0.001 of client-level value
-  for every client at every snapshot — nothing dropped, nothing
-  double-counted.
+- **SC-006**: No instrument appears twice within a single theme, and no
+  single theme exceeds 100% of client value — asserted across all 20
+  clients at all 5 snapshots. *(Revised. The original criterion required
+  theme totals to sum to 100%; that is wrong, because the two theme rules
+  overlap by design and a holding may belong to both. This invariant
+  catches the real failure mode — a structured product contributing its
+  weight once per referenced name, which would inflate the hero's figure
+  past 42% plausibly.)*
 - **SC-007**: Every emitted finding carries at least one evidence entry
   naming a file and one or more row identifiers, and validates against the
   recorded Finding schema.

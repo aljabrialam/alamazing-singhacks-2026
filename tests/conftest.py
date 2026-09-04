@@ -43,3 +43,24 @@ BLOCKADE_REIMPOSED = "2026-08-05"
 @pytest.fixture(scope="session")
 def book():
     return load_all(DATA)
+
+
+# --- spec 001 -------------------------------------------------------------
+
+# Lau Chi Ming. Holds one company three ways — a perpetual bond, the
+# ordinary shares, and an accumulator written on it. Three asset classes,
+# one credit risk, and his own business is Hong Kong property development.
+GOLDEN_HARBOUR_CLIENT = "CL-0014"
+GOLDEN_HARBOUR = ["SYN-FI-0207", "SYN-ST-0106", "SYN-SP-0503"]
+
+# Margarethe Voss-Brenner. 71.46% equity on a Conservative mandate,
+# transferred in as it stood. Used here as the client whose
+# compliance_clean must be False.
+BREACHED_CLIENT = "CL-0003"
+
+# The two names the hero's structured note references that he also holds
+# outright. Block 3 acceptance.
+HERO_DUPLICATES = ["SYN-EQ-0008", "SYN-ST-0104"]
+
+# .alamazing/findings.md § 1, Trajectory.
+HERO_TRAJECTORY = [29.41, 29.50, 34.08, 41.07, 42.13]

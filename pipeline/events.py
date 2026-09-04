@@ -105,9 +105,10 @@ def events_touching(
     answer, not a gap to be filled.
 
     **This match is narrow, not loose.** On this data it has effectively no
-    false positives and several false negatives — "shipping" matches
-    nothing, because shipping positions are booked under sector
-    "Industrials". The honest description is "events whose transmission
+    false positives and several false negatives: a transmission channel
+    naming an activity matches nothing when the holdings that do that
+    activity are booked under a broader sector heading. The honest
+    description is "events whose transmission
     channels name an asset class or sector this client holds", not "every
     event that touches this client". Recorded in research.md R5 rather than
     hidden, because a false positive is visible and rejectable while a
