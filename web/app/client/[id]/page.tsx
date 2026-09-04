@@ -36,6 +36,7 @@ import {
   explanation,
   saidVsHeld,
   scenario,
+  taxPosition,
 } from "@/lib/findings";
 import { money, shortDate, year } from "@/lib/format";
 
@@ -58,6 +59,7 @@ export default async function ClientBrief({
   const question = openQuestion(client);
   const repricing = scenario(client);
   const explained = explanation(client);
+  const tax = taxPosition(client);
   const runway = client.findings.filter((f) => f.kind === "D4");
   const snapshot = findings.meta.snapshot_date;
 
@@ -177,6 +179,22 @@ export default async function ClientBrief({
                 </div>
               ))}
               <Decisions findingKey={`${client.client_id}-D4`} />
+            </Band>
+          )}
+
+          {/* The tax position at domicile. Reports; never optimises. Spec 008. */}
+          {tax && (
+            <Band>
+              <h3 className="font-read text-[20px] font-normal">
+                The tax position, at domicile
+              </h3>
+              <p className="font-read mt-3 max-w-[62ch] text-[16px] leading-[1.65] text-prose md:text-[17.5px]">
+                {tax.detail}
+              </p>
+              <p className="mt-3 max-w-[64ch] text-[13px] leading-[1.6] text-muted-foreground">
+                {tax.unsure_about}
+              </p>
+              <Decisions findingKey={`${client.client_id}-D9`} />
             </Band>
           )}
 

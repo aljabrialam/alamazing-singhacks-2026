@@ -149,6 +149,19 @@ export type Finding = {
   }[];
   disposed?: { instrument_id: string; instrument_name: string; change_usd: number }[];
   market_movement_usd?: number;
+
+  // D9
+  tax_position?: {
+    domicile: string;
+    residence: string;
+    domicile_differs_from_residence: boolean;
+    capital_gains_levied: boolean | null;
+    gains_base: number;
+    losses_base: number;
+    net_base: number;
+    unpriced_names: string[];
+    base_currency: string;
+  };
   acquired_market_movement_usd?: number;
   paid_in_usd?: number;
   taken_out_usd?: number;
@@ -320,6 +333,10 @@ export function saidVsHeld(client: ClientRecord): Finding | undefined {
 
 export function explanation(client: ClientRecord): Finding | undefined {
   return byKind(client, "D7")[0];
+}
+
+export function taxPosition(client: ClientRecord): Finding | undefined {
+  return byKind(client, "D9")[0];
 }
 
 /**

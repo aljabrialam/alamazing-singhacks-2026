@@ -4,7 +4,7 @@
       "aum_usd": 22181135.66,
       "client_id": "CL-0003",
       "compliance_clean": false,
-      "finding_count": 5,
+      "finding_count": 6,
       "has_brief": true,
       "name": "Margarethe Voss-Brenner",
       "rank": 1,
@@ -14,7 +14,7 @@
       "aum_usd": 26488970.55,
       "client_id": "CL-0014",
       "compliance_clean": false,
-      "finding_count": 7,
+      "finding_count": 8,
       "has_brief": true,
       "name": "Lau Chi Ming",
       "rank": 2,
@@ -24,7 +24,7 @@
       "aum_usd": 32214266.33,
       "client_id": "CL-0019",
       "compliance_clean": true,
-      "finding_count": 9,
+      "finding_count": 10,
       "has_brief": true,
       "name": "Abdullah Al-Mansoori",
       "rank": 3,
@@ -1785,6 +1785,76 @@
             "from": "2026-02-27",
             "to": "2026-08-26"
           }
+        },
+        {
+          "classification": null,
+          "client_id": "CL-0003",
+          "confidence": "medium",
+          "detail": "Tax domicile is Germany; residence is Singapore. The domicile is what governs here, and the two differ \u2014 worth checking before anything is realised. Across all portfolios the unrealised position is EUR 2,621,596 in gains across 6 positions and EUR 226,000 in losses across 1, a net EUR +2,395,596. Germany does levy tax on capital gains, so the timing and order of any sale has a consequence. That matters because German inheritance tax instalment \u2014 EUR 3,400,000 due by 2026-12-31 \u2014 has to be funded, and the portfolio holds net gains. Meeting it realises taxable gains in Germany. And one position cannot be assessed at all: Nordvind Industrial AB carries no cost basis, so the gain or loss on it \u2014 and therefore the tax consequence of selling it \u2014 cannot be stated from this data.",
+          "events": [],
+          "evidence": [
+            {
+              "file": "clients.csv",
+              "note": "tax domicile Germany, country of residence Singapore",
+              "rows": [
+                "CL-0003"
+              ]
+            },
+            {
+              "file": "holdings.csv",
+              "note": "unrealised gains 2,621,596, losses -226,000, 1 with no cost basis",
+              "rows": [
+                "SYN-AL-0304",
+                "SYN-CA-0605",
+                "SYN-EQ-0003",
+                "SYN-EQ-0004",
+                "SYN-EQ-0010",
+                "SYN-FI-0209",
+                "SYN-SP-0506",
+                "SYN-ST-0107"
+              ]
+            }
+          ],
+          "headline": "EUR 2,621,596 of unrealised gains against a Germany domicile that does levy capital gains.",
+          "kind": "D9",
+          "obligations": [
+            {
+              "amount": 3400000.0,
+              "currency": "EUR",
+              "description": "German inheritance tax instalment",
+              "due_to": "2026-12-31",
+              "need_id": "CN-004"
+            }
+          ],
+          "severity": 4,
+          "tax_position": {
+            "base_currency": "EUR",
+            "capital_gains_levied": true,
+            "domicile": "Germany",
+            "domicile_differs_from_residence": true,
+            "gain_positions": [
+              "SYN-AL-0304",
+              "SYN-CA-0605",
+              "SYN-EQ-0003",
+              "SYN-EQ-0004",
+              "SYN-EQ-0010",
+              "SYN-SP-0506"
+            ],
+            "gains_base": 2621595.7300000004,
+            "loss_positions": [
+              "SYN-FI-0209"
+            ],
+            "losses_base": -226000.0,
+            "net_base": 2395595.7300000004,
+            "residence": "Singapore",
+            "unpriced_names": [
+              "Nordvind Industrial AB"
+            ],
+            "unpriced_positions": [
+              "SYN-ST-0107"
+            ]
+          },
+          "unsure_about": "This is a position, not tax advice. The system holds a simple record of whether a domicile levies capital gains and nothing else \u2014 no holding periods, no asset-type distinctions, no remittance rules, no treaties. Anything that turns on those is a question for the tax team. Nordvind Industrial AB carries no cost basis, so its gain or loss is unknown and it is excluded from the totals above rather than assumed flat."
         }
       ],
       "life_stage": "Recently inherited - transition",
@@ -6106,6 +6176,71 @@
             "from": "2026-02-27",
             "to": "2026-08-26"
           }
+        },
+        {
+          "classification": null,
+          "client_id": "CL-0014",
+          "confidence": "medium",
+          "detail": "Tax domicile and residence are both Hong Kong SAR. Across all portfolios the unrealised position is HKD 12,500,000 in gains across 1 positions and HKD 62,614,640 in losses across 6, a net HKD -50,114,640. There is a large unrealised loss here, and the obvious move would be to realise it against gains. On these figures that is not worth doing: Hong Kong SAR does not levy tax on capital gains, so harvesting the loss buys no relief. It may still matter for reporting in another jurisdiction, which is a question for the tax team rather than this system.",
+          "events": [],
+          "evidence": [
+            {
+              "file": "clients.csv",
+              "note": "tax domicile Hong Kong SAR",
+              "rows": [
+                "CL-0014"
+              ]
+            },
+            {
+              "file": "holdings.csv",
+              "note": "unrealised gains 12,500,000, losses -62,614,640, 0 with no cost basis",
+              "rows": [
+                "SYN-AL-0307",
+                "SYN-EQ-0021",
+                "SYN-FI-0205",
+                "SYN-FI-0206",
+                "SYN-FI-0207",
+                "SYN-SP-0503",
+                "SYN-ST-0106"
+              ]
+            }
+          ],
+          "headline": "HKD 62,614,640 of unrealised losses, and a Hong Kong SAR domicile where realising them carries no capital gains benefit.",
+          "kind": "D9",
+          "obligations": [
+            {
+              "amount": 60000000.0,
+              "currency": "HKD",
+              "description": "Mid-Levels redevelopment equity contribution",
+              "due_to": "2027-06-30",
+              "need_id": "CN-013"
+            }
+          ],
+          "severity": 3,
+          "tax_position": {
+            "base_currency": "HKD",
+            "capital_gains_levied": false,
+            "domicile": "Hong Kong SAR",
+            "domicile_differs_from_residence": false,
+            "gain_positions": [
+              "SYN-AL-0307"
+            ],
+            "gains_base": 12500000.0,
+            "loss_positions": [
+              "SYN-EQ-0021",
+              "SYN-FI-0205",
+              "SYN-FI-0206",
+              "SYN-FI-0207",
+              "SYN-SP-0503",
+              "SYN-ST-0106"
+            ],
+            "losses_base": -62614640.0,
+            "net_base": -50114640.0,
+            "residence": "Hong Kong SAR",
+            "unpriced_names": [],
+            "unpriced_positions": []
+          },
+          "unsure_about": "This is a position, not tax advice. The system holds a simple record of whether a domicile levies capital gains and nothing else \u2014 no holding periods, no asset-type distinctions, no remittance rules, no treaties. Anything that turns on those is a question for the tax team."
         }
       ],
       "life_stage": "Peak earning years",
@@ -8620,6 +8755,77 @@
             "from": "2026-02-27",
             "to": "2026-08-26"
           }
+        },
+        {
+          "classification": null,
+          "client_id": "CL-0019",
+          "confidence": "medium",
+          "detail": "Tax domicile and residence are both United Arab Emirates. Across all portfolios the unrealised position is USD 6,862,240 in gains across 8 positions and USD 519,000 in losses across 2, a net USD +6,343,240. United Arab Emirates does not levy tax on capital gains, so realising a gain or a loss here carries no capital gains consequence.",
+          "events": [],
+          "evidence": [
+            {
+              "file": "clients.csv",
+              "note": "tax domicile United Arab Emirates",
+              "rows": [
+                "CL-0019"
+              ]
+            },
+            {
+              "file": "holdings.csv",
+              "note": "unrealised gains 6,862,240, losses -519,000, 0 with no cost basis",
+              "rows": [
+                "SYN-AL-0303",
+                "SYN-EQ-0001",
+                "SYN-EQ-0002",
+                "SYN-EQ-0008",
+                "SYN-EQ-0020",
+                "SYN-EQ-0025",
+                "SYN-FI-0203",
+                "SYN-FI-0210",
+                "SYN-SP-0505",
+                "SYN-ST-0104"
+              ]
+            }
+          ],
+          "headline": "Unrealised position: USD 6,862,240 in gains, USD 519,000 in losses. Domicile United Arab Emirates.",
+          "kind": "D9",
+          "obligations": [
+            {
+              "amount": 5000000.0,
+              "currency": "USD",
+              "description": "Seed capital for Singapore family office entity",
+              "due_to": "2027-12-31",
+              "need_id": "CN-017"
+            }
+          ],
+          "severity": 3,
+          "tax_position": {
+            "base_currency": "USD",
+            "capital_gains_levied": false,
+            "domicile": "United Arab Emirates",
+            "domicile_differs_from_residence": false,
+            "gain_positions": [
+              "SYN-AL-0303",
+              "SYN-EQ-0001",
+              "SYN-EQ-0002",
+              "SYN-EQ-0008",
+              "SYN-EQ-0020",
+              "SYN-EQ-0025",
+              "SYN-SP-0505",
+              "SYN-ST-0104"
+            ],
+            "gains_base": 6862240.33,
+            "loss_positions": [
+              "SYN-FI-0203",
+              "SYN-FI-0210"
+            ],
+            "losses_base": -519000.0,
+            "net_base": 6343240.33,
+            "residence": "United Arab Emirates",
+            "unpriced_names": [],
+            "unpriced_positions": []
+          },
+          "unsure_about": "This is a position, not tax advice. The system holds a simple record of whether a domicile levies capital gains and nothing else \u2014 no holding periods, no asset-type distinctions, no remittance rules, no treaties. Anything that turns on those is a question for the tax team."
         }
       ],
       "life_stage": "Peak earning years",
@@ -9075,6 +9281,12 @@
         "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not."
       },
       {
+        "client_id": "CL-0003",
+        "headline": "EUR 2,621,596 of unrealised gains against a Germany domicile that does levy capital gains.",
+        "kind": "D9",
+        "unsure_about": "This is a position, not tax advice. The system holds a simple record of whether a domicile levies capital gains and nothing else \u2014 no holding periods, no asset-type distinctions, no remittance rules, no treaties. Anything that turns on those is a question for the tax team. Nordvind Industrial AB carries no cost basis, so its gain or loss is unknown and it is excluded from the totals above rather than assumed flat."
+      },
+      {
         "client_id": "CL-0007",
         "headline": "Capital Protected Note ref. Gold, 24M references 2 names the client already holds outright.",
         "kind": "D3",
@@ -9115,6 +9327,12 @@
         "headline": "The portfolio moved -4.98m on market prices since 2026-02-27.",
         "kind": "D7",
         "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not."
+      },
+      {
+        "client_id": "CL-0014",
+        "headline": "HKD 62,614,640 of unrealised losses, and a Hong Kong SAR domicile where realising them carries no capital gains benefit.",
+        "kind": "D9",
+        "unsure_about": "This is a position, not tax advice. The system holds a simple record of whether a domicile levies capital gains and nothing else \u2014 no holding periods, no asset-type distinctions, no remittance rules, no treaties. Anything that turns on those is a question for the tax team."
       },
       {
         "client_id": "CL-0019",
@@ -9163,6 +9381,12 @@
         "headline": "The portfolio is up +6.02m since 2026-02-27 \u2014 but 3.84m of that is money paid in, not performance.",
         "kind": "D7",
         "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not."
+      },
+      {
+        "client_id": "CL-0019",
+        "headline": "Unrealised position: USD 6,862,240 in gains, USD 519,000 in losses. Domicile United Arab Emirates.",
+        "kind": "D9",
+        "unsure_about": "This is a position, not tax advice. The system holds a simple record of whether a domicile levies capital gains and nothing else \u2014 no holding periods, no asset-type distinctions, no remittance rules, no treaties. Anything that turns on those is a question for the tax team."
       }
     ]
   }

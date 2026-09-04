@@ -48,6 +48,7 @@ from pipeline.divergence import (  # noqa: E402
     d5_unanswered,
     d6_scenario,
     d7_explain,
+    d9_tax,
 )
 
 OUTPUT_PATH = Path(__file__).parent.parent / "web" / "public" / "findings.json"
@@ -89,6 +90,7 @@ def detect_all(book: Book, client_id: str, series_id: str) -> list[dict]:
         book, client_id, series_id, date_now, date_then
     )
     findings += d7_explain.detect(book, client_id, date_then, date_now)
+    findings += d9_tax.detect(book, client_id)
     return findings
 
 
