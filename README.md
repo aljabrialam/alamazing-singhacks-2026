@@ -16,13 +16,13 @@ Not a dashboard. The interesting failures in private banking are not limit breac
 |---|---|
 | **Live app** | [web-ftwdlend0-aljs-projects.vercel.app](https://web-ftwdlend0-aljs-projects.vercel.app) |
 | **Challenge** | SingHacks 2026 · Julius Baer, Wealth Intelligence · solo build |
-| **What it is** | Six detectors that find divergence between what a client said, what their mandate permits, and what they actually hold — each finding carrying the source rows behind it |
+| **What it is** | Nine detectors that find divergence between what a client said, what their mandate permits, and what they actually hold — each finding carrying the source rows behind it |
 | **Problem solved** | Exception engines only fire on exceptions. A portfolio can respect every mandate band, breach no single-name limit, and still be 42% one bet against a stated objective — and nothing in the bank will say so |
 | **How** | pandas computes every figure → findings are written to a committed JSON file → a static Next.js app renders three screens. **No live API between them** |
 | **Model** | `claude-opus-5`, **24 calls in the whole system**, all at build time, all committed. It reads prose and writes prose. **It never counts** — every figure comes from pandas |
 | **Core rule** | `event_log.csv` outranks the model. Where the model's recollection and the file disagree, the file wins, and explanations cite events by date from the file only |
 | **Hero finding** | **42.13%** of one client's portfolio is a single shipping-and-energy bet, against a 2014 objective of *"outside the Gulf region and outside the shipping sector"* — with **every mandate band respected** |
-| **Status** | All 8 specs shipped. 88 tests green, 46 findings, gates `g1`–`g3` tagged. See [Specs](#specs) |
+| **Status** | All 9 specs shipped. 108 tests green, 53 findings, gates `g1`–`g3` tagged. See [Specs](#specs) |
 | **Stack** | Python 3 + pandas (pipeline), Next.js 16 + TypeScript + Tailwind + shadcn/ui (workbench), pytest |
 
 ## The problem
@@ -179,11 +179,18 @@ Two guards make fabrication structurally hard. A claim whose quoted words do not
 | **D1** | Said vs held | A portfolio that contradicts what the client told their RM. The only detector that needs a model, and it only uses it to read |
 | **D2** | Mandate classification | Band breaches, classified `drift` / `client_directed` / **`inherited`** — a third class the brief does not name |
 | **D3** | Hidden when split | Concentration visible only after resolving structured products to their underlying references |
-| **D4** | Liquidity runway | A dated obligation against what is genuinely sellable, net of pledged collateral |
+| **D4** | Liquidity runway | A dated obligation against what is genuinely sellable, net of pledged collateral — **and the loan-to-value traced across all five snapshots** |
 | **D5** | The unanswered question | Something the client asked with no recorded answer. Twenty lines, and it converts the demo from analytics to advisory |
 | **D6** | Scenario | What happens if a named market series returns to a past level. Arithmetic over stored prices — no forecast, no volatility assumption |
+| **D7** | Explanation | What the portfolio did and why, in **three buckets** — market movement, money paid in, money taken out. Never one number |
+| **D9** | Tax at domicile | Unrealised gains and losses across the household, assessed at **domicile rather than residence**. Reports; never optimises |
+| **D10** | Life events | A contradiction between the **recorded profile** and the client's own stated plans |
 
-`detect(book, client_id)` for all six. D6 additionally takes the market series and both dates as **arguments** — *"what if the Strait reopens"* is one call; *"what if rates fall"* is the same function with different arguments. Nothing in the pipeline names a client, an instrument, a sector, a date or a series.
+There is deliberately no D8 — the collateral trajectory extends D4,
+because a client has one funding problem rather than a liquidity finding
+and a separate collateral finding.
+
+`detect(book, client_id)` for all of them. D6 additionally takes the market series and both dates as **arguments** — *"what if the Strait reopens"* is one call; *"what if rates fall"* is the same function with different arguments. Nothing in the pipeline names a client, an instrument, a sector, a date or a series.
 
 ### The third classification
 
@@ -193,6 +200,44 @@ Margarethe Voss-Brenner's portfolio is **71.46% equity against a 30% ceiling** o
 
 So the system reports a third class, `inherited`. Same breach, a different conversation — and one that cannot be had the way the other two are had, because she has said twice that she does not understand what is in the portfolio.
 
+## Against the brief's own menu
+
+The challenge brief lists *"Directions the Data Supports"* and calls it
+**"a menu, not a checklist — two or three done well beats all of them done
+thinly."** We built seven, and the two we declined are declined on the
+record rather than quietly missing.
+
+| Direction | Where |
+|---|---|
+| **Hidden risk** — aggregation across portfolios, look-through to underlyings | D3. The `weight_pct` trap *is* the multi-portfolio case |
+| **Mandate governance** — drift vs client-directed | D2, plus a third class, `inherited` |
+| **Liquidity** — commitments against what is sellable | D4 |
+| **Collateral** — trace loan-to-value across the five snapshots | D4's trajectory |
+| **Scenario** — what if the Middle East de-escalates | D6 |
+| **Explanation** — attribute the change to specific events | D7 |
+| **Tax-aware** — gains and losses together, at domicile not residence | D9 |
+| **Life events** — futures the allocation was not built for | D10 |
+| **Prioritisation** — who to call first, defensibly | The ranked call list |
+
+**Two things we deliberately do not do**, and they are positions rather
+than omissions:
+
+**We do not recommend trades.** The brief's flow says *"Recommend
+Potential Actions"* and Building Block 3 lists rebalancing suggestions. We
+draft the *conversation*, not the trade. A rebalancing suggestion from a
+system that has never met the client is the thing an RM has to undo — and
+the brief's own Trust section asks for solutions that *"support human
+decision-making rather than replace it"*. Priscilla gets the finding, the
+evidence, and a sentence she can open with, and she keeps, rejects or
+annotates every one.
+
+**We do not optimise tax.** D9 reports the position and stops. One client
+holds HKD 62.6m of unrealised losses and every optimisation instinct says
+harvest them — but his domicile does not levy capital gains, so
+harvesting buys nothing. Telling him to would be confidently wrong in
+front of someone who understands his own affairs better than we do. The
+negative finding is the valuable one.
+
 ## Why you can trust it
 
 **Every finding carries its evidence.** Source file, row identifiers, values. A detector that cannot produce evidence returns nothing — there is no such thing as an unsourced finding here. The evidence panel is visible without interaction on desktop, because hiding it undercuts the whole claim.
@@ -200,10 +245,10 @@ So the system reports a third class, `inherited`. Same breach, a different conve
 **Determinism is tested, not asserted.** Two builds, byte-identical output, with the model key removed. And separately: the written file is checked to contain the recorded figures — because *a deterministic build of the wrong numbers is still deterministic.*
 
 ```
-88 passed in 6.37s
+108 passed in 8.00s
 ```
 
-**We report data problems rather than working around them.** Julius Baer's brief asks for this explicitly, and the uncertainty screen keeps two kinds of not-knowing apart: **10 data imperfections** (the files cannot tell us) and **19 method limits** (our approach has a boundary).
+**We report data problems rather than working around them.** Julius Baer's brief asks for this explicitly, and the uncertainty screen keeps two kinds of not-knowing apart: **10 data imperfections** (the files cannot tell us) and **26 method limits** (our approach has a boundary).
 
 The sharpest one: `SYN-ST-0107` Nordvind Industrial AB carries **no cost basis** for CL-0003. It is not a reference-data gap — another client holds the same stock with a full basis and a +93% gain, acquired 2011. What is missing is the basis for *her* position, because the transfer carried a date and a value but not a history. So the bank knows what that stock cost in 2011 and **cannot tell her what her holding cost** — which becomes a tax problem the moment she sells it, and selling it is one of her options for a EUR 3.4m instalment due before year end.
 
@@ -302,7 +347,8 @@ alamazing-singhacks-2026/
 │   ├── brief.py               briefs and the call-list ranking
 │   ├── build.py               CLI → web/public/findings.json
 │   └── divergence/            d1_said, d2_mandate, d3_hidden,
-│                              d4_runway, d5_unanswered, d6_scenario
+│                              d4_runway, d5_unanswered, d6_scenario,
+│                              d7_explain, d9_tax, d10_lifeevents
 ├── derived/                Committed model output — claims, briefs, ranking,
 │                              each with the prompt and settings that produced it
 ├── web/                    Next.js. Presents. Reads one static file.
@@ -332,8 +378,9 @@ Built spec-first: every feature goes through `/speckit.specify → /speckit.plan
 | 005 | [Scenario](specs/005-scenario/) | no | Shipped · `g2` |
 | 006 | [Briefs and build](specs/006-briefs-build/) | **yes** | Shipped |
 | 007 | [The workbench](specs/007-workbench/) | no | Shipped · `g3` |
+| 008 | [Explanation, collateral, tax, life events](specs/008-explanation-collateral-tax-life/) | no | Shipped — four detectors from an audit against the official brief |
 
-**Six of eight specs need no model at all.**
+**Seven of nine specs need no model at all.**
 
 Each spec directory carries a `research.md` recording every question that had to be answered from the data before code was written, with the query that answered it. That is where the four reference-document errors and two shipped defects are documented — including the two the constitution itself needed, which is why it is at v1.2.0 rather than v1.0.0.
 
