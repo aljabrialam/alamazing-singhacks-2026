@@ -6,11 +6,11 @@ need is below.
 
 ## Input
 
-- `divergence-demo.mp4` — a silent screen recording, total **2:30.0** (no audio track), 1440×810, 30 fps, H.264. Inspect it to confirm.
+- `divergence-demo.mp4` — a silent screen recording, total **2:30.0** (no audio track), 2560×1440, 30 fps, H.264. Inspect it to confirm.
 - The numbered narration lines in **Narration** below. Each has a start cue
   in `m:ss.s` measured from the very start of the video.
 
-The recording is a real browser session against https://web-6a5tpt22u-aljs-projects.vercel.app — not a mock-up.
+The recording is a real browser session against https://web-bdqvc2a3d-aljs-projects.vercel.app — not a mock-up.
 The soft navy ring that appears around elements is a capture aid added by
 the recording script to direct the eye; it is not part of the product.
 

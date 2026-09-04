@@ -30,12 +30,26 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const SITE = process.env.DEMO_URL ?? "https://web-6a5tpt22u-aljs-projects.vercel.app";
+const SITE = process.env.DEMO_URL ?? "https://web-bdqvc2a3d-aljs-projects.vercel.app";
 const HERO = "CL-0019";
 const OUT = join(import.meta.dirname, "out");
 const RAW = join(OUT, "raw");
-const W = 1440;
-const H = 810;
+// True 2560x1440 capture, with the framing of a 1440px layout.
+//
+// `recordVideo.size` larger than the viewport does NOT supersample — it
+// pads the surplus with flat grey. Measured: a 1440x810 viewport asked
+// to record at 2880x1620 put the page in the top-left quadrant and
+// filled the rest with rgb(128,128,128). deviceScaleFactor does not
+// change this; the screencast follows the CSS viewport.
+//
+// So the viewport itself has to be large. To keep the framing identical
+// to the 1440px layout that was already verified, the page is laid out
+// at 1440 CSS px and zoomed to fill the wider viewport. Media queries
+// still see 2560px, so the desktop layout branch is unchanged.
+const VIEW_W = 2560;     // viewport == video size, so nothing is padded
+const VIEW_H = 1440;
+const LAYOUT_W = 1440;   // the width the page lays itself out at
+const ZOOM = VIEW_W / LAYOUT_W;   // 1.777…
 
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(RAW, { recursive: true });
@@ -77,7 +91,9 @@ const beats = [
       "rather than portfolio size.",
     async run(p) {
       await clear(p);
-      await smoothTo(p, 520);
+      // Anchored on a row rather than a pixel offset: with the page
+      // zoomed, a literal scrollTop no longer means the same distance.
+      await smoothToSel(p, "ol li:nth-child(4)");
     },
   },
   {
@@ -378,13 +394,23 @@ console.log(`length ${(total / 1000).toFixed(1)}s\n`);
 
 const browser = await chromium.launch({ args: ["--force-color-profile=srgb"] });
 const context = await browser.newContext({
-  viewport: { width: W, height: H },
-  recordVideo: { dir: RAW, size: { width: W, height: H } },
+  viewport: { width: VIEW_W, height: VIEW_H },
+  recordVideo: { dir: RAW, size: { width: VIEW_W, height: VIEW_H } },
   reducedMotion: "no-preference", // the merge and the pins must animate
   colorScheme: "light",
   deviceScaleFactor: 1,
 });
 const page = await context.newPage();
+
+// Applied before first paint so no unzoomed frame is ever recorded.
+await page.addInitScript(`
+  addEventListener('DOMContentLoaded', () => {
+    const s = document.createElement('style');
+    s.textContent =
+      'html{zoom:${ZOOM};width:${LAYOUT_W}px}';
+    document.head.appendChild(s);
+  });
+`);
 
 await page.goto(SITE, { waitUntil: "networkidle" });
 await settle(page);
@@ -449,7 +475,7 @@ execFileSync(
     "-ss", trim.toFixed(3),
     "-t", (total / 1000).toFixed(3),
     "-an",
-    "-c:v", "libx264", "-preset", "slow", "-crf", "19",
+    "-c:v", "libx264", "-preset", "slow", "-crf", "20",
     "-pix_fmt", "yuv420p", "-r", "30",
     "-movflags", "+faststart",
     mp4,
@@ -459,7 +485,19 @@ execFileSync(
 
 writeFileSync(
   join(OUT, "beats.json"),
-  JSON.stringify({ site: SITE, width: W, height: H, totalMs: total, cues }, null, 2)
+  JSON.stringify(
+    {
+      site: SITE,
+      layoutWidth: LAYOUT_W,
+      zoom: ZOOM,
+      width: VIEW_W,
+      height: VIEW_H,
+      totalMs: total,
+      cues,
+    },
+    null,
+    2
+  )
 );
 
 const outDur = JSON.parse(

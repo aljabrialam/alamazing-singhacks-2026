@@ -109,8 +109,16 @@ export function ExposureMerge({
             >
               {block.assetClass}
             </div>
+            {/* A FIXED height, not a minimum.
+                Instrument names wrap to different line counts — "Fixed
+                Coupon Note ref. Basket C, 9.20% p.a., 12M" takes two
+                lines where "Pacific Orient Shipping Ltd" takes one — so
+                a min-height let each block's percentage sit at its own
+                baseline. Four figures at four different heights, in the
+                graphic the whole demo turns on. Reserving the same space
+                in every block lines them up. */}
             <div
-              className="mt-[5px] min-h-[36px] text-[13.5px] leading-[1.35]"
+              className="mt-[5px] line-clamp-3 h-[56px] text-[13.5px] leading-[1.35]"
               style={{
                 opacity: merged ? 0 : 1,
                 transition: "opacity .35s",
