@@ -11,10 +11,11 @@ but not tagged did not pass.
 
 ## Deployment
 
-Production: https://web-ftwdlend0-aljs-projects.vercel.app
+Production: https://web-o0k86prrh-aljs-projects.vercel.app
 
 Static only. There is no backend to deploy — the Python pipeline is a
 build-time step and `web/public/findings.json` is committed, so Vercel
 serves 25 prerendered pages and nothing runs at demo time. That is the
 constitution's Technology Standards, not a shortcut: "No live API between
 them."
+| G3 — redeployed with spec 008 | 01:17 | — |
