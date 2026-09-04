@@ -29,62 +29,77 @@ export function ClientHero({
   const asked = question?.unanswered_question;
 
   return (
-    <div
-      className={`jb-rule relative overflow-hidden rounded-[3px] bg-navy px-6 pt-8 text-white md:px-12 md:pt-11 md:pb-10 ${
-        /* Room for the figure below the content on a phone — but only
-           when there is a figure. Otherwise this is dead space. */
-        exposure ? "pb-[150px]" : "pb-8"
-      }`}
-    >
-      {/* The one crest element on the panel. Text beside the colour,
-          never colour alone. */}
-      {asked && (
-        <span className="inline-flex items-center gap-2.5 rounded-[2px] border border-jb-red/50 px-3.5 py-[7px] text-[13.5px] text-[#F2B8C0]">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-jb-red"
-          />
-          {client.name.split(" ")[0]} asked you a question on{" "}
-          {shortDate(asked.asked_on)}. It has no answer yet.
-        </span>
-      )}
+    <div className="jb-rule overflow-hidden rounded-[3px] bg-navy px-6 py-8 text-white md:px-12 md:py-11">
+      {/* Content left, figure bottom-right — as a GRID, not as an
+          absolutely positioned figure.
 
-      <h2 className={`hero-name ${asked ? "mt-5" : ""} mb-2`}>
-        {client.name}
-      </h2>
+          The mockup positions the figure `absolute; right:48px;
+          bottom:38px`, which works there because its quote is one short
+          line. Real objectives are not: this client's runs to three lines
+          at 22px and ran straight underneath the 80px figure. An absolute
+          figure cannot know how tall the text beside it is, so the
+          collision is a property of the technique rather than of this
+          client — the next long objective would do it again.
 
-      <div className="text-[14.5px] text-white/60">
-        {client.age ? <>{client.age} · </> : null}
-        {client.risk_profile}, {client.service_models.join(", ").toLowerCase()}{" "}
-        · {money(client.aum_usd)} · client since {year(client.client_since)}
+          A grid row with `items-end` puts the figure at the bottom of the
+          row and reserves its column, so the two can never overlap
+          whatever the text length. Stacks on a phone for free. */}
+      <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-12">
+        <div>
+          {/* The one crest element on the panel. Text beside the colour,
+              never colour alone. */}
+          {asked && (
+            <span className="inline-flex items-center gap-2.5 rounded-[2px] border border-jb-red/50 px-3.5 py-[7px] text-[13.5px] text-[#F2B8C0]">
+              <span
+                aria-hidden
+                className="h-1.5 w-1.5 rounded-full bg-jb-red"
+              />
+              {client.name.split(" ")[0]} asked you a question on{" "}
+              {shortDate(asked.asked_on)}. It has no answer yet.
+            </span>
+          )}
+
+          <h2 className={`hero-name ${asked ? "mt-5" : ""} mb-2`}>
+            {client.name}
+          </h2>
+
+          <div className="text-[14.5px] text-white/60">
+            {client.age ? <>{client.age} · </> : null}
+            {client.risk_profile},{" "}
+            {client.service_models.join(", ").toLowerCase()} ·{" "}
+            {money(client.aum_usd)} · client since{" "}
+            {year(client.client_since)}
+          </div>
+
+          {/* What they asked us for, quoted in full. Absent entirely if
+              unrecorded — empty quote marks would imply we hold
+              something we do not. Never truncated: the objective is the
+              thing the whole finding is measured against. */}
+          {client.objectives && (
+            <div className="mt-7 max-w-[46ch] border-l-2 border-e1/60 pl-[22px]">
+              <div className="mb-2 text-[12.5px] text-white/50">
+                Their objective, on file since {year(client.client_since)}
+              </div>
+              <div className="font-read text-[18px] leading-[1.5] text-[#F0EEEA] md:text-[20px]">
+                &ldquo;{client.objectives}&rdquo;
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* The headline figure. Absent when there is no look-through
+            finding: no zero, no em-dash, no empty gold slab. */}
+        {exposure && (
+          <div className="md:text-right">
+            <div className="hero-figure whitespace-nowrap text-e1">
+              {pct(exposure.theme_pct ?? 0, 1)}
+            </div>
+            <div className="mt-2 max-w-[20ch] text-[13px] leading-[1.45] text-white/60 md:ml-auto">
+              of the portfolio is {exposure.theme}
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* What they asked us for, quoted. Absent entirely if unrecorded —
-          empty quote marks would imply we hold something we do not. */}
-      {client.objectives && (
-        <div className="mt-7 max-w-[52ch] border-l-2 border-e1/60 pl-[22px]">
-          <div className="mb-2 text-[12.5px] text-white/50">
-            Their objective, on file since {year(client.client_since)}
-          </div>
-          <div className="font-read text-[19px] leading-[1.5] text-[#F0EEEA] md:text-[22px]">
-            &ldquo;{client.objectives}&rdquo;
-          </div>
-        </div>
-      )}
-
-      {/* The headline figure. Bottom-right on desktop, below the content
-          on a phone — reflowed rather than overlapping. Absent when there
-          is no look-through finding: no zero, no em-dash. */}
-      {exposure && (
-        <div className="absolute bottom-7 left-6 text-left md:bottom-10 md:left-auto md:right-12 md:text-right">
-          <div className="hero-figure text-e1">
-            {pct(exposure.theme_pct ?? 0, 1)}
-          </div>
-          <div className="mt-2 max-w-[19ch] text-[13px] text-white/60">
-            of the portfolio is {exposure.theme}
-          </div>
-        </div>
-      )}
 
       {/* The date the figures are *as at*. Never today's. */}
       {!exposure && (
