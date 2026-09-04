@@ -31,7 +31,7 @@ from __future__ import annotations
 import pandas as pd
 
 from pipeline.fx import to_usd
-from pipeline.load import Book, client_weights, latest
+from pipeline.load import Book, client_weights, latest, snapshots
 
 KIND = "D4"
 
@@ -47,6 +47,104 @@ NEAR_CASH = ("Cash and Equivalents", "Fixed Income")
 DEFAULT_COVER_THRESHOLD = 3.0
 
 
+def _facility_history(book: Book, client_id: str, facility) -> list[dict]:
+    """The facility at **every** snapshot, not just the latest.
+
+    Spec 004 read one snapshot of five. That reports a position; it does
+    not report a direction, and for a client walking toward a margin call
+    the direction is the finding.
+
+    A snapshot the facility does not carry is **omitted, never
+    interpolated** — an invented loan-to-value is exactly the kind of
+    plausible figure this project exists not to produce.
+    """
+    out = []
+    for date in snapshots(book):
+        row = {}
+        for field in (
+            "drawn",
+            "collateral_market_value",
+            "lending_value",
+            "ltv_pct",
+            "headroom",
+        ):
+            name = f"{field}_{date}"
+            if name in facility.index and pd.notna(facility[name]):
+                row[field] = float(facility[name])
+        if "ltv_pct" not in row:
+            continue
+        out.append({"snapshot_date": date, **row})
+    return out
+
+
+def _read_trajectory(history: list[dict], margin_call_pct: float) -> dict:
+    """What the trajectory says, in words rather than a chart.
+
+    Two distinct causes, and telling them apart is the whole value:
+    a rise while the drawn balance grew is a **decision**; a rise on an
+    unchanged balance is the **collateral shrinking underneath the client**.
+    """
+    if len(history) < 2:
+        return {}
+
+    first, last = history[0], history[-1]
+    change = last["ltv_pct"] - first["ltv_pct"]
+
+    draws = []
+    for previous, current in zip(history, history[1:]):
+        before, after = previous.get("drawn"), current.get("drawn")
+        if before is None or after is None or before == after:
+            continue
+        draws.append(
+            {
+                "snapshot_date": current["snapshot_date"],
+                "from": before,
+                "to": after,
+                "delta": after - before,
+                "kind": "drawdown" if after > before else "repayment",
+            }
+        )
+
+    # Movement with no change in what is owed can only be the collateral.
+    collateral_driven = []
+    for previous, current in zip(history, history[1:]):
+        if previous.get("drawn") != current.get("drawn"):
+            continue
+        rise = current["ltv_pct"] - previous["ltv_pct"]
+        if rise <= 0:
+            continue
+        collateral_driven.append(
+            {
+                "snapshot_date": current["snapshot_date"],
+                "ltv_rise_pp": rise,
+                "collateral_fall": (
+                    previous.get("collateral_market_value", 0)
+                    - current.get("collateral_market_value", 0)
+                ),
+            }
+        )
+
+    return {
+        "from_snapshot": first["snapshot_date"],
+        "to_snapshot": last["snapshot_date"],
+        "ltv_from": first["ltv_pct"],
+        "ltv_to": last["ltv_pct"],
+        "ltv_change_pp": change,
+        "direction": "rising" if change > 0 else ("falling" if change < 0 else "flat"),
+        "headroom_from": first.get("headroom"),
+        "headroom_to": last.get("headroom"),
+        "headroom_lost": (
+            first.get("headroom", 0) - last.get("headroom", 0)
+            if first.get("headroom") is not None
+            and last.get("headroom") is not None
+            else None
+        ),
+        "pp_to_margin_call": margin_call_pct - last["ltv_pct"],
+        "balance_changes": draws,
+        "collateral_driven_rises": collateral_driven,
+    }
+
+
 def _facility_for(book: Book, client_id: str, date: str):
     """The client's credit facility, if any, at this snapshot."""
     facilities = book.credit[book.credit.client_id == client_id]
@@ -58,9 +156,15 @@ def _facility_for(book: Book, client_id: str, date: str):
         name = f"{prefix}_{date}"
         return float(facility[name]) if name in facility.index else None
 
+    history = _facility_history(book, client_id, facility)
+
     return {
         "facility_id": facility.facility_id,
         "facility_type": facility.facility_type,
+        "history": history,
+        "trajectory": _read_trajectory(
+            history, float(facility.margin_call_ltv_pct)
+        ),
         "currency": facility.facility_ccy,
         "collateral_portfolio_id": facility.collateral_portfolio_id,
         "credit_limit": float(facility.credit_limit),
@@ -216,6 +320,21 @@ def _obligations(book: Book, client_id: str, date: str) -> list[dict]:
     return out
 
 
+def _concentration_theme(book: Book, client_id: str, date: str) -> str | None:
+    """The issuer concentration D3 already found, if any.
+
+    Named rather than restated: the collateral finding should say "it is
+    the same concentration reported above", not compute it again.
+    """
+    from pipeline.divergence.d3_hidden import look_through
+
+    resolved = look_through(book, client_id, date)
+    if resolved.empty:
+        return None
+    themes = sorted(set(resolved.theme_issuer.dropna()))
+    return themes[0] if themes else None
+
+
 def detect(
     book: Book,
     client_id: str,
@@ -289,12 +408,65 @@ def detect(
                 near_cash_cover,
                 need_pct,
                 blocked,
+                concentration_theme=_concentration_theme(book, client_id, date),
             )
         )
 
     return sorted(
         findings, key=lambda f: (-f.get("need_pct", 0.0), f["obligation"]["id"])
     )
+
+
+def _trajectory_copy(facility: dict, concentration_theme: str | None) -> str:
+    """The loan against the portfolio, over time, in words.
+
+    Two causes, told apart: a rise while the balance grew is a decision;
+    a rise on an unchanged balance is the collateral shrinking underneath
+    the client. Reporting only the latest reading loses both.
+    """
+    t = facility.get("trajectory") or {}
+    if not t or t.get("direction") != "rising":
+        return ""
+
+    parts = [
+        f"Over the five snapshots the loan-to-value has moved from "
+        f"{t['ltv_from']:.2f}% to {t['ltv_to']:.2f}% — "
+        f"{t['ltv_change_pp']:+.2f} percentage points — leaving "
+        f"{t['pp_to_margin_call']:.2f} of headroom against the "
+        f"{facility['margin_call_ltv_pct']:.0f}% trigger."
+    ]
+
+    if t.get("headroom_lost"):
+        parts.append(
+            f"Borrowing capacity fell by "
+            f"{t['headroom_lost']:,.0f} {facility['currency']} over that "
+            f"period."
+        )
+
+    for change in t.get("balance_changes", []):
+        if change["kind"] == "drawdown":
+            parts.append(
+                f"On {change['snapshot_date']} the drawn balance rose from "
+                f"{change['from']:,.0f} to {change['to']:,.0f} "
+                f"{facility['currency']} — a decision, taken while the "
+                f"collateral was falling."
+            )
+
+    rises = t.get("collateral_driven_rises", [])
+    if rises:
+        total = sum(r["ltv_rise_pp"] for r in rises)
+        parts.append(
+            f"Since then nothing further has been drawn, and the "
+            f"loan-to-value has still risen {total:.2f} percentage points"
+            + (
+                f" — the collateral is falling, and it is the same "
+                f"{concentration_theme} concentration reported above."
+                if concentration_theme
+                else " because the collateral value is falling."
+            )
+        )
+
+    return " ".join(parts)
 
 
 def _finding(
@@ -307,6 +479,7 @@ def _finding(
     near_cash_cover,
     need_pct,
     blocked,
+    concentration_theme=None,
 ) -> dict:
     detail = [
         f"{obligation['description']} — {obligation['currency']} "
@@ -357,6 +530,12 @@ def _finding(
             f"{facility['margin_call_ltv_pct']:.0f}% threshold."
         )
 
+    # The trajectory. A static reading says where he is; this says where he
+    # is going, and separates the part he chose from the part that happened
+    # to him. See specs/008-.../research.md R2.
+    if facility:
+        detail.append(_trajectory_copy(facility, concentration_theme))
+
     evidence = [
         {
             "file": obligation["source"],
@@ -394,6 +573,7 @@ def _finding(
     return {
         "client_id": client_id,
         "kind": KIND,
+        "facility_trajectory": (facility or {}).get("trajectory") or None,
         "severity": 5 if blocked else 4,
         "confidence": "high",
         "headline": (

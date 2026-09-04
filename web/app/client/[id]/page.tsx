@@ -19,6 +19,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Band, Caption, Sheet } from "@/components/sheet-section";
+import { CollateralTrajectory } from "@/components/collateral-trajectory";
 import { Decisions } from "@/components/decisions";
 import { EvidenceColumn } from "@/components/evidence";
 import { ExposureFigure, Trajectory } from "@/components/exposure-figure";
@@ -166,6 +167,15 @@ export default async function ClientBrief({
                 </div>
               ))}
               <Decisions findingKey={`${client.client_id}-D4`} />
+            </Band>
+          )}
+
+          {/* The loan against the portfolio, over time. Spec 008. */}
+          {runway.some((f) => f.facility_trajectory) && (
+            <Band>
+              <CollateralTrajectory
+                finding={runway.find((f) => f.facility_trajectory)!}
+              />
             </Band>
           )}
 

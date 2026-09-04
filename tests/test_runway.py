@@ -165,3 +165,88 @@ def test_private_market_lag_is_noted_never_flagged(book):
 def test_findings_are_deterministic(book):
     for client_id in (BREACHED_CLIENT, GOLDEN_HARBOUR_CLIENT):
         assert d4.detect(book, client_id) == d4.detect(book, client_id)
+
+
+# --- spec 008: the collateral trajectory --------------------------------
+
+
+def test_facility_trajectory_omits_missing_snapshots_never_interpolates(book):
+    """Unit — an invented loan-to-value is the failure mode here.
+
+    A snapshot the facility does not carry is dropped, not filled in. On
+    this data every facility carries all five, so the assertion is that
+    the count matches what the file actually holds rather than the number
+    of snapshots in the book.
+    """
+    from pipeline.divergence.d4_runway import _facility_for
+    from pipeline.load import snapshots
+
+    date = latest(book)
+    for client_id in sorted(book.clients.client_id):
+        facility = _facility_for(book, client_id, date)
+        if not facility:
+            continue
+        history = facility["history"]
+        # Every entry must have come from a real column, not a fill.
+        row = book.credit[
+            book.credit.facility_id == facility["facility_id"]
+        ].iloc[0]
+        for entry in history:
+            column = f"ltv_pct_{entry['snapshot_date']}"
+            assert column in row.index
+            assert entry["ltv_pct"] == pytest.approx(
+                float(row[column]), abs=1e-9
+            )
+        assert len(history) <= len(snapshots(book))
+        # Chronological, so "direction" means something.
+        dates = [e["snapshot_date"] for e in history]
+        assert dates == sorted(dates)
+
+
+def test_collateral_trajectory_cl0014(book):
+    """Integration — he walked to the trigger over five snapshots.
+
+    The static reading says 0.59pp from a margin call, which reads as a
+    fact that might always have been true. The trajectory says he is
+    moving, and separates the part he chose from the part that happened to
+    him. specs/008-explanation-collateral-tax-life/research.md R2.
+    """
+    finding = _one(d4.detect(book, GOLDEN_HARBOUR_CLIENT), "CN-013")
+    trajectory = finding["facility_trajectory"]
+    assert trajectory
+
+    # SC-001 — all five readings, from the file.
+    recorded = [53.93, 53.53, 65.62, 67.96, 69.41]
+    history = finding["facility"]["history"]
+    assert len(history) == 5
+    for entry, expected in zip(history, recorded):
+        assert entry["ltv_pct"] == pytest.approx(expected, abs=0.01)
+
+    assert trajectory["direction"] == "rising"
+    assert trajectory["ltv_from"] == pytest.approx(53.93, abs=0.01)
+    assert trajectory["ltv_to"] == pytest.approx(69.41, abs=0.01)
+    assert trajectory["ltv_change_pp"] == pytest.approx(15.48, abs=0.01)
+
+    # Headroom collapsing while he did nothing.
+    assert trajectory["headroom_from"] == pytest.approx(44_420_170, abs=1)
+    assert trajectory["headroom_to"] == pytest.approx(25_565_930, abs=1)
+    assert trajectory["headroom_lost"] == pytest.approx(18_854_240, abs=1)
+
+    # SC-002 — the March draw is a decision, not drift.
+    draws = [
+        c for c in trajectory["balance_changes"] if c["kind"] == "drawdown"
+    ]
+    assert len(draws) == 1
+    assert draws[0]["snapshot_date"] == "2026-03-31"
+    assert draws[0]["delta"] == pytest.approx(6_000_000, abs=1)
+    assert "a decision" in finding["detail"]
+
+    # SC-003 — the rise since then is the collateral, not more borrowing.
+    rises = trajectory["collateral_driven_rises"]
+    assert len(rises) == 2
+    assert sum(r["ltv_rise_pp"] for r in rises) == pytest.approx(3.79, abs=0.02)
+    assert all(r["collateral_fall"] > 0 for r in rises)
+
+    # And it names the concentration rather than restating it.
+    assert "Golden Harbour" in finding["detail"]
+    assert "nothing further has been drawn" in finding["detail"]

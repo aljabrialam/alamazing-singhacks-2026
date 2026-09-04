@@ -104,8 +104,27 @@ export type Finding = {
     drawn: number;
     ltv_pct: number;
     margin_call_ltv_pct: number;
+    history?: {
+      snapshot_date: string;
+      ltv_pct: number;
+      drawn: number;
+      headroom: number;
+      collateral_market_value: number;
+    }[];
   } | null;
   facility_after_sale?: { ltv_pct_after: number | null; breaches_margin_call: boolean } | null;
+  facility_trajectory?: {
+    ltv_from: number;
+    ltv_to: number;
+    ltv_change_pp: number;
+    direction: string;
+    headroom_from: number | null;
+    headroom_to: number | null;
+    headroom_lost: number | null;
+    pp_to_margin_call: number;
+    balance_changes: { snapshot_date: string; from: number; to: number; delta: number; kind: string }[];
+    collateral_driven_rises: { snapshot_date: string; ltv_rise_pp: number; collateral_fall: number }[];
+  } | null;
   liquidity?: { liquid_pct: number; near_cash_pct: number; by_tier: Record<string, number> };
 
   // D5

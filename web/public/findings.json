@@ -1672,6 +1672,7 @@
           ],
           "facility": null,
           "facility_after_sale": null,
+          "facility_trajectory": null,
           "funding_blocked_by_facility": false,
           "headline": "EUR 3,400,000 due by 2026-12-31 \u2014 16.74% of the portfolio.",
           "kind": "D4",
@@ -5658,7 +5659,7 @@
           "client_id": "CL-0014",
           "confidence": "high",
           "cover_ratio": 2.5300643337933333,
-          "detail": "Mid-Levels redevelopment equity contribution \u2014 HKD 60,000,000 (USD 7,682,458), due by 2027-06-30. That is 29.00% of the portfolio. Holdings sellable daily or weekly total 73.38% of the portfolio, covering the obligation 2.53 times over. There is no unpledged liquidity to meet this from \u2014 free liquid holdings are USD 0 against a need of USD 7,682,458. The portfolio is pledged as collateral under CF-0002, with 58,000,000 HKD drawn and a loan-to-value of 69.41% against a 70% margin-call threshold \u2014 0.59 percentage points of headroom. Funding the need from pledged collateral moves the loan-to-value from 69.41% to 97.76% against a 70% margin-call threshold. Funding this by selling collateral is therefore not available on these numbers; it may be worth raising how else it would be met.",
+          "detail": "Mid-Levels redevelopment equity contribution \u2014 HKD 60,000,000 (USD 7,682,458), due by 2027-06-30. That is 29.00% of the portfolio. Holdings sellable daily or weekly total 73.38% of the portfolio, covering the obligation 2.53 times over. There is no unpledged liquidity to meet this from \u2014 free liquid holdings are USD 0 against a need of USD 7,682,458. The portfolio is pledged as collateral under CF-0002, with 58,000,000 HKD drawn and a loan-to-value of 69.41% against a 70% margin-call threshold \u2014 0.59 percentage points of headroom. Funding the need from pledged collateral moves the loan-to-value from 69.41% to 97.76% against a 70% margin-call threshold. Funding this by selling collateral is therefore not available on these numbers; it may be worth raising how else it would be met. Over the five snapshots the loan-to-value has moved from 53.93% to 69.41% \u2014 +15.48 percentage points \u2014 leaving 0.59 of headroom against the 70% trigger. Borrowing capacity fell by 18,854,240 HKD over that period. On 2026-03-31 the drawn balance rose from 52,000,000 to 58,000,000 HKD \u2014 a decision, taken while the collateral was falling. Since then nothing further has been drawn, and the loan-to-value has still risen 3.79 percentage points \u2014 the collateral is falling, and it is the same Golden Harbour Properties Ltd concentration reported above.",
           "events": [],
           "evidence": [
             {
@@ -5697,9 +5698,84 @@
             "facility_id": "CF-0002",
             "facility_type": "Lombard Credit Facility",
             "headroom": 25565930.0,
+            "history": [
+              {
+                "collateral_market_value": 219536340.0,
+                "drawn": 52000000.0,
+                "headroom": 44420170.0,
+                "lending_value": 96420170.0,
+                "ltv_pct": 53.93,
+                "snapshot_date": "2025-12-31"
+              },
+              {
+                "collateral_market_value": 245469500.0,
+                "drawn": 52000000.0,
+                "headroom": 45141750.0,
+                "lending_value": 97141750.0,
+                "ltv_pct": 53.53,
+                "snapshot_date": "2026-02-27"
+              },
+              {
+                "collateral_market_value": 222792925.0,
+                "drawn": 58000000.0,
+                "headroom": 30390462.5,
+                "lending_value": 88390462.5,
+                "ltv_pct": 65.62,
+                "snapshot_date": "2026-03-31"
+              },
+              {
+                "collateral_market_value": 212160650.0,
+                "drawn": 58000000.0,
+                "headroom": 27350325.0,
+                "lending_value": 85350325.0,
+                "ltv_pct": 67.96,
+                "snapshot_date": "2026-06-30"
+              },
+              {
+                "collateral_market_value": 206878860.0,
+                "drawn": 58000000.0,
+                "headroom": 25565930.0,
+                "lending_value": 83565930.0,
+                "ltv_pct": 69.41,
+                "snapshot_date": "2026-08-26"
+              }
+            ],
             "lending_value": 83565930.0,
             "ltv_pct": 69.41,
-            "margin_call_ltv_pct": 70.0
+            "margin_call_ltv_pct": 70.0,
+            "trajectory": {
+              "balance_changes": [
+                {
+                  "delta": 6000000.0,
+                  "from": 52000000.0,
+                  "kind": "drawdown",
+                  "snapshot_date": "2026-03-31",
+                  "to": 58000000.0
+                }
+              ],
+              "collateral_driven_rises": [
+                {
+                  "collateral_fall": 10632275.0,
+                  "ltv_rise_pp": 2.339999999999989,
+                  "snapshot_date": "2026-06-30"
+                },
+                {
+                  "collateral_fall": 5281790.0,
+                  "ltv_rise_pp": 1.4500000000000028,
+                  "snapshot_date": "2026-08-26"
+                }
+              ],
+              "direction": "rising",
+              "from_snapshot": "2025-12-31",
+              "headroom_from": 44420170.0,
+              "headroom_lost": 18854240.0,
+              "headroom_to": 25565930.0,
+              "ltv_change_pp": 15.479999999999997,
+              "ltv_from": 53.93,
+              "ltv_to": 69.41,
+              "pp_to_margin_call": 0.5900000000000034,
+              "to_snapshot": "2026-08-26"
+            }
           },
           "facility_after_sale": {
             "advance_rate_pct": 40.39365356131603,
@@ -5707,6 +5783,39 @@
             "lending_value_after": 59329737.86321038,
             "ltv_pct_after": 97.75873295399316,
             "note": "funding the need from pledged collateral moves the loan-to-value from 69.41% to 97.76% against a 70% margin-call threshold"
+          },
+          "facility_trajectory": {
+            "balance_changes": [
+              {
+                "delta": 6000000.0,
+                "from": 52000000.0,
+                "kind": "drawdown",
+                "snapshot_date": "2026-03-31",
+                "to": 58000000.0
+              }
+            ],
+            "collateral_driven_rises": [
+              {
+                "collateral_fall": 10632275.0,
+                "ltv_rise_pp": 2.339999999999989,
+                "snapshot_date": "2026-06-30"
+              },
+              {
+                "collateral_fall": 5281790.0,
+                "ltv_rise_pp": 1.4500000000000028,
+                "snapshot_date": "2026-08-26"
+              }
+            ],
+            "direction": "rising",
+            "from_snapshot": "2025-12-31",
+            "headroom_from": 44420170.0,
+            "headroom_lost": 18854240.0,
+            "headroom_to": 25565930.0,
+            "ltv_change_pp": 15.479999999999997,
+            "ltv_from": 53.93,
+            "ltv_to": 69.41,
+            "pp_to_margin_call": 0.5900000000000034,
+            "to_snapshot": "2026-08-26"
           },
           "funding_blocked_by_facility": true,
           "headline": "HKD 60,000,000 due by 2027-06-30 cannot be funded by selling pledged collateral without breaching the facility's margin-call threshold.",
@@ -8026,6 +8135,7 @@
           ],
           "facility": null,
           "facility_after_sale": null,
+          "facility_trajectory": null,
           "funding_blocked_by_facility": false,
           "headline": "USD 5,000,000 due by 2027-12-31 \u2014 15.52% of the portfolio.",
           "kind": "D4",
