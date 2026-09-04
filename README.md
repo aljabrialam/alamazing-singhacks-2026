@@ -94,12 +94,68 @@ Verified figures and their derivation: [`specs/001-divergence-engine/findings.md
 
 ## How it works
 
-```
-data/*.csv  →  pandas detectors  →  findings.json  →  Next.js (static)
-               (build time)          (committed)       (25 prerendered pages)
+```mermaid
+flowchart LR
+  subgraph SRC["data/ — Julius Baer's twelve files, read-only"]
+    H["holdings.csv<br/><small>1,015 rows × 5 snapshots</small>"]
+    I["instruments.csv<br/><small>underlying_reference,<br/>price history</small>"]
+    M["mandates.csv<br/>portfolios.csv"]
+    N["rm_notes.json<br/><small>28 notes, free text</small>"]
+    E["event_log.csv<br/><small>authoritative</small>"]
+    X["transactions · commitments<br/>credit_facilities · market_context<br/>planned_cash_needs · clients"]
+  end
+
+  subgraph BUILD["pipeline/ — build time. pandas computes every figure"]
+    L["load.py<br/><small>the Book. joins once.<br/>records imperfections,<br/>never drops a row</small>"]
+    W["client_weights<br/><small>recomputed from<br/>market_value_usd</small>"]
+    D["six detectors<br/><small>D1 said-vs-held · D2 mandate<br/>D3 look-through · D4 runway<br/>D5 unanswered · D6 scenario</small>"]
+    MD["mandate.py · fx.py<br/><small>shared arithmetic</small>"]
+  end
+
+  subgraph MODEL["the model — reads and writes, never counts"]
+    CL["claims.py<br/><small>20 calls: prose → testable claims</small>"]
+    BR["brief.py<br/><small>3 briefs + 1 ranking</small>"]
+    DV["derived/*.json<br/><small>committed with the prompt,<br/>model id and settings</small>"]
+  end
+
+  subgraph WEB["web/ — presents. static, no server"]
+    F["findings.json<br/><small>committed artifact</small>"]
+    S1["/ call list"]
+    S2["/client/&lsqb;id&rsqb; the brief"]
+    S3["/uncertain"]
+  end
+
+  H --> L
+  I --> L
+  M --> L
+  N --> L
+  E --> L
+  X --> L
+  L --> W
+  W --> D
+  MD --> D
+  N -.prose only.-> CL
+  CL --> DV
+  D --> BR
+  BR --> DV
+  DV -.read at build, no call.-> F
+  D --> F
+  F --> S1
+  F --> S2
+  F --> S3
+
+  style MODEL fill:#1F2937,stroke:#D29922,color:#E6EDF3
+  style F fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style SRC fill:#161B22,stroke:#30363D,color:#E6EDF3
 ```
 
-**There is no backend.** No `/api`, no server actions, no route handlers. The pipeline is a build-time step whose output is committed, so nothing runs at demo time and the same inputs always give the same answer. In a bank this is an overnight batch against core banking, not a web service.
+Three things this diagram is making explicit, because each is a judged claim:
+
+**`data/` has one arrow out.** Only `load.py` reads the filesystem. No detector can half-see a changed file mid-build.
+
+**The model's only input is prose.** `rm_notes.json` and the objectives text reach `claims.py`; nothing else does. No holdings row, no weight, no figure. Its output is committed to `derived/` and read back at build time — **the dotted arrow makes no call.**
+
+**`findings.json` is the only thing the web layer gets.** No `/api`, no server actions, no route handlers — verified, not assumed. The pipeline is a build-time step, so there is nothing to host and nothing to fail on stage. In a bank this is an overnight batch against core banking; today it reads a folder, in production it reads an adapter.
 
 ### The model reads and writes. It never counts.
 
