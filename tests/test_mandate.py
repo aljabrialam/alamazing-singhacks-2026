@@ -5,10 +5,18 @@ by spec 003 for breach classification, so its behaviour is pinned here
 before either depends on it.
 """
 
+import pandas as pd
 import pytest
 
 from pipeline.load import latest
-from pipeline.mandate import ABOVE, BELOW, WITHIN, check_bands, compliance_verdict
+from pipeline.mandate import (
+    ABOVE,
+    BELOW,
+    WITHIN,
+    check_bands,
+    check_position_limits,
+    compliance_verdict,
+)
 from tests.conftest import BREACHED_CLIENT, GOLDEN_HARBOUR_CLIENT, HERO
 
 
@@ -81,3 +89,93 @@ def test_bands_are_per_portfolio_not_per_client(book):
                 client_id,
                 portfolio_id,
             )
+
+
+def test_custody_is_not_measured_against_a_band(book):
+    """Unit — a custody account is held, not managed.
+
+    Three portfolios in this book are custody accounts, and every
+    portfolio carries a mandate_code regardless. Comparing them to a band
+    produces a 97.97% "equity breach" on a single legacy holding and a
+    100% "alternatives breach" on a client's own founder shareholding.
+
+    Telling a founder their portfolio breaches its equity limit when the
+    position *is* the company they founded is not a finding — it is the
+    system failing to understand what it is looking at.
+    research.md R4 (spec 003).
+    """
+    from pipeline.mandate import CUSTODY, MANAGED, custody_portfolios
+
+    date = latest(book)
+    custody = book.portfolios[book.portfolios.service_model == CUSTODY]
+    assert not custody.empty, "precondition: the book has custody accounts"
+
+    for _, portfolio in custody.iterrows():
+        client_id = portfolio.client_id
+
+        # Excluded from measurement.
+        bands = check_bands(book, client_id, date)
+        assert portfolio.portfolio_id not in set(bands.portfolio_id)
+
+        positions = check_position_limits(book, client_id, date)
+        assert portfolio.portfolio_id not in set(positions.portfolio_id)
+
+        # But still reported, so nothing disappears from view.
+        reported = custody_portfolios(book, client_id, date)
+        assert portfolio.portfolio_id in {c["portfolio_id"] for c in reported}
+        entry = next(
+            c for c in reported if c["portfolio_id"] == portfolio.portfolio_id
+        )
+        assert entry["value_usd"] > 0
+        assert entry["positions"]
+        assert "not managed to a mandate" in entry["status"]
+
+    # Only managed portfolios are ever compared.
+    models = dict(zip(book.portfolios.portfolio_id, book.portfolios.service_model))
+    for client_id in sorted(book.clients.client_id):
+        for portfolio_id in check_bands(book, client_id, date).portfolio_id:
+            assert models[portfolio_id] in MANAGED
+
+
+def test_diversified_funds_are_exempt_from_the_position_limit(book):
+    """Unit — `concentration_limit_applies` gates the single-position check.
+
+    A diversified index fund at 26% of a portfolio is an asset-allocation
+    question, not a concentration risk. Applying a single-name limit to it
+    produces false breaches on exactly the instruments that exist to
+    spread risk — and buries the real ones: one client's genuine
+    single-stock breach was listed *below* a false one.
+    research.md R6 (spec 003).
+    """
+    from pipeline.mandate import LIMIT_APPLIES
+
+    date = latest(book)
+    flags = dict(
+        zip(
+            book.instruments.instrument_id,
+            book.instruments.concentration_limit_applies,
+        )
+    )
+
+    saw_exempt_over_limit = False
+    for client_id in sorted(book.clients.client_id):
+        positions = check_position_limits(book, client_id, date)
+        if positions.empty:
+            continue
+        for _, row in positions.iterrows():
+            over = (
+                pd.notna(row.max_single_position_pct)
+                and row.actual_pct > row.max_single_position_pct
+            )
+            applies = flags[row.instrument_id] == LIMIT_APPLIES
+
+            # A breach requires both: over the limit, and subject to it.
+            assert bool(row.breached) == bool(over and applies)
+            assert bool(row.over_limit_but_exempt) == bool(over and not applies)
+            if over and not applies:
+                saw_exempt_over_limit = True
+
+    assert saw_exempt_over_limit, (
+        "the book must contain a diversified fund over its limit, or this "
+        "test proves nothing"
+    )
