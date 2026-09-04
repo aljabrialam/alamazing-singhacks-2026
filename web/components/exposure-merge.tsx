@@ -137,14 +137,21 @@ export function ExposureMerge({
         }}
         aria-hidden={!merged}
       >
+        {/* No `flex-wrap` here, and the figure is `shrink-0`.
+            With wrapping enabled the sentence took the full width and
+            pushed the combined figure onto a second line, which the
+            72px `overflow-hidden` above then clipped — so the merge
+            revealed everything except the one number it exists to
+            reveal. Caught by extracting a frame from the demo capture
+            at the merged beat and looking at it. */}
         <div
-          className="flex h-[72px] flex-wrap items-center justify-between gap-4 px-5 md:px-6"
+          className="flex h-[72px] items-center justify-between gap-5 px-5 md:px-6"
           style={{ background: barBg, color: barFg, borderRadius: 2 }}
         >
-          <div className="font-read max-w-[46ch] text-[16px] leading-[1.35] md:text-[19.5px]">
+          <div className="font-read line-clamp-2 min-w-0 text-[14px] leading-[1.3] md:text-[18px]">
             {sentence}
           </div>
-          <div className="font-read text-[28px] tabular md:text-[36px]">
+          <div className="font-read shrink-0 text-[30px] leading-none tabular md:text-[36px]">
             {combinedLabel}
           </div>
         </div>

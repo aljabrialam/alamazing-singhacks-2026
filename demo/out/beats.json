@@ -1,0 +1,99 @@
+{
+  "site": "https://web-6a5tpt22u-aljs-projects.vercel.app",
+  "width": 1440,
+  "height": 810,
+  "totalMs": 150000,
+  "cues": [
+    {
+      "id": "call-list",
+      "startMs": 0,
+      "ms": 10000,
+      "on": "The call list, top of page — twenty clients, ranked",
+      "say": "This is the first screen a relationship manager sees. Not a dashboard — a ranked list of who to call."
+    },
+    {
+      "id": "counts",
+      "startMs": 10001,
+      "ms": 12000,
+      "on": "Spotlight: the derived summary line (3 briefed / 10 watching / 7 clean)",
+      "say": "Three conversations worth having this week. Seven clients with nothing to raise — checked, and clean. Every count is derived, never typed."
+    },
+    {
+      "id": "rows",
+      "startMs": 22001,
+      "ms": 10000,
+      "on": "Scrolling the ranked list — one defensible sentence per row",
+      "say": "Each row carries one sentence that can be defended, ordered by urgency rather than portfolio size."
+    },
+    {
+      "id": "hero",
+      "startMs": 32002,
+      "ms": 12000,
+      "on": "Client brief opens — the navy hero panel, 46px name",
+      "say": "Abdullah Al-Mansoori. Forty-nine, Balanced Growth, thirty-two point two million. He asked a question in August that still has no answer."
+    },
+    {
+      "id": "objective",
+      "startMs": 44003,
+      "ms": 12000,
+      "on": "Spotlight: the quoted objective and the 42.1% headline figure",
+      "say": "His objective, on file since two thousand and fourteen: build wealth outside the Gulf, and outside shipping. Forty-two per cent of the portfolio is energy and industrials."
+    },
+    {
+      "id": "four-blocks",
+      "startMs": 56005,
+      "ms": 12000,
+      "on": "The four exposure blocks, separated and labelled",
+      "say": "On any allocation report these are four separate things — two funds, a stock, a structured product. It looks diversified."
+    },
+    {
+      "id": "merge",
+      "startMs": 68007,
+      "ms": 12000,
+      "on": "THE ORCHESTRATED MOMENT — button pressed, four blocks merge into one",
+      "say": "Look through the note, and they are one bet. It references two names already held outright."
+    },
+    {
+      "id": "merged",
+      "startMs": 80009,
+      "ms": 10000,
+      "on": "Spotlight: the merged bar — one combined figure, 42.1%",
+      "say": "Four positions. Forty-two point one per cent. One concentrated bet — read from a single record."
+    },
+    {
+      "id": "mandate",
+      "startMs": 90011,
+      "ms": 10000,
+      "on": "The mandate panel scrolls in — the five band markers draw themselves once",
+      "say": "Now the mandate. Every band, against what the portfolio actually holds."
+    },
+    {
+      "id": "verdict",
+      "startMs": 100013,
+      "ms": 13000,
+      "on": "Spotlight: the verdict block — every band respected, no breach",
+      "say": "Every band is respected. Nothing in this bank's monitoring would raise anything here — and it is still forty-two per cent one bet. That gap is the product."
+    },
+    {
+      "id": "scenario",
+      "startMs": 113013,
+      "ms": 12000,
+      "on": "The scenario panel — the question he asked, answered",
+      "say": "He asked what happens if the Strait reopens. Two and a half million comes off the portfolio, and his charter rates fall the same week."
+    },
+    {
+      "id": "opening-line",
+      "startMs": 125014,
+      "ms": 12000,
+      "on": "The opening line on the deep navy panel, 33px",
+      "say": "The opening line, drafted from the findings above. Every figure in it was computed before the sentence was written."
+    },
+    {
+      "id": "evidence",
+      "startMs": 137017,
+      "ms": 13000,
+      "on": "The evidence column — file, row identifiers, values",
+      "say": "Every sentence traces to a row — the file, the identifiers, the values. A finding without evidence is not shown."
+    }
+  ]
+}
