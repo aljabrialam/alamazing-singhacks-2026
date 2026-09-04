@@ -66,7 +66,19 @@ Add Margarethe Voss-Brenner after the Abdullah beat:
 > against a 30% ceiling. Nobody chose that — it arrived that way. So we
 > classify it neither as drift nor as client-directed, but as inherited,
 > because it's a different conversation. And she has a 3.4 million euro
-> tax bill due before year end against 17% liquidity."
+> tax bill due before year end — which she can pay comfortably, and can
+> only pay by selling the equity she never chose."
+
+**Do not say "17% liquidity."** An earlier draft of this script did, and
+the screen contradicts it: she is **88% liquid**, because her equity sits
+in daily-dealing funds. The 17% is cash plus fixed income — 16.83% — and
+the bill is 16.74% of the portfolio.
+
+The true version is the stronger one. She is not short of liquidity. Her
+non-equity holdings are almost exactly the size of the bill, so meeting it
+consumes all of them or comes out of the equity she does not understand
+and never chose. That is worse than tight, and it is what the screen
+shows.
 
 
 ---

@@ -66,4 +66,69 @@ Add Margarethe Voss-Brenner after the Abdullah beat:
 > against a 30% ceiling. Nobody chose that — it arrived that way. So we
 > classify it neither as drift nor as client-directed, but as inherited,
 > because it's a different conversation. And she has a 3.4 million euro
-> tax bill due before year end against 17% liquidity."
+> tax bill due before year end — which she can pay comfortably, and can
+> only pay by selling the equity she never chose."
+
+**Do not say "17% liquidity."** An earlier draft of this script did, and
+the screen contradicts it: she is **88% liquid**, because her equity sits
+in daily-dealing funds. The 17% is cash plus fixed income — 16.83% — and
+the bill is 16.74% of the portfolio.
+
+The true version is the stronger one. She is not short of liquidity. Her
+non-equity holdings are almost exactly the size of the bill, so meeting it
+consumes all of them or comes out of the equity she does not understand
+and never chose. That is worse than tight, and it is what the screen
+shows.
+
+
+---
+
+## Q&A — the correctness question
+
+A banking judge will ask how the RM knows the output is right. This is the
+answer. **Do not put it in the three minutes** — the evidence panel already
+shows the proof, and explaining determinism on stage costs twenty seconds
+the run does not have.
+
+### The short answer, if asked
+
+> "The facts are reproducible — same inputs, same output, and there is a
+> test for it. What is not automatic is the judgement about which findings
+> matter, which is why Priscilla can reject any of them and why nothing
+> reaches a client without her."
+
+### If pushed further
+
+> "Before this went near production you would run it in shadow mode for a
+> quarter. Every finding logged, every RM decision recorded. At the end you
+> have measured precision — how often it flagged something she agreed was
+> worth a call. That is the confusion matrix a bank would actually require,
+> and it is a real number rather than a claim."
+
+### The three layers, if they want detail
+
+**Nothing the model produces is a figure.** 42.13% is a groupby. The band
+comparison is `actual > max_pct`. The scenario is arithmetic over stored
+prices. Same class of computation as the bank's existing portfolio system.
+
+**Every claim resolves to rows.** Click a sentence, see the holdings rows
+and the values summed. That is stronger than accuracy — it is
+*checkability*. An auditor does not want a correct black box; they want a
+wrong answer they can trace.
+
+**Determinism.** Same inputs, same output, forever, proven by test. A
+system that answers differently on Tuesday than Monday cannot be signed off.
+
+### Say the limit yourself
+
+The facts are verifiable. The **selection** is a modelling choice — we
+treat the note's worst-of basket as full exposure to all three underlyings,
+which overstates it. That is on the uncertainty screen, and naming it
+before a judge does is worth more than the extra decimal place.
+
+### The structural reassurance
+
+The system never touches money, never contacts a client, and never decides.
+It produces a briefing an experienced banker reads and either uses or bins.
+**The failure mode of a wrong finding is two wasted minutes, not a wrong
+trade.**
