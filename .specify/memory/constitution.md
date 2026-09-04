@@ -1,6 +1,40 @@
 <!--
 Sync Impact Report
 ==================
+Version change: 1.1.0 → 1.2.0
+Amended during the build window at 22:47 SGT, Friday 4 September.
+
+MINOR: two corrections to Technology Standards and Principle VII, both
+forced by reality rather than chosen.
+
+1. **"Model temperature MUST be 0" removed.** It is not achievable on any
+   current model — sampling parameters were removed from the Messages API
+   and passing `temperature` is rejected outright (TypeError in the
+   installed SDK, 400 on the wire). Replaced with the requirement that
+   every model output be committed alongside its prompt, model id and
+   settings. This is the stronger guarantee: temperature 0 reduced
+   variance but never eliminated it, whereas a committed artifact is
+   byte-identical on every run forever. Determinism was always the goal;
+   temperature was only ever a means to it.
+
+2. **Call inventory corrected from 4 to 24.** The previous text read
+   "four calls exist in the whole system: three briefs and one ranking",
+   which omitted claim extraction — one call per client, 20 calls. This
+   was an error in the original document, not a scope change: Principle V
+   has always required the model to "convert a stated wish into a testable
+   claim", and spec 002 does exactly that. The inventory simply failed to
+   count it.
+
+Also records the model id (`claude-opus-5`) and the effort setting, and
+requires both to appear in every committed artifact so an audit can tell
+which output came from which configuration.
+
+**Nothing was relaxed.** Both changes make the document match what the
+repository actually does; the previous text asserted one impossibility and
+one wrong number. Discovered while implementing spec 002 and reported
+before being fixed, per Principle X.
+
+--- prior report ---
 Version change: 1.0.0 → 1.1.0
 
 MINOR: added Principle XI (Portable By Construction) — no hardcoded
@@ -185,8 +219,21 @@ fabrication.
 Identical inputs MUST produce identical output. Always.
 
 Briefs are generated at **build time** and committed to `findings.json`.
-No model call occurs at demo time. Model temperature MUST be 0 and the
-prompt MUST be committed alongside its output.
+No model call occurs at demo time.
+
+**Every model output MUST be committed to disk alongside the prompt, the
+model id and the settings that produced it.** The committed artifact — not
+a sampling parameter — is what makes the system deterministic. A model
+output that is not committed MUST NOT be relied on at demo time.
+
+*Amended 1.2.0. This previously read "Model temperature MUST be 0". That
+is no longer achievable: sampling parameters were removed from the
+Messages API, and passing `temperature` is rejected. The committed
+artifact is the stronger guarantee in any case — temperature 0 reduces
+variance but never eliminated it, whereas a committed file is
+byte-identical on every run forever. Where a model exposes an
+effort or reasoning-depth setting, it MUST be recorded in the committed
+artifact rather than left implicit.*
 
 **Rationale**: A regulated advisory system cannot answer differently on
 different days. It is also why the demo cannot fail on stage — the same
@@ -401,9 +448,27 @@ likely source of a silent wrong number in this dataset: clients holding
 several portfolios return plausible but incorrect figures if the column is
 summed directly.
 
-**Model calls MUST run at build time only, at temperature 0, with the
-prompt committed alongside its output.** Four calls exist in the whole
-system: three briefs and one ranking.
+**Model calls MUST run at build time only, with the prompt, the model id
+and the settings committed alongside the output.** Regenerating a model
+artifact MUST be an explicit action, never a side effect of running the
+pipeline.
+
+**Model**: `claude-opus-5`. Claim extraction runs at `effort: low`
+(schema-constrained extraction over short prose); brief writing and
+ranking are unconstrained. The model id and effort MUST be recorded in
+every committed artifact, so an audit can tell which output came from
+which configuration.
+
+**Call inventory** — one call per client for claim extraction (20), plus
+three briefs and one ranking. **24 calls in the whole system**, all at
+build time.
+
+*Amended 1.2.0. This previously read "at temperature 0" — no longer
+achievable, see Principle VII — and claimed "four calls exist in the whole
+system: three briefs and one ranking", which omitted claim extraction
+entirely. Principle V has always required the model to "convert a stated
+wish into a testable claim"; the call inventory simply failed to count it.
+Corrected rather than left as a figure the repository contradicts.*
 
 ---
 
@@ -541,4 +606,4 @@ assumption, per Principle II.
 
 ---
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-04 | **Last Amended**: 2026-09-04
+**Version**: 1.2.0 | **Ratified**: 2026-09-04 | **Last Amended**: 2026-09-04 22:47 SGT

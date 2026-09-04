@@ -250,7 +250,11 @@ claim quoting her words.
 - **FR-013**: Claims MUST be extracted at **build time**, committed to
   disk alongside the prompt that produced them, and reused thereafter. **No
   model call may occur at demo time** (Principle VII).
-- **FR-014**: Model temperature MUST be 0.
+- **FR-014**: The model id and every setting affecting its output MUST be
+  recorded in the committed artifact. *(Amended: this read "Model
+  temperature MUST be 0" until the constitution was corrected to 1.2.0 —
+  temperature cannot be set on any current model. See
+  [research.md](./research.md) R5.)*
 - **FR-015**: The system MUST function with no API key by using the
   committed claims.
 - **FR-016**: Relationship-manager-facing copy MUST NOT contain the word

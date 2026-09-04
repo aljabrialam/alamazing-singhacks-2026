@@ -120,7 +120,8 @@ synthetic case to be provable at all.
 **Discovered during implementation**, not planned for. Recorded here
 because it changes what the constitution can require.
 
-The constitution's Technology Standards state:
+The constitution's Technology Standards stated, **at version 1.1.0**
+(quoted here as it read before the amendment this section prompted):
 
 > Model calls MUST run at build time only, **at temperature 0**, with the
 > prompt committed alongside its output.
@@ -154,12 +155,14 @@ forever, which is what Principle VII actually asks for. The
 field in the cache both record this, so nobody reading either concludes
 the requirement was quietly dropped.
 
-**This warrants a constitution amendment** — the Technology Standards
-sentence is now unsatisfiable as written. Flagged rather than amended: the
-amendment procedure requires stopping and recording the time, and
-Principle II caps mid-build spec edits at ten minutes. Recording the
-conflict here is the ten-minute-cap-compliant action; the amendment is
-Priscilla's call, not mine.
+**Amended — constitution 1.2.0, 22:47 SGT.** Flagged first, then amended
+on the maintainer's instruction. Two things changed: the temperature
+sentence was replaced with the committed-artifact requirement, and the
+call inventory was corrected from "four calls" to 24 — the original text
+omitted claim extraction entirely, though Principle V has always required
+the model to "convert a stated wish into a testable claim". The duplicate
+copy in `alamazing-all-specs.md` was brought into line in the same edit,
+as Governance requires.
 
 **One other API-drift correction.** The plan named Sonnet, on a
 cost-per-token argument I invented. Current guidance is to default to the

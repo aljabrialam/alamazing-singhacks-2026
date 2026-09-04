@@ -191,8 +191,14 @@ fabrication.
 Identical inputs MUST produce identical output. Always.
 
 Briefs are generated at **build time** and committed to `findings.json`.
-No model call occurs at demo time. Model temperature MUST be 0 and the
-prompt MUST be committed alongside its output.
+No model call occurs at demo time.
+
+**Every model output MUST be committed to disk alongside the prompt, the
+model id and the settings that produced it.** The committed artifact — not
+a sampling parameter — is what makes the system deterministic.
+
+*Amended 1.2.0. Previously "Model temperature MUST be 0"; not achievable,
+sampling parameters were removed from the Messages API.*
 
 **Rationale**: A regulated advisory system cannot answer differently on
 different days. It is also why the demo cannot fail on stage — the same
@@ -373,9 +379,23 @@ likely source of a silent wrong number in this dataset: clients holding
 several portfolios return plausible but incorrect figures if the column is
 summed directly.
 
-**Model calls MUST run at build time only, at temperature 0, with the
-prompt committed alongside its output.** Four calls exist in the whole
-system: three briefs and one ranking.
+**Model calls MUST run at build time only, with the prompt, the model id
+and the settings committed alongside the output.** Regenerating a model
+artifact MUST be an explicit action, never a side effect of running the
+pipeline.
+
+**Model**: `claude-opus-5`. Claim extraction runs at `effort: low`; brief
+writing and ranking are unconstrained. Both MUST be recorded in every
+committed artifact.
+
+**Call inventory** — one call per client for claim extraction (20), plus
+three briefs and one ranking. **24 calls in the whole system**, all at
+build time.
+
+*Amended 1.2.0. Previously "at temperature 0" — not achievable, sampling
+parameters were removed from the Messages API — and "four calls", which
+omitted claim extraction. See the Sync Impact Report in
+`.specify/memory/constitution.md`.*
 
 ---
 
@@ -510,7 +530,7 @@ assumption, per Principle II.
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-04 | **Last Amended**: 2026-09-04
+**Version**: 1.2.0 | **Ratified**: 2026-09-04 | **Last Amended**: 2026-09-04 22:47 SGT
 ```
 
 **After it generates, verify these survived** — Spec Kit compresses:
