@@ -1,0 +1,954 @@
+{
+  "clients": {
+    "CL-0001": {
+      "claims": [
+        {
+          "check": "avoid_region",
+          "claim": "Preserve family wealth outside Indonesia",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "indonesia"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "expects to need around SGD 9m for the deposit in early 2027",
+          "source": "N-002",
+          "stated_on": "2026-04-14",
+          "target": "early 2027"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "fund a planned property purchase in Singapore in 2027",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "2027"
+        },
+        {
+          "check": "other",
+          "claim": "Did not want to discuss reducing the legacy shareholding, said it would be read as a signal by his uncles",
+          "source": "N-001",
+          "stated_on": "2026-01-08",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "the Julius Baer relationship is meant to be the part of the family's wealth that is not tied to the mine",
+          "source": "N-001",
+          "stated_on": "2026-01-08",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "Very positive on the outlook for coal and gas pricing. Asked what products give him more of that",
+          "source": "N-002",
+          "stated_on": "2026-04-14",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "diversify away from the family operating business",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "c8df677a76245397",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0002": {
+      "claims": [
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Bridge liquidity until the secondary sale of founder shares expected Q4 2026",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "q4 2026"
+        },
+        {
+          "check": "other",
+          "claim": "Comfortable increasing the Lombard line if needed",
+          "source": "N-003",
+          "stated_on": "2026-02-03",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "avoid selling any listed positions before then",
+          "source": "N-003",
+          "stated_on": "2026-02-03",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "he views the tech complex as the best place to be",
+          "source": "N-003",
+          "stated_on": "2026-02-03",
+          "target": "tech"
+        },
+        {
+          "check": "other",
+          "claim": "agitated about the drop in his technology holdings last week and the effect on his collateral value",
+          "source": "N-004",
+          "stated_on": "2026-06-11",
+          "target": "technology"
+        },
+        {
+          "check": "other",
+          "claim": "build a diversified portfolio post-event",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "establish a family trust",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "d2ce518b13982d26",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0003": {
+      "claims": [
+        {
+          "check": "avoid_region",
+          "claim": "whether she should be worried about the news from the Middle East",
+          "source": "N-006",
+          "stated_on": "2026-05-29",
+          "target": "middle east"
+        },
+        {
+          "check": "other",
+          "claim": "asked that we not make any changes for now",
+          "source": "N-005",
+          "stated_on": "2026-02-16",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "her husband handled all of it",
+          "source": "N-005",
+          "stated_on": "2026-02-16",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "she does not understand what is in the portfolio",
+          "source": "N-005",
+          "stated_on": "2026-02-16",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "asking whether her portfolio would be affected",
+          "source": "N-006",
+          "stated_on": "2026-05-29",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "German inheritance tax planning",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "secure a stable income",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "someone who has never taken a risk with money",
+          "source": "N-005",
+          "stated_on": "2026-02-16",
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "she would prefer 'something safe and boring'",
+          "source": "N-006",
+          "stated_on": "2026-05-29",
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "Understand and de-risk the inherited portfolio",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "872aebe213565e36",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0004": {
+      "claims": [
+        {
+          "check": "needs_liquidity_by",
+          "claim": "firm on retiring in Q2 2027 and handing the business to his eldest daughter",
+          "source": "N-007",
+          "stated_on": "2026-03-24",
+          "target": "q2 2027"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Replace salary with portfolio income from Q2 2027",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "q2 2027"
+        },
+        {
+          "check": "other",
+          "claim": "Concerned about the drop in his bond valuations",
+          "source": "N-007",
+          "stated_on": "2026-03-24",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "wants to know whether the portfolio can produce USD 1.45m a year without touching capital",
+          "source": "N-007",
+          "stated_on": "2026-03-24",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "fund a family foundation",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "transfer the operating business to the next generation",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "asked whether he should move everything to deposits",
+          "source": "N-028",
+          "stated_on": "2026-08-19",
+          "target": null
+        }
+      ],
+      "fingerprint": "c5a4d50401a11c3e",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0005": {
+      "claims": [
+        {
+          "check": "avoid_sector",
+          "claim": "diversify away from plantation assets",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "plantation"
+        },
+        {
+          "check": "other",
+          "claim": "She was not aware of the energy fund holding",
+          "source": "N-008",
+          "stated_on": "2026-02-11",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "The Sunrise Palm position is a family holding from before the policy and she considers it separate",
+          "source": "N-008",
+          "stated_on": "2026-02-11",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "the portfolio is fully aligned",
+          "source": "N-008",
+          "stated_on": "2026-02-11",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "Align the portfolio with a stated sustainability policy adopted in 2024",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "ef3e8af6940804b9",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": [
+        "needs_liquidity_by claim with no target dropped"
+      ]
+    },
+    "CL-0006": {
+      "claims": [
+        {
+          "check": "other",
+          "claim": "surprised that a fund she thought of as conservative could restrict withdrawals",
+          "source": "N-009",
+          "stated_on": "2026-05-12",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "grow capital at a moderate pace",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "cf5331d45ca9a547",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": [
+        "needs_liquidity_by claim with no target dropped",
+        "needs_liquidity_by claim with no target dropped"
+      ]
+    },
+    "CL-0007": {
+      "claims": [
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Foundation launch planned for 2027 with an initial endowment of around USD 12m",
+          "source": "N-011",
+          "stated_on": "2026-07-30",
+          "target": "2027"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Fund a charitable foundation from 2027",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "2027"
+        },
+        {
+          "check": "other",
+          "claim": "the monetary system is being repriced and that gold has further to run",
+          "source": "N-010",
+          "stated_on": "2026-01-22",
+          "target": "gold"
+        },
+        {
+          "check": "other",
+          "claim": "He wants to fund it from appreciated assets rather than cash",
+          "source": "N-011",
+          "stated_on": "2026-07-30",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "leave a defined legacy to three grandchildren",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "protect real purchasing power",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "dd70a6cfaad738fb",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0008": {
+      "claims": [
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Eldest starts at a UK university in September 2027, second child two years later",
+          "source": "N-012",
+          "stated_on": "2026-06-18",
+          "target": "2027-09"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "in early discussions about selling a minority stake in the franchise business in 2028",
+          "source": "N-012",
+          "stated_on": "2026-06-18",
+          "target": "2028"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Fund two children's overseas university education from 2027 to 2033",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "2027"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "partial business sale in 2028",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "2028"
+        },
+        {
+          "check": "other",
+          "claim": "steady capital growth",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "wants certainty on this and is willing to accept lower returns on the portion that funds it",
+          "source": "N-012",
+          "stated_on": "2026-06-18",
+          "target": null
+        }
+      ],
+      "fingerprint": "c1f64bd08ad2acab",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0009": {
+      "claims": [
+        {
+          "check": "other",
+          "claim": "he is waiting for a better entry point",
+          "source": "N-013",
+          "stated_on": "2026-03-02",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "unwilling to sell the residual Nordvind stake for sentimental reasons",
+          "source": "N-013",
+          "stated_on": "2026-03-02",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "Deploy sale proceeds into a long-term allocation",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "retain a residual stake in the former business",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "retire in Europe",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "europe"
+        }
+      ],
+      "fingerprint": "f5c70e0767d0b6ab",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0010": {
+      "claims": [
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Wants to start a first property purchase fund for 2028",
+          "source": "N-014",
+          "stated_on": "2026-04-08",
+          "target": "2028"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "first property purchase in 2028",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "2028"
+        },
+        {
+          "check": "other",
+          "claim": "Long-horizon growth consistent with a personal impact policy",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "900dc8d21f6881e6",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0011": {
+      "claims": [
+        {
+          "check": "other",
+          "claim": "asked for more time to think",
+          "source": "N-015",
+          "stated_on": "2026-05-20",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "Orderly transfer of assets to four children",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "maintain lifestyle income",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "minimise disruption to the family property portfolio",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "family property portfolio"
+        }
+      ],
+      "fingerprint": "e10f6b0b229ad752",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0012": {
+      "claims": [
+        {
+          "check": "other",
+          "claim": "he was told bonds were the safe part",
+          "source": "N-016",
+          "stated_on": "2026-07-16",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "preserve capital for two children",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "refuse_realise_loss",
+          "claim": "he does not want to sell anything at a loss",
+          "source": "N-016",
+          "stated_on": "2026-07-16",
+          "target": null
+        },
+        {
+          "check": "refuse_realise_loss",
+          "claim": "would rather wait for the bonds to come back",
+          "source": "N-016",
+          "stated_on": "2026-07-16",
+          "target": null
+        }
+      ],
+      "fingerprint": "d4ff32feb1b4fd3d",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": [
+        "needs_liquidity_by claim with no target dropped",
+        "needs_liquidity_by claim with no target dropped"
+      ]
+    },
+    "CL-0013": {
+      "claims": [
+        {
+          "check": "other",
+          "claim": "sees the technology drawdown as a buying opportunity and wants more, not less",
+          "source": "N-017",
+          "stated_on": "2026-06-12",
+          "target": "technology"
+        },
+        {
+          "check": "other",
+          "claim": "she understands the sector better than the bank does",
+          "source": "N-017",
+          "stated_on": "2026-06-12",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "Aggressive growth",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "eventual family office structure",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "maintain a credit line for opportunistic investment in her operating business",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "75fd269eed5d8f80",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0014": {
+      "claims": [
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Redevelopment project needs an HKD 60m equity contribution by mid-2027",
+          "source": "N-019",
+          "stated_on": "2026-08-11",
+          "target": "2027-06-30"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "expects to fund it partly from the portfolio",
+          "source": "N-019",
+          "stated_on": "2026-08-11",
+          "target": "2027-06-30"
+        },
+        {
+          "check": "other",
+          "claim": "the Hong Kong property market turns this year",
+          "source": "N-018",
+          "stated_on": "2026-03-05",
+          "target": "hong kong property"
+        },
+        {
+          "check": "other",
+          "claim": "Generate yield to service development financing",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "fund a Mid-Levels redevelopment project",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "retain exposure to the Hong Kong property recovery",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "hong kong property"
+        }
+      ],
+      "fingerprint": "92ea66f0b495b0cf",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0015": {
+      "claims": [
+        {
+          "check": "other",
+          "claim": "asked for the most aggressive way to express a view that the Middle East situation gets worse before it gets better",
+          "source": "N-020",
+          "stated_on": "2026-03-18",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "High growth",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "comfortable with drawdowns",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "thematic and event-driven ideas",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "748021456dfa1e1d",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0016": {
+      "claims": [
+        {
+          "check": "needs_liquidity_by",
+          "claim": "will need yen income at that point",
+          "source": "N-021",
+          "stated_on": "2026-05-07",
+          "target": "2030"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Retire to Japan in 2030 with JPY-denominated income",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "2030"
+        },
+        {
+          "check": "other",
+          "claim": "Supports his parents at around JPY 18m a year",
+          "source": "N-021",
+          "stated_on": "2026-05-07",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "has an emotional attachment to them",
+          "source": "N-021",
+          "stated_on": "2026-05-07",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "support elderly parents",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "reduce dependence on employer stock",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "9e62966dd940e405",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0017": {
+      "claims": [
+        {
+          "check": "other",
+          "claim": "asked for a full liquidity map before the next investment committee in October",
+          "source": "N-022",
+          "stated_on": "2026-02-10",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "G3 representatives pushed for more technology and venture exposure in the next generation account",
+          "source": "N-023",
+          "stated_on": "2026-06-30",
+          "target": "technology"
+        },
+        {
+          "check": "other",
+          "claim": "fund G3 education and venture allocations",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "meet outstanding private markets commitments",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "G2 wants to keep the core mandate conservative",
+          "source": "N-023",
+          "stated_on": "2026-06-30",
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "Perpetual capital preservation across generations",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "b4e1b91ff6dbfc3c",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0018": {
+      "claims": [
+        {
+          "check": "avoid_sector",
+          "claim": "diversify away from the luxury retail cycle",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "luxury retail"
+        },
+        {
+          "check": "other",
+          "claim": "She originally sized it as a 5% hedge",
+          "source": "N-024",
+          "stated_on": "2026-04-22",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "the gold position ... the only thing that has worked",
+          "source": "N-024",
+          "stated_on": "2026-04-22",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "Hedge against currency debasement and geopolitical risk",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "Italian succession planning",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "a0231ab488439e11",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0019": {
+      "claims": [
+        {
+          "check": "avoid_region",
+          "claim": "Build wealth outside the Gulf region",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "gulf region"
+        },
+        {
+          "check": "avoid_sector",
+          "claim": "outside the shipping sector",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "shipping"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "planning a Singapore family office entity for 2027, around USD 5m of seed capital",
+          "source": "N-026",
+          "stated_on": "2026-08-12",
+          "target": "2027"
+        },
+        {
+          "check": "other",
+          "claim": "charter rates stay elevated while the Strait situation is unresolved",
+          "source": "N-025",
+          "stated_on": "2026-04-15",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "his operating business benefits from the same conditions",
+          "source": "N-025",
+          "stated_on": "2026-04-15",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "the point of the Asia portfolio was to be uncorrelated with the Gulf business",
+          "source": "N-025",
+          "stated_on": "2026-04-15",
+          "target": "gulf"
+        },
+        {
+          "check": "other",
+          "claim": "asked for a view on what happens to his portfolio if the Strait reopens and normalises",
+          "source": "N-026",
+          "stated_on": "2026-08-12",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "fund a family office in Asia",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "asia"
+        },
+        {
+          "check": "other",
+          "claim": "long-term capital growth",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        }
+      ],
+      "fingerprint": "47211f6a1152f4d3",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    },
+    "CL-0020": {
+      "claims": [
+        {
+          "check": "needs_liquidity_by",
+          "claim": "Hong Kong property purchase planned for 2027, around USD 3.6m",
+          "source": "N-027",
+          "stated_on": "2026-02-27",
+          "target": "2027"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "buy a Hong Kong property in 2027",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "2027"
+        },
+        {
+          "check": "needs_liquidity_by",
+          "claim": "establish a healthcare access foundation in West Africa by 2028",
+          "source": "objectives",
+          "stated_on": null,
+          "target": "2028"
+        },
+        {
+          "check": "other",
+          "claim": "Foundation ambitions for 2028 are aspirational at this stage",
+          "source": "N-027",
+          "stated_on": "2026-02-27",
+          "target": "2028"
+        },
+        {
+          "check": "other",
+          "claim": "wants portfolio growth",
+          "source": "N-027",
+          "stated_on": "2026-02-27",
+          "target": null
+        },
+        {
+          "check": "other",
+          "claim": "Long-horizon growth",
+          "source": "objectives",
+          "stated_on": null,
+          "target": null
+        },
+        {
+          "check": "reduce_risk",
+          "claim": "aware her wealth and her largest holdings are in the same sector",
+          "source": "N-027",
+          "stated_on": "2026-02-27",
+          "target": null
+        }
+      ],
+      "fingerprint": "e41612b6e23a4702",
+      "provenance": "model:claude-opus-5 effort:low",
+      "rejected": []
+    }
+  },
+  "determinism": "temperature is not settable on current models (removed from the Messages API); determinism comes from this committed cache",
+  "effort": "low",
+  "model": "claude-opus-5",
+  "prompt": "You are reading a private banking client's stated objectives and their\nrelationship manager's meeting notes. Extract every claim the client has\nmade about what they want, refuse to do, or are worried about.\n\nReturn JSON only. No prose, no markdown fences.\n\n[{\"claim\": \"<what they said, in their terms>\",\n  \"check\":  \"avoid_sector\" | \"avoid_region\" | \"reduce_risk\" |\n            \"refuse_realise_loss\" | \"needs_liquidity_by\" | \"other\",\n  \"target\": \"<sector, region, or date - or null>\",\n  \"source\": \"<objectives | note_id>\",\n  \"stated_on\": \"<YYYY-MM-DD or null>\"}]\n\nRules:\n- Only claims the client made. Not the RM's opinion.\n- If the note records the RM's concern rather than the client's words,\n  skip it.\n- Quote their phrasing in `claim`. Use their words, not a paraphrase --\n  a claim whose words do not appear in the source will be discarded.\n- `target` for avoid_sector must be a single lowercase word or short\n  phrase as the client said it, e.g. \"shipping\".\n\nOBJECTIVES: {objectives}\nNOTES: {notes}"
+}
