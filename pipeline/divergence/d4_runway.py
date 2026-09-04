@@ -1,0 +1,488 @@
+"""Spec 004 — D4, what meeting this obligation actually costs.
+
+A client has a known bill and a known date. The naive check compares the
+bill to liquid assets, finds it covered several times over, and reports
+comfort. On this book that answer is wrong twice, in opposite directions:
+
+**One client is more comfortable than recorded.** Block 6 calls her
+liquidity "tight" on a cash-plus-fixed-income figure of 16.8%. By block
+6's own rule — liquidity tier Daily or Weekly — she is 88.29% liquid,
+because her equity is held in daily-dealing funds. She can pay easily.
+What she cannot do is pay *without selling equity*, because cash plus
+fixed income is almost exactly the size of the bill. That is the finding,
+and it is worse than tight.
+
+**One client is far less comfortable than the ratio suggests.** He shows
+73% liquid against a 29% need — 2.5x coverage. But his only portfolio is
+pledged as collateral against a facility sitting 0.59 percentage points
+from a margin call. Selling to fund the obligation would push the
+loan-to-value to 97.76% against a 70% trigger. **He cannot fund it by
+selling.** A coverage ratio computed without the facility is exactly the
+kind of confidently wrong number this project exists not to produce.
+
+So this detector reports two liquidity figures, nets pledged collateral,
+and computes what the loan-to-value becomes after the need is met.
+
+See ``specs/004-liquidity-unanswered/research.md`` R2 and R3.
+"""
+
+from __future__ import annotations
+
+import pandas as pd
+
+from pipeline.fx import to_usd
+from pipeline.load import Book, client_weights, latest
+
+KIND = "D4"
+
+# Block 6: "Liquid = liquidity_tier in (Daily, Weekly). Illiquid and
+# Monthly do not count toward a near-dated need."
+LIQUID_TIERS = ("Daily", "Weekly")
+
+# Asset classes that can meet an obligation without touching equity. Not a
+# liquidity measure — a measure of what funding the bill consumes.
+NEAR_CASH = ("Cash and Equivalents", "Fixed Income")
+
+# Below this multiple of the need, the position is worth raising.
+DEFAULT_COVER_THRESHOLD = 3.0
+
+
+def _facility_for(book: Book, client_id: str, date: str):
+    """The client's credit facility, if any, at this snapshot."""
+    facilities = book.credit[book.credit.client_id == client_id]
+    if facilities.empty:
+        return None
+    facility = facilities.iloc[0]
+
+    def col(prefix):
+        name = f"{prefix}_{date}"
+        return float(facility[name]) if name in facility.index else None
+
+    return {
+        "facility_id": facility.facility_id,
+        "facility_type": facility.facility_type,
+        "currency": facility.facility_ccy,
+        "collateral_portfolio_id": facility.collateral_portfolio_id,
+        "credit_limit": float(facility.credit_limit),
+        "margin_call_ltv_pct": float(facility.margin_call_ltv_pct),
+        "drawn": col("drawn"),
+        "collateral_market_value": col("collateral_market_value"),
+        "lending_value": col("lending_value"),
+        "ltv_pct": col("ltv_pct"),
+        "headroom": col("headroom"),
+    }
+
+
+def _ltv_after_sale(facility: dict, sale_amount_ccy: float) -> dict | None:
+    """What the loan-to-value becomes if collateral is sold to fund a need.
+
+    Selling pledged collateral reduces the lending value, which raises the
+    loan-to-value on an unchanged drawn balance. The advance rate is
+    implied from the facility's own numbers rather than assumed.
+    """
+    if not facility or not facility["lending_value"]:
+        return None
+    collateral = facility["collateral_market_value"]
+    if not collateral:
+        return None
+
+    advance_rate = facility["lending_value"] / collateral
+    remaining_lending_value = facility["lending_value"] - (
+        sale_amount_ccy * advance_rate
+    )
+    if remaining_lending_value <= 0:
+        return {
+            "advance_rate_pct": advance_rate * 100.0,
+            "lending_value_after": remaining_lending_value,
+            "ltv_pct_after": None,
+            "breaches_margin_call": True,
+            "note": (
+                "selling this much collateral would leave no lending value "
+                "against the drawn balance"
+            ),
+        }
+
+    ltv_after = facility["drawn"] / remaining_lending_value * 100.0
+    return {
+        "advance_rate_pct": advance_rate * 100.0,
+        "lending_value_after": remaining_lending_value,
+        "ltv_pct_after": ltv_after,
+        "breaches_margin_call": ltv_after > facility["margin_call_ltv_pct"],
+        "note": (
+            f"funding the need from pledged collateral moves the "
+            f"loan-to-value from {facility['ltv_pct']:.2f}% to "
+            f"{ltv_after:.2f}% against a "
+            f"{facility['margin_call_ltv_pct']:.0f}% margin-call threshold"
+        ),
+    }
+
+
+def liquidity(book: Book, client_id: str, date: str) -> dict:
+    """Two figures, because they answer two different questions."""
+    weighted = client_weights(book, client_id, date)
+    if weighted.empty:
+        return {
+            "total_usd": 0.0,
+            "liquid_usd": 0.0,
+            "liquid_pct": 0.0,
+            "near_cash_usd": 0.0,
+            "near_cash_pct": 0.0,
+            "by_tier": {},
+        }
+
+    total = float(weighted.market_value_usd.sum())
+    liquid = weighted[weighted.liquidity_tier.isin(LIQUID_TIERS)]
+    near_cash = weighted[weighted.asset_class.isin(NEAR_CASH)]
+
+    # Liquidity that is **not** pledged as collateral. This is the figure
+    # that decides whether a facility actually constrains anything: a
+    # client with an unpledged portfolio can fund an obligation from it
+    # and never touch the collateral. One client here has only one
+    # portfolio and it *is* the collateral — for him the facility governs
+    # the whole answer, and for others it does not.
+    pledged = set(
+        book.credit[book.credit.client_id == client_id].collateral_portfolio_id
+    )
+    free = liquid[~liquid.portfolio_id.isin(pledged)]
+
+    return {
+        "total_usd": total,
+        # Can this be funded by the date required?
+        "liquid_usd": float(liquid.market_value_usd.sum()),
+        "liquid_pct": float(liquid.w.sum()),
+        "liquid_instrument_ids": sorted(liquid.instrument_id),
+        # Can it be funded without touching pledged collateral?
+        "free_liquid_usd": float(free.market_value_usd.sum()),
+        "free_liquid_pct": float(free.w.sum()),
+        "pledged_portfolio_ids": sorted(pledged),
+        # What does funding it consume?
+        "near_cash_usd": float(near_cash.market_value_usd.sum()),
+        "near_cash_pct": float(near_cash.w.sum()),
+        "by_tier": {
+            tier: float(group.w.sum())
+            for tier, group in weighted.groupby("liquidity_tier", sort=True)
+        },
+    }
+
+
+def _obligations(book: Book, client_id: str, date: str) -> list[dict]:
+    """Planned cash needs and uncalled commitments, converted to USD."""
+    out = []
+
+    needs = book.cash_needs[book.cash_needs.client_id == client_id]
+    for _, need in needs.sort_values("need_id").iterrows():
+        converted = to_usd(book, float(need.amount), need.currency, date)
+        out.append(
+            {
+                "source": "planned_cash_needs.csv",
+                "id": need.need_id,
+                "description": need.description,
+                "currency": need.currency,
+                "amount": float(need.amount),
+                "amount_usd": converted["usd"],
+                "fx_note": converted["note"],
+                "due_from": need.due_from,
+                "due_to": need.due_to,
+                "certainty": need.certainty,
+                "recurrence": need.recurrence,
+            }
+        )
+
+    commitments = book.commitments[book.commitments.client_id == client_id]
+    for _, commitment in commitments.sort_values("commitment_id").iterrows():
+        if float(commitment.uncalled) <= 0:
+            continue
+        converted = to_usd(
+            book, float(commitment.uncalled), commitment.currency, date
+        )
+        out.append(
+            {
+                "source": "commitments.csv",
+                "id": commitment.commitment_id,
+                "description": (
+                    f"uncalled commitment to {commitment.fund_name}"
+                ),
+                "currency": commitment.currency,
+                "amount": float(commitment.uncalled),
+                "amount_usd": converted["usd"],
+                "fx_note": converted["note"],
+                "due_from": commitment.expected_call_window,
+                "due_to": commitment.expected_call_window,
+                "certainty": "Expected",
+                "recurrence": "Capital call",
+            }
+        )
+
+    return out
+
+
+def detect(
+    book: Book,
+    client_id: str,
+    date: str | None = None,
+    cover_threshold: float = DEFAULT_COVER_THRESHOLD,
+) -> list[dict]:
+    """One finding per obligation worth raising."""
+    date = date or latest(book)
+    obligations = _obligations(book, client_id, date)
+    if not obligations:
+        return []
+
+    funds = liquidity(book, client_id, date)
+    facility = _facility_for(book, client_id, date)
+    findings = []
+
+    for obligation in obligations:
+        amount_usd = obligation["amount_usd"]
+        if amount_usd is None:
+            # No rate, so no comparison. Reported rather than guessed.
+            findings.append(
+                _unconvertible(client_id, obligation, funds, facility)
+            )
+            continue
+
+        cover = (
+            funds["liquid_usd"] / amount_usd if amount_usd else float("inf")
+        )
+        near_cash_cover = (
+            funds["near_cash_usd"] / amount_usd if amount_usd else float("inf")
+        )
+        need_pct = amount_usd / funds["total_usd"] * 100.0
+
+        after_sale = None
+        if facility and facility["collateral_portfolio_id"]:
+            # The need is met in the facility's currency where they match,
+            # otherwise convert back through USD.
+            if obligation["currency"] == facility["currency"]:
+                sale_ccy = obligation["amount"]
+            else:
+                rate = to_usd(book, 1.0, facility["currency"], date)
+                sale_ccy = (
+                    amount_usd / rate["usd"] if rate["usd"] else None
+                )
+            if sale_ccy:
+                after_sale = _ltv_after_sale(facility, sale_ccy)
+
+        # The facility only blocks funding if there is no *unpledged*
+        # liquidity to meet the obligation from. Otherwise the client
+        # simply pays from the other portfolio and the collateral is
+        # never touched.
+        must_use_collateral = funds["free_liquid_usd"] < amount_usd
+        blocked = bool(
+            must_use_collateral
+            and after_sale
+            and after_sale["breaches_margin_call"]
+        )
+        tight_on_near_cash = near_cash_cover < 1.5
+
+        if cover >= cover_threshold and not blocked and not tight_on_near_cash:
+            continue
+
+        findings.append(
+            _finding(
+                client_id,
+                obligation,
+                funds,
+                facility,
+                after_sale,
+                cover,
+                near_cash_cover,
+                need_pct,
+                blocked,
+            )
+        )
+
+    return sorted(
+        findings, key=lambda f: (-f.get("need_pct", 0.0), f["obligation"]["id"])
+    )
+
+
+def _finding(
+    client_id,
+    obligation,
+    funds,
+    facility,
+    after_sale,
+    cover,
+    near_cash_cover,
+    need_pct,
+    blocked,
+) -> dict:
+    detail = [
+        f"{obligation['description']} — {obligation['currency']} "
+        f"{obligation['amount']:,.0f} "
+        f"(USD {obligation['amount_usd']:,.0f}), due by "
+        f"{obligation['due_to']}. That is {need_pct:.2f}% of the portfolio."
+    ]
+
+    detail.append(
+        f"Holdings sellable daily or weekly total "
+        f"{funds['liquid_pct']:.2f}% of the portfolio, covering the "
+        f"obligation {cover:.2f} times over."
+    )
+
+    # The distinction that matters: covered is not the same as painless.
+    if near_cash_cover < 1.5:
+        detail.append(
+            f"But cash and fixed income together are only "
+            f"{funds['near_cash_pct']:.2f}%, which covers it "
+            f"{near_cash_cover:.2f} times — so meeting it means selling "
+            f"into the rest of the portfolio rather than drawing on "
+            f"near-cash holdings."
+        )
+
+    if blocked and after_sale:
+        detail.append(
+            f"There is no unpledged liquidity to meet this from — "
+            f"free liquid holdings are USD "
+            f"{funds['free_liquid_usd']:,.0f} against a need of USD "
+            f"{obligation['amount_usd']:,.0f}."
+        )
+        detail.append(
+            f"The portfolio is pledged as collateral under "
+            f"{facility['facility_id']}, with "
+            f"{facility['drawn']:,.0f} {facility['currency']} drawn and a "
+            f"loan-to-value of {facility['ltv_pct']:.2f}% against a "
+            f"{facility['margin_call_ltv_pct']:.0f}% margin-call "
+            f"threshold — {facility['margin_call_ltv_pct'] - facility['ltv_pct']:.2f} "
+            f"percentage points of headroom. {after_sale['note'].capitalize()}. "
+            f"Funding this by selling collateral is therefore not "
+            f"available on these numbers; it may be worth raising how "
+            f"else it would be met."
+        )
+    elif facility:
+        detail.append(
+            f"The portfolio is pledged under {facility['facility_id']} at "
+            f"{facility['ltv_pct']:.2f}% loan-to-value against a "
+            f"{facility['margin_call_ltv_pct']:.0f}% threshold."
+        )
+
+    evidence = [
+        {
+            "file": obligation["source"],
+            "rows": [obligation["id"]],
+            "note": (
+                f"{obligation['description']}, {obligation['currency']} "
+                f"{obligation['amount']:,.0f}, due "
+                f"{obligation['due_from']}..{obligation['due_to']}, "
+                f"{obligation['certainty']}. {obligation['fx_note']}"
+            ),
+        },
+        {
+            "file": "holdings.csv",
+            "rows": funds["liquid_instrument_ids"],
+            "note": (
+                f"sellable daily or weekly: "
+                f"USD {funds['liquid_usd']:,.0f} "
+                f"({funds['liquid_pct']:.2f}%)"
+            ),
+        },
+    ]
+    if facility:
+        evidence.append(
+            {
+                "file": "credit_facilities.csv",
+                "rows": [facility["facility_id"]],
+                "note": (
+                    f"{facility['drawn']:,.0f} {facility['currency']} drawn, "
+                    f"loan-to-value {facility['ltv_pct']:.2f}%, margin call "
+                    f"at {facility['margin_call_ltv_pct']:.0f}%"
+                ),
+            }
+        )
+
+    return {
+        "client_id": client_id,
+        "kind": KIND,
+        "severity": 5 if blocked else 4,
+        "confidence": "high",
+        "headline": (
+            f"{obligation['currency']} {obligation['amount']:,.0f} due by "
+            f"{obligation['due_to']}"
+            + (
+                " cannot be funded by selling pledged collateral without "
+                "breaching the facility's margin-call threshold."
+                if blocked
+                else f" — {need_pct:.2f}% of the portfolio."
+            )
+        ),
+        "detail": " ".join(detail),
+        "obligation": obligation,
+        "need_pct": need_pct,
+        "liquidity": funds,
+        "cover_ratio": cover,
+        "near_cash_cover_ratio": near_cash_cover,
+        "facility": facility,
+        "facility_after_sale": after_sale,
+        "funding_blocked_by_facility": blocked,
+        "evidence": evidence,
+        "events": [],
+        "unsure_about": _unsure(funds, obligation),
+        "classification": None,
+    }
+
+
+def _unconvertible(client_id, obligation, funds, facility) -> dict:
+    """A need whose currency has no rate. Reported, never estimated."""
+    return {
+        "client_id": client_id,
+        "kind": KIND,
+        "severity": 3,
+        "confidence": "low",
+        "headline": (
+            f"{obligation['currency']} {obligation['amount']:,.0f} due by "
+            f"{obligation['due_to']} could not be compared to the "
+            f"portfolio."
+        ),
+        "detail": (
+            f"{obligation['description']} is denominated in "
+            f"{obligation['currency']}. {obligation['fx_note']}. No USD "
+            f"figure is stated and no coverage ratio is computed."
+        ),
+        "obligation": obligation,
+        "need_pct": 0.0,
+        "liquidity": funds,
+        "facility": facility,
+        "evidence": [
+            {
+                "file": obligation["source"],
+                "rows": [obligation["id"]],
+                "note": obligation["fx_note"],
+            }
+        ],
+        "events": [],
+        "unsure_about": obligation["fx_note"],
+        "classification": None,
+    }
+
+
+def _unsure(funds: dict, obligation: dict) -> str:
+    parts = []
+
+    # Block 6 is explicit: private-market valuations lag a quarter by
+    # design. Industry practice, not an error — so it is noted where it
+    # affects a conclusion and never flagged.
+    monthly_or_illiquid = {
+        tier: pct
+        for tier, pct in funds["by_tier"].items()
+        if tier not in LIQUID_TIERS
+    }
+    if monthly_or_illiquid:
+        described = ", ".join(
+            f"{pct:.2f}% {tier.lower()}"
+            for tier, pct in sorted(monthly_or_illiquid.items())
+        )
+        parts.append(
+            f"{described} is excluded from available funds. Private-market "
+            f"valuations in that group lag by a quarter as a matter of "
+            f"industry practice, so the excluded value is indicative "
+            f"rather than current."
+        )
+
+    if obligation["certainty"] != "Confirmed":
+        parts.append(
+            f"This obligation is recorded as "
+            f"{obligation['certainty'].lower()} rather than confirmed."
+        )
+
+    return " ".join(parts)

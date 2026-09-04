@@ -22,9 +22,11 @@
         "D1",
         "D2",
         "D3",
-        "D4"
+        "D4",
+        "D5",
+        "D6"
       ],
-      "description": "D1 said-vs-held, D2 mandate, D3 hidden-when-split, D4 plan-vs-runway"
+      "description": "D1 said-vs-held (spec 002), D2 mandate (spec 003), D3 hidden-when-split (spec 001), D4 plan-vs-runway (spec 004), D5 unanswered question (spec 004), D6 scenario (spec 005). Extended from D1-D4 by spec 004: implementation.md and RUN-SHEET.md both specified D5 and D6, and this schema already defines an `unanswered_question` object for D5, so only the enum had been left behind. See specs/004-liquidity-unanswered/research.md R6."
     },
     "severity": {
       "type": "integer",
