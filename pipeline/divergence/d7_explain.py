@@ -11,9 +11,9 @@ challenge"* — position, change, cause.
 +6.02m between the pre-conflict snapshot and today. Reported as one
 number, the market appears to have given him six million. It did not:
 
-    2026-04-15  Structured Product Subscription
+    mid-window  Structured Product Subscription
                 300,000 units @ HKD 100.00  =  HKD 30,000,000 paid in
-    2026-08-26  holding                     =  HKD 32,460,000
+    latest      holding                     =  HKD 32,460,000
 
 He **paid in about USD 3.84m**. Only ~2.18m is market movement. A single
 "portfolio change" figure is the wrong shape for the question regardless
