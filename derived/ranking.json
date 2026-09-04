@@ -1,0 +1,94 @@
+{
+  "effort": "high",
+  "entries": {
+    "all": {
+      "corrections": [],
+      "fingerprint": "83aaa20f4760e815",
+      "order": [
+        {
+          "client_id": "CL-0003",
+          "why": "She told you she wanted less risk and the portfolio is still 71% equity against a 10-30 band, with EUR 3.4m due by the end of 2026 that a bad quarter could put out of reach \u2014 this is the call to make first."
+        },
+        {
+          "client_id": "CL-0014",
+          "why": "At 63 he has an HKD 60m obligation due June 2027 that cannot be funded from pledged collateral without triggering a margin call, sitting on top of 29% in a single property name and an accumulator adding more of it, so the funding path needs to be built now."
+        },
+        {
+          "client_id": "CL-0019",
+          "why": "He has USD 5m due end-2027, a question from August 2026 still unanswered on file, and 42% in the very sector he asked to move away from \u2014 the unanswered note alone warrants picking up the phone."
+        },
+        {
+          "client_id": "CL-0011",
+          "why": "At 78 and in succession planning, nearly half the portfolio is in illiquid alternatives against a 0-15 band while fixed income sits well below floor, which is the wrong shape for an estate that may need to settle quickly."
+        },
+        {
+          "client_id": "CL-0002",
+          "why": "With a liquidity event ahead, 88.6% of his wealth sits in one sector and a note doubles down on a name he already owns outright \u2014 concentration this extreme deserves a conversation before the event, not after."
+        },
+        {
+          "client_id": "CL-0007",
+          "why": "He is 72, retired and focused on legacy, with commodities at 19% against a 0-10 ceiling and a gold note layered over holdings he already has, so the client-directed position needs re-confirming in writing."
+        },
+        {
+          "client_id": "CL-0009",
+          "why": "Post-liquidity at 61, he is sitting on 45% cash against an 18% ceiling with fixed income below floor, and every month of drift costs him real return."
+        },
+        {
+          "client_id": "CL-0016",
+          "why": "Five to ten years from retirement he is carrying 68% equity against a 55% ceiling with fixed income short \u2014 the drawdown risk is poorly timed for his stage."
+        },
+        {
+          "client_id": "CL-0013",
+          "why": "Over half the portfolio is in Information Technology and a note references a name she already holds outright, so the true single-name exposure is larger than it looks."
+        },
+        {
+          "client_id": "CL-0005",
+          "why": "Equity at 68% against a 30-55 band is a wide drift for someone in peak earning years and should be brought back before markets do it for her."
+        },
+        {
+          "client_id": "CL-0018",
+          "why": "Fixed income is just under floor and commodities just over ceiling \u2014 a straightforward rebalancing conversation with no urgency behind it."
+        },
+        {
+          "client_id": "CL-0001",
+          "why": "Mandate bands are all respected, but 45% in Energy plus a note on a name he already owns means his real risk is more concentrated than the compliance view suggests."
+        },
+        {
+          "client_id": "CL-0017",
+          "why": "The largest book on your list, but equity is only marginally over its ceiling and nothing else is wrong, so size alone should not pull this forward."
+        },
+        {
+          "client_id": "CL-0004",
+          "why": "Bands are all respected, though at 66 and approaching retirement it is worth a routine check that the mandate still matches his income plans."
+        },
+        {
+          "client_id": "CL-0012",
+          "why": "Retired at 71 with a fully compliant portfolio \u2014 a periodic suitability touchpoint rather than a problem to fix."
+        },
+        {
+          "client_id": "CL-0008",
+          "why": "Nothing is out of line; a standard review when you have capacity."
+        },
+        {
+          "client_id": "CL-0015",
+          "why": "All six bands are within limits and his stage gives him a long horizon, so this can wait."
+        },
+        {
+          "client_id": "CL-0006",
+          "why": "Clean mandate and steady accumulation phase \u2014 no reason to move her up the queue."
+        },
+        {
+          "client_id": "CL-0020",
+          "why": "No breaches, no dated obligations and decades of runway ahead of her."
+        },
+        {
+          "client_id": "CL-0010",
+          "why": "Youngest client, smallest mandate and nothing wrong with the portfolio, so she sits last on urgency."
+        }
+      ],
+      "provenance": "model:claude-opus-5 effort:high"
+    }
+  },
+  "model": "claude-opus-5",
+  "prompt": "You are ordering a private banking relationship manager's client book by\nhow soon a conversation is worth having. She has twenty clients and can\nproperly watch about three.\n\nOrder by urgency of conversation, NOT by portfolio size. Age, life stage,\ndrawdown and imminent cash needs weigh more than the size of a mandate\nbreach. A large portfolio with nothing wrong ranks below a smaller one\nwith a dated obligation the client cannot meet.\n\nReturn JSON only, no markdown fences. Every client must appear exactly\nonce:\n[{\"client_id\": \"...\", \"why\": \"<one sentence>\"}]\n\nKeep `why` to one sentence, in plain English, addressed to her. Do not use\nthe word \"recommend\".\n\nCLIENTS: {clients}"
+}

@@ -85,10 +85,18 @@ JSON files on disk, no database. Deploy to Vercel.
 ## Commands
 
 ```bash
-python pipeline/build.py          # → web/public/findings.json
+# → web/public/findings.json. --series is required: the scenario is the
+# question being asked, so it lives in the command, not in pipeline/.
+python pipeline/build.py --data data/ \
+  --clients CL-0019,CL-0003,CL-0014 --series BRENT_USD_BBL
+
 pytest tests/test_determinism.py  # same inputs, same findings
 cd web && npm run dev
 ```
+
+Regenerating model output is explicit, never a side effect of the build.
+`derived/claims.json`, `derived/briefs.json` and `derived/ranking.json`
+are committed; the build reads them and makes **no** model call.
 
 ## Deadlines
 
