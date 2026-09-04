@@ -22,6 +22,7 @@ import { Band, Caption, Sheet } from "@/components/sheet-section";
 import { CollateralTrajectory } from "@/components/collateral-trajectory";
 import { Decisions } from "@/components/decisions";
 import { EvidenceColumn } from "@/components/evidence";
+import { ExplanationPanel } from "@/components/explanation-panel";
 import { ExposureFigure, Trajectory } from "@/components/exposure-figure";
 import { MandatePanel } from "@/components/mandate-panel";
 import { ScenarioPanel } from "@/components/scenario-panel";
@@ -32,6 +33,7 @@ import {
   getClient,
   lookThrough,
   openQuestion,
+  explanation,
   saidVsHeld,
   scenario,
 } from "@/lib/findings";
@@ -55,6 +57,7 @@ export default async function ClientBrief({
   const said = saidVsHeld(client);
   const question = openQuestion(client);
   const repricing = scenario(client);
+  const explained = explanation(client);
   const runway = client.findings.filter((f) => f.kind === "D4");
   const snapshot = findings.meta.snapshot_date;
 
@@ -114,6 +117,13 @@ export default async function ClientBrief({
           {exposure?.trajectory && exposure.trajectory.length > 1 && (
             <Band>
               <Trajectory finding={exposure} />
+            </Band>
+          )}
+
+          {/* What the portfolio did, and why. Building Block 1. Spec 008. */}
+          {explained && (
+            <Band>
+              <ExplanationPanel finding={explained} />
             </Band>
           )}
 

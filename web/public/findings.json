@@ -4,7 +4,7 @@
       "aum_usd": 22181135.66,
       "client_id": "CL-0003",
       "compliance_clean": false,
-      "finding_count": 4,
+      "finding_count": 5,
       "has_brief": true,
       "name": "Margarethe Voss-Brenner",
       "rank": 1,
@@ -14,7 +14,7 @@
       "aum_usd": 26488970.55,
       "client_id": "CL-0014",
       "compliance_clean": false,
-      "finding_count": 6,
+      "finding_count": 7,
       "has_brief": true,
       "name": "Lau Chi Ming",
       "rank": 2,
@@ -24,7 +24,7 @@
       "aum_usd": 32214266.33,
       "client_id": "CL-0019",
       "compliance_clean": true,
-      "finding_count": 8,
+      "finding_count": 9,
       "has_brief": true,
       "name": "Abdullah Al-Mansoori",
       "rank": 3,
@@ -1717,6 +1717,74 @@
           },
           "severity": 4,
           "unsure_about": "5.39% illiquid, 6.32% monthly is excluded from available funds. Private-market valuations in that group lag by a quarter as a matter of industry practice, so the excluded value is indicative rather than current."
+        },
+        {
+          "acquired": [],
+          "acquired_market_movement_usd": 0,
+          "classification": null,
+          "client_id": "CL-0003",
+          "confidence": "high",
+          "detail": "The portfolio moved -1.69m on market prices since 2026-02-27, with no money paid in or taken out. What moved: Global Luxury and Consumer Brands Fund -1.05m; Nordvind Industrial AB -0.27m; EUR Investment Grade Bond Fund -0.27m.",
+          "disposed": [],
+          "events": [],
+          "evidence": [
+            {
+              "file": "holdings.csv",
+              "note": "values at 2026-02-27 and 2026-08-26; market movement -1,692,965 USD on positions held throughout",
+              "rows": [
+                "SYN-EQ-0010",
+                "SYN-FI-0209",
+                "SYN-ST-0107"
+              ]
+            }
+          ],
+          "headline": "The portfolio moved -1.69m on market prices since 2026-02-27.",
+          "held": [
+            {
+              "asset_class": "Equity",
+              "change_usd": -1051353.5999999996,
+              "flow": null,
+              "instrument_id": "SYN-EQ-0010",
+              "instrument_name": "Global Luxury and Consumer Brands Fund",
+              "is_performance": true,
+              "value_now_usd": 5780174.4,
+              "value_then_usd": 6831528.0,
+              "weight_change_pp": -2.5558422196781088
+            },
+            {
+              "asset_class": "Equity",
+              "change_usd": -270977.3999999999,
+              "flow": null,
+              "instrument_id": "SYN-ST-0107",
+              "instrument_name": "Nordvind Industrial AB",
+              "is_performance": true,
+              "value_now_usd": 4075671.6,
+              "value_then_usd": 4346649.0,
+              "weight_change_pp": 0.16794947360581602
+            },
+            {
+              "asset_class": "Fixed Income",
+              "change_usd": -270224.0,
+              "flow": null,
+              "instrument_id": "SYN-FI-0209",
+              "instrument_name": "EUR Investment Grade Bond Fund",
+              "is_performance": true,
+              "value_now_usd": 2028936.0,
+              "value_then_usd": 2299160.0,
+              "weight_change_pp": -0.48322807970176385
+            }
+          ],
+          "kind": "D7",
+          "market_movement_usd": -1692965.3399999994,
+          "paid_in_usd": 0,
+          "severity": 3,
+          "taken_out_usd": 0,
+          "total_change_usd": -1692965.3399999994,
+          "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not.",
+          "window": {
+            "from": "2026-02-27",
+            "to": "2026-08-26"
+          }
         }
       ],
       "life_stage": "Recently inherited - transition",
@@ -5946,6 +6014,98 @@
           "total_impact_pct": 14.413836186865126,
           "total_impact_usd": 3818076.822663947,
           "unsure_about": "This is arithmetic over stored prices at two dates. It is not a forecast, carries no probability, and assumes no volatility."
+        },
+        {
+          "acquired": [],
+          "acquired_market_movement_usd": 0,
+          "classification": null,
+          "client_id": "CL-0014",
+          "confidence": "high",
+          "detail": "The portfolio moved -4.98m on market prices since 2026-02-27, with no money paid in or taken out. What moved: Golden Harbour Properties 5.25% Perpetual -1.58m; Accumulator ref. Golden Harbour Properties Ltd, 12M -1.28m; Golden Harbour Properties Ltd -0.78m; Pacific Rim Bank 4.75% Perpetual -0.73m.",
+          "disposed": [],
+          "events": [],
+          "evidence": [
+            {
+              "file": "holdings.csv",
+              "note": "values at 2026-02-27 and 2026-08-26; market movement -4,981,478 USD on positions held throughout",
+              "rows": [
+                "SYN-FI-0205",
+                "SYN-FI-0206",
+                "SYN-FI-0207",
+                "SYN-SP-0503",
+                "SYN-ST-0106"
+              ]
+            }
+          ],
+          "headline": "The portfolio moved -4.98m on market prices since 2026-02-27.",
+          "held": [
+            {
+              "asset_class": "Fixed Income",
+              "change_usd": -1578000.0,
+              "flow": null,
+              "instrument_id": "SYN-FI-0207",
+              "instrument_name": "Golden Harbour Properties 5.25% Perpetual",
+              "is_performance": true,
+              "value_now_usd": 3408000.0,
+              "value_then_usd": 4986000.0,
+              "weight_change_pp": -2.977702579035384
+            },
+            {
+              "asset_class": "Structured Products",
+              "change_usd": -1281238.72,
+              "flow": null,
+              "instrument_id": "SYN-SP-0503",
+              "instrument_name": "Accumulator ref. Golden Harbour Properties Ltd, 12M",
+              "is_performance": true,
+              "value_now_usd": 1866197.18,
+              "value_then_usd": 3147435.9,
+              "weight_change_pp": -2.9560567719409754
+            },
+            {
+              "asset_class": "Equity",
+              "change_usd": -775035.29,
+              "flow": null,
+              "instrument_id": "SYN-ST-0106",
+              "instrument_name": "Golden Harbour Properties Ltd",
+              "is_performance": true,
+              "value_now_usd": 2527528.81,
+              "value_then_usd": 3302564.1,
+              "weight_change_pp": -0.9523595181262721
+            },
+            {
+              "asset_class": "Fixed Income",
+              "change_usd": -731500.0,
+              "flow": null,
+              "instrument_id": "SYN-FI-0206",
+              "instrument_name": "Pacific Rim Bank 4.75% Perpetual",
+              "is_performance": true,
+              "value_now_usd": 4653000.0,
+              "value_then_usd": 5384500.0,
+              "weight_change_pp": 0.4560995277446942
+            },
+            {
+              "asset_class": "Fixed Income",
+              "change_usd": -387000.0,
+              "flow": null,
+              "instrument_id": "SYN-FI-0205",
+              "instrument_name": "Asia High Yield Bond Fund",
+              "is_performance": true,
+              "value_now_usd": 3645000.0,
+              "value_then_usd": 4032000.0,
+              "weight_change_pp": 0.9484247367889278
+            }
+          ],
+          "kind": "D7",
+          "market_movement_usd": -4981478.16,
+          "paid_in_usd": 0,
+          "severity": 3,
+          "taken_out_usd": 0,
+          "total_change_usd": -4981478.159999999,
+          "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not.",
+          "window": {
+            "from": "2026-02-27",
+            "to": "2026-08-26"
+          }
         }
       ],
       "life_stage": "Peak earning years",
@@ -8334,6 +8494,132 @@
           "total_impact_pct": -7.801547280426389,
           "total_impact_usd": -2513211.218777429,
           "unsure_about": "Fixed Coupon Note ref. Basket C, 9.20% p.a., 12M was not held at 2026-02-27, so it is repriced using Pacific Orient Shipping Ltd, the worst-performing leg of its basket that the client holds (-19.75%). Its own price series is par-indexed and carries a value for dates before the note existed, which would understate the move; that value is not used. On a strict worst-of reading the note would reprice off Bara Nusantara Energy Tbk, which fell -23.10% \u2014 further than any leg the client holds. That leg cannot be used for the headline because the client does not hold it, but on that basis the total impact would be nearer -2.65m (-8.23%). The uncertainty runs against the client, not in their favour. This is arithmetic over stored prices at two dates. It is not a forecast, carries no probability, and assumes no volatility."
+        },
+        {
+          "acquired": [
+            {
+              "asset_class": "Structured Products",
+              "change_usd": 4156209.99,
+              "flow": {
+                "paid_in_usd": 3841229.1933418694,
+                "taken_out_usd": 0.0,
+                "transactions": [
+                  {
+                    "amount": -30000000.0,
+                    "amount_usd": 3841229.1933418694,
+                    "currency": "HKD",
+                    "fx_note": "HKD 30,000,000 divided by USDHKD 7.81 (HKD per USD) at 2026-08-26",
+                    "trade_date": "2026-04-15",
+                    "transaction_id": "TXN-0005",
+                    "transaction_type": "Structured Product Subscription"
+                  }
+                ],
+                "unconverted": []
+              },
+              "instrument_id": "SYN-SP-0505",
+              "instrument_name": "Fixed Coupon Note ref. Basket C, 9.20% p.a., 12M",
+              "is_performance": false,
+              "market_movement_usd": 314980.7966581308,
+              "paid_in_usd": 3841229.1933418694,
+              "value_now_usd": 4156209.99,
+              "value_then_usd": 0.0,
+              "weight_change_pp": 12.901768264483088
+            }
+          ],
+          "acquired_market_movement_usd": 314980.7966581308,
+          "classification": null,
+          "client_id": "CL-0019",
+          "confidence": "high",
+          "detail": "Of the +6.02m change since 2026-02-27, 3.84m is new money and +1.86m is market movement on positions held throughout. Those are different things and the first is not performance. What moved: Pacific Orient Shipping Ltd +0.72m; Global Energy Majors Equity Fund +0.54m; Asia Pacific Shipping and Logistics Fund +0.43m. Fixed Coupon Note ref. Basket C, 9.20% p.a., 12M was subscribed inside this window \u2014 3.84m paid in, now worth 4.16m. The +4.16m it adds to the portfolio is almost all the subscription, not a gain. Events touching this client in the window: 2026-02-28 \u2014 United States and Israel commence military operations against Iran.; 2026-03-02 \u2014 Brent crude rises 10-13% to around USD 80-82 per barrel as tanker traffic in the Strait of; 2026-03-04 \u2014 Strait of Hormuz effectively closed. Brent surges past USD 120. QatarEnergy declares force.",
+          "disposed": [],
+          "events": [
+            "2026-02-28",
+            "2026-03-02",
+            "2026-03-04",
+            "2026-03-11",
+            "2026-03-12",
+            "2026-05-04",
+            "2026-08-05"
+          ],
+          "evidence": [
+            {
+              "file": "holdings.csv",
+              "note": "values at 2026-02-27 and 2026-08-26; market movement 1,862,610 USD on positions held throughout",
+              "rows": [
+                "SYN-EQ-0008",
+                "SYN-EQ-0025",
+                "SYN-SP-0505",
+                "SYN-ST-0104"
+              ]
+            },
+            {
+              "file": "transactions.csv",
+              "note": "3,841,229 USD paid in, 0 USD taken out \u2014 excluded from performance",
+              "rows": [
+                "TXN-0005"
+              ]
+            },
+            {
+              "file": "event_log.csv",
+              "note": "2026-02-28 United States and Israel commence military operations against Iran.; 2026-03-02 Brent crude rises 10-13% to around USD 80-82 per barrel as tanker traf; 2026-03-04 Strait of Hormuz effectively closed. Brent surges past USD 120. QatarE; 2026-03-11 IEA member countries agree to release 400 million barrels from emergen; 2026-03-12 IEA characterises the conflict as the largest supply disruption in the; 2026-05-04 Brent crude peaks at approximately USD 114 per barrel.; 2026-08-05 United States reimposes a naval blockade following renewed Iranian att",
+              "rows": [
+                "2026-02-28",
+                "2026-03-02",
+                "2026-03-04",
+                "2026-03-11",
+                "2026-03-12",
+                "2026-05-04",
+                "2026-08-05"
+              ]
+            }
+          ],
+          "headline": "The portfolio is up +6.02m since 2026-02-27 \u2014 but 3.84m of that is money paid in, not performance.",
+          "held": [
+            {
+              "asset_class": "Equity",
+              "change_usd": 722210.19,
+              "flow": null,
+              "instrument_id": "SYN-ST-0104",
+              "instrument_name": "Pacific Orient Shipping Ltd",
+              "is_performance": true,
+              "value_now_usd": 3676056.34,
+              "value_then_usd": 2953846.15,
+              "weight_change_pp": 0.13508636056337053
+            },
+            {
+              "asset_class": "Equity",
+              "change_usd": 535200.0,
+              "flow": null,
+              "instrument_id": "SYN-EQ-0008",
+              "instrument_name": "Global Energy Majors Equity Fund",
+              "is_performance": true,
+              "value_now_usd": 2878800.0,
+              "value_then_usd": 2343600.0,
+              "weight_change_pp": -0.010179825296543044
+            },
+            {
+              "asset_class": "Equity",
+              "change_usd": 431200.0,
+              "flow": null,
+              "instrument_id": "SYN-EQ-0025",
+              "instrument_name": "Asia Pacific Shipping and Logistics Fund",
+              "is_performance": true,
+              "value_now_usd": 2862200.0,
+              "value_then_usd": 2431000.0,
+              "weight_change_pp": -0.3953555673735085
+            }
+          ],
+          "kind": "D7",
+          "market_movement_usd": 1862610.19,
+          "paid_in_usd": 3841229.1933418694,
+          "severity": 3,
+          "taken_out_usd": 0,
+          "total_change_usd": 6018820.18,
+          "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not.",
+          "window": {
+            "from": "2026-02-27",
+            "to": "2026-08-26"
+          }
         }
       ],
       "life_stage": "Peak earning years",
@@ -8783,6 +9069,12 @@
         "unsure_about": "5.39% illiquid, 6.32% monthly is excluded from available funds. Private-market valuations in that group lag by a quarter as a matter of industry practice, so the excluded value is indicative rather than current."
       },
       {
+        "client_id": "CL-0003",
+        "headline": "The portfolio moved -1.69m on market prices since 2026-02-27.",
+        "kind": "D7",
+        "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not."
+      },
+      {
         "client_id": "CL-0007",
         "headline": "Capital Protected Note ref. Gold, 24M references 2 names the client already holds outright.",
         "kind": "D3",
@@ -8817,6 +9109,12 @@
         "headline": "Around USD 3,818,077 comes off the portfolio if Brent crude returns from 101.5 to 72.4 USD/barrel \u2014 14.41% of it.",
         "kind": "D6",
         "unsure_about": "This is arithmetic over stored prices at two dates. It is not a forecast, carries no probability, and assumes no volatility."
+      },
+      {
+        "client_id": "CL-0014",
+        "headline": "The portfolio moved -4.98m on market prices since 2026-02-27.",
+        "kind": "D7",
+        "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not."
       },
       {
         "client_id": "CL-0019",
@@ -8859,6 +9157,12 @@
         "headline": "Around USD 2,513,211 comes off the portfolio if Brent crude returns from 101.5 to 72.4 USD/barrel \u2014 7.80% of it.",
         "kind": "D6",
         "unsure_about": "Fixed Coupon Note ref. Basket C, 9.20% p.a., 12M was not held at 2026-02-27, so it is repriced using Pacific Orient Shipping Ltd, the worst-performing leg of its basket that the client holds (-19.75%). Its own price series is par-indexed and carries a value for dates before the note existed, which would understate the move; that value is not used. On a strict worst-of reading the note would reprice off Bara Nusantara Energy Tbk, which fell -23.10% \u2014 further than any leg the client holds. That leg cannot be used for the headline because the client does not hold it, but on that basis the total impact would be nearer -2.65m (-8.23%). The uncertainty runs against the client, not in their favour. This is arithmetic over stored prices at two dates. It is not a forecast, carries no probability, and assumes no volatility."
+      },
+      {
+        "client_id": "CL-0019",
+        "headline": "The portfolio is up +6.02m since 2026-02-27 \u2014 but 3.84m of that is money paid in, not performance.",
+        "kind": "D7",
+        "unsure_about": "Events are matched to this client by the transmission channels named in the event log against the sectors and asset classes they hold. That is a keyword match, so an event may be listed here without having moved any particular position \u2014 the attribution above is arithmetic, the causal link is not."
       }
     ]
   }

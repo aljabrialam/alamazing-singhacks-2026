@@ -46,7 +46,7 @@ export type ScenarioPosition = {
 
 export type Finding = {
   client_id: string;
-  kind: "D1" | "D2" | "D3" | "D4" | "D5" | "D6";
+  kind: "D1" | "D2" | "D3" | "D4" | "D5" | "D6" | "D7" | "D9" | "D10";
   rule?: string;
   check?: string;
   severity: number;
@@ -129,6 +129,30 @@ export type Finding = {
 
   // D5
   unanswered_question?: { note_id: string; asked_on: string; question: string };
+
+  // D7
+  window?: { from: string; to: string };
+  held?: {
+    instrument_id: string;
+    instrument_name: string;
+    change_usd: number;
+    is_performance: boolean;
+  }[];
+  acquired?: {
+    instrument_id: string;
+    instrument_name: string;
+    paid_in_usd: number | null;
+    value_now_usd: number;
+    change_usd: number;
+    market_movement_usd: number | null;
+    is_performance: boolean;
+  }[];
+  disposed?: { instrument_id: string; instrument_name: string; change_usd: number }[];
+  market_movement_usd?: number;
+  acquired_market_movement_usd?: number;
+  paid_in_usd?: number;
+  taken_out_usd?: number;
+  total_change_usd?: number;
 
   // D6
   scenario?: {
@@ -292,6 +316,10 @@ export function openQuestion(client: ClientRecord): Finding | undefined {
 
 export function saidVsHeld(client: ClientRecord): Finding | undefined {
   return byKind(client, "D1")[0];
+}
+
+export function explanation(client: ClientRecord): Finding | undefined {
+  return byKind(client, "D7")[0];
 }
 
 /**
