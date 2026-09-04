@@ -7,3 +7,6 @@ node_modules/
 web/.next/
 web/out/
 .vercel
+web/node_modules/
+web/.next/
+web/next-env.d.ts

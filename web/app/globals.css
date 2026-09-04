@@ -1,0 +1,188 @@
+/* ============================================================
+   Divergence Engine — theme
+
+   Ported from .alamazing/globals.css to Tailwind v4 syntax. The token
+   VALUES come from .alamazing/mockup.html where the two design documents
+   disagree — see specs/007-workbench/research.md R1. The run sheet
+   identifies the visual mockup as the intended direction rather than an
+   alternative, so it governs where it specifies.
+
+   Reference: a printed advisory note from a Swiss private bank. Not a
+   dashboard, not a trading console.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+
+:root {
+  /* --- the palette, from the mockup --- */
+  --ground: #f0f1ed;        /* the desk. soft sage-grey, deliberately not warm cream */
+  --sheet: #ffffff;         /* paper. pure white reads as printed, not as a UI panel */
+  --ink: #131b26;
+  --navy: #16325c;          /* the one accent */
+  --crest: #a4343a;         /* urgency. once per screen at most */
+  --safe: #2e6b52;          /* a band respected */
+  --muted-ink: #6e7681;
+  --hair: #e4e5e1;          /* dividers, softer than a rule */
+  --prose: #26303c;
+
+  /* Exposure: one hue, four tints. Four positions that are one bet. */
+  --e1: #c79355;
+  --e2: #b58141;
+  --e3: #a0702f;
+  --e4: #8a5e23;
+
+  /* --- shadcn tokens --- */
+  --radius: 0.1875rem;      /* 3px, interactive elements only */
+  --background: var(--ground);
+  --foreground: var(--ink);
+  --card: var(--sheet);
+  --card-foreground: var(--ink);
+  --popover: var(--sheet);
+  --popover-foreground: var(--ink);
+  --primary: var(--navy);
+  --primary-foreground: #ffffff;
+  --secondary: #f6f7f4;
+  --secondary-foreground: var(--ink);
+  --muted: #f6f7f4;
+  --muted-foreground: var(--muted-ink);
+  --accent: #f6f7f4;
+  --accent-foreground: var(--navy);
+  --destructive: var(--crest);
+  --destructive-foreground: #ffffff;
+  --border: var(--hair);
+  --input: var(--hair);
+  --ring: var(--navy);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-ground: var(--ground);
+  --color-sheet: var(--sheet);
+  --color-ink: var(--ink);
+  --color-navy: var(--navy);
+  --color-crest: var(--crest);
+  --color-safe: var(--safe);
+  --color-hair: var(--hair);
+  --color-prose: var(--prose);
+  --color-e1: var(--e1);
+  --color-e2: var(--e2);
+  --color-e3: var(--e3);
+  --color-e4: var(--e4);
+
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+
+  --font-read: 'Newsreader', Georgia, serif;
+  --font-ui: 'Archivo', system-ui, sans-serif;
+  --font-num: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Keyboard focus must stay visible. */
+  :focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Three voices, three jobs.
+     read — what Priscilla reads. The brief, the findings, the opening line.
+     ui   — chrome, buttons, metadata.
+     num  — figures and file names in the evidence panel. Data only. */
+  .font-read { font-family: var(--font-read); }
+  .font-ui   { font-family: var(--font-ui); }
+  .font-num  { font-family: var(--font-num); }
+
+  /* Sheets sit on the ground like paper on a desk. Two shadows, not one:
+     a tight contact shadow and a wide soft one. That is what makes paper
+     look like paper rather than a card component. */
+  .sheet {
+    background: var(--sheet);
+    border-radius: 5px;
+    box-shadow:
+      0 1px 2px rgba(19, 27, 38, 0.05),
+      0 10px 28px -14px rgba(19, 27, 38, 0.16);
+  }
+
+  /* Section captions read as annotations on a desk, which is the
+     metaphor. Not boxed headers. */
+  .caption {
+    font-family: var(--font-read);
+    font-style: italic;
+    color: var(--muted-ink);
+    font-size: 15px;
+  }
+
+  /* Brief prose. Serif gets a longer measure and more leading than sans. */
+  .prose-brief p {
+    font-family: var(--font-read);
+    font-size: 19px;
+    line-height: 1.7;
+    max-width: 63ch;
+    margin-bottom: 21px;
+    color: var(--prose);
+  }
+  .prose-brief p:last-child { margin-bottom: 0; }
+
+  /* The payoff. One of exactly two places boldness is spent — keep
+     everything around it quiet. */
+  .opening-line {
+    font-family: var(--font-read);
+    font-size: 29px;
+    line-height: 1.4;
+    max-width: 32ch;
+  }
+
+  /* Figures must not jitter as they update. */
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+/* Prose steps down on small screens; the opening line stays large — it is
+   the point on any screen. */
+@media (max-width: 920px) {
+  .prose-brief p { font-size: 17.5px; }
+  .opening-line { font-size: 23px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
