@@ -24,7 +24,7 @@
       "aum_usd": 32214266.33,
       "client_id": "CL-0019",
       "compliance_clean": true,
-      "finding_count": 10,
+      "finding_count": 11,
       "has_brief": true,
       "name": "Abdullah Al-Mansoori",
       "rank": 3,
@@ -8826,6 +8826,51 @@
             "unpriced_positions": []
           },
           "unsure_about": "This is a position, not tax advice. The system holds a simple record of whether a domicile levies capital gains and nothing else \u2014 no holding periods, no asset-type distinctions, no remittance rules, no treaties. Anything that turns on those is a question for the tax team."
+        },
+        {
+          "classification": null,
+          "client_id": "CL-0019",
+          "confidence": "high",
+          "detail": "The risk profile on file records liquidity needs as low against an investment horizon of 25 years. Against that, Seed capital for Singapore family office entity \u2014 USD 5,000,000, about 15.52% of the portfolio \u2014 is due by 2027-12-31, in roughly 1.3 years. It is the profile that looks out of date here rather than the portfolio, and the profile is what suitability checks run against \u2014 so a portfolio can pass every check and still be built for the wrong horizon. Worth raising whether the recorded liquidity needs still describe this client.",
+          "events": [],
+          "evidence": [
+            {
+              "file": "clients.csv",
+              "note": "liquidity_needs Low, investment_horizon_years 25, life_stage Peak earning years",
+              "rows": [
+                "CL-0019"
+              ]
+            },
+            {
+              "file": "planned_cash_needs.csv",
+              "note": "Seed capital for Singapore family office entity, USD 5,000,000 due by 2027-12-31, Likely",
+              "rows": [
+                "CN-017"
+              ]
+            }
+          ],
+          "headline": "Liquidity needs are recorded as low, and USD 5,000,000 falls due by 2027-12-31.",
+          "kind": "D10",
+          "obligations": [
+            {
+              "amount": 5000000.0,
+              "amount_usd": 5000000.0,
+              "certainty": "Likely",
+              "currency": "USD",
+              "description": "Seed capital for Singapore family office entity",
+              "due_to": "2027-12-31",
+              "id": "CN-017",
+              "source": "planned_cash_needs.csv",
+              "years_away": 1.3470319634703196
+            }
+          ],
+          "recorded_profile": {
+            "investment_horizon_years": 25.0,
+            "life_stage": "Peak earning years",
+            "liquidity_needs": "Low"
+          },
+          "severity": 3,
+          "unsure_about": "This compares a profile field against a dated obligation. The obligation may already have been discussed and the profile deliberately left as it is \u2014 the note history is where that would be recorded, and this detector does not read it for intent."
         }
       ],
       "life_stage": "Peak earning years",
@@ -9387,6 +9432,12 @@
         "headline": "Unrealised position: USD 6,862,240 in gains, USD 519,000 in losses. Domicile United Arab Emirates.",
         "kind": "D9",
         "unsure_about": "This is a position, not tax advice. The system holds a simple record of whether a domicile levies capital gains and nothing else \u2014 no holding periods, no asset-type distinctions, no remittance rules, no treaties. Anything that turns on those is a question for the tax team."
+      },
+      {
+        "client_id": "CL-0019",
+        "headline": "Liquidity needs are recorded as low, and USD 5,000,000 falls due by 2027-12-31.",
+        "kind": "D10",
+        "unsure_about": "This compares a profile field against a dated obligation. The obligation may already have been discussed and the profile deliberately left as it is \u2014 the note history is where that would be recorded, and this detector does not read it for intent."
       }
     ]
   }

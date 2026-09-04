@@ -34,6 +34,7 @@ import {
   lookThrough,
   openQuestion,
   explanation,
+  profileMismatch,
   saidVsHeld,
   scenario,
   taxPosition,
@@ -60,6 +61,7 @@ export default async function ClientBrief({
   const repricing = scenario(client);
   const explained = explanation(client);
   const tax = taxPosition(client);
+  const profile = profileMismatch(client);
   const runway = client.findings.filter((f) => f.kind === "D4");
   const snapshot = findings.meta.snapshot_date;
 
@@ -179,6 +181,19 @@ export default async function ClientBrief({
                 </div>
               ))}
               <Decisions findingKey={`${client.client_id}-D4`} />
+            </Band>
+          )}
+
+          {/* The profile, against the client's own plans. Spec 008. */}
+          {profile && (
+            <Band>
+              <h3 className="font-read text-[20px] font-normal">
+                What the profile says, against what he has planned
+              </h3>
+              <p className="font-read mt-3 max-w-[62ch] text-[16px] leading-[1.65] text-prose md:text-[17.5px]">
+                {profile.detail}
+              </p>
+              <Decisions findingKey={`${client.client_id}-D10`} />
             </Band>
           )}
 

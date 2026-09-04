@@ -339,6 +339,10 @@ export function taxPosition(client: ClientRecord): Finding | undefined {
   return byKind(client, "D9")[0];
 }
 
+export function profileMismatch(client: ClientRecord): Finding | undefined {
+  return byKind(client, "D10")[0];
+}
+
 /**
  * Clients with nothing worth a conversation today.
  *
