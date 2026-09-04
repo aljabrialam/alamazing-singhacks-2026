@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Divergence Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#E7E9E5; --sheet:#FFFFFF; --ink:#16202E; --navy:#16325C;
+  --crest:#A4343A; --muted:#6E7681; --hair:#E2E3DF;
+  --read:'Newsreader',Georgia,serif;
+  --ui:'Archivo',system-ui,sans-serif;
+  --num:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--ui);
+  font-size:15px;line-height:1.5;padding:44px 24px 120px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto}
+.masthead{margin-bottom:44px}
+.masthead h1{font-family:var(--read);font-size:26px;font-weight:400;letter-spacing:-.01em}
+.masthead .sub{font-size:13.5px;color:var(--muted);margin-top:5px}
+.caption{font-family:var(--read);font-style:italic;color:var(--muted);font-size:15px;margin:52px 0 15px}
+.caption:first-of-type{margin-top:0}
+.sheet{background:var(--sheet);border-radius:4px;
+  box-shadow:0 1px 2px rgba(22,32,46,.05),0 8px 24px -12px rgba(22,32,46,.14)}
+
+.lh{padding:28px 34px 22px}
+.lh h2{font-family:var(--read);font-size:22px;font-weight:400}
+.lh p{font-size:14px;color:var(--muted);margin-top:5px;max-width:58ch}
+.entry{padding:22px 34px;border-top:1px solid var(--hair);
+  display:grid;grid-template-columns:1fr 120px;gap:24px;align-items:start}
+.entry.first{background:linear-gradient(90deg,rgba(164,52,58,.035),transparent 55%)}
+.nm{font-family:var(--read);font-size:20px;line-height:1.25}
+.nm .flag{color:var(--crest);font-size:13px;font-family:var(--ui);vertical-align:2px;margin-left:9px}
+.sub2{font-size:13px;color:var(--muted);margin-top:4px}
+.line{font-family:var(--read);font-size:16.5px;line-height:1.6;margin-top:11px;max-width:66ch;color:#2A3441}
+.val{font-family:var(--read);font-size:16px;color:var(--muted);text-align:right;padding-top:4px}
+
+.brief{display:grid;grid-template-columns:1fr 340px}
+.body{padding:40px 46px 36px}
+.head{padding-bottom:22px;border-bottom:1px solid var(--hair);margin-bottom:30px}
+.head h2{font-family:var(--read);font-size:33px;font-weight:400;letter-spacing:-.015em}
+.head .role{font-family:var(--read);font-size:17px;color:var(--muted);margin-top:7px;font-style:italic}
+.head .obj{font-size:14.5px;line-height:1.65;margin-top:16px;max-width:60ch;color:#2A3441}
+.head .obj strong{font-weight:600;color:var(--ink)}
+.body p{font-family:var(--read);font-size:19px;line-height:1.7;max-width:63ch;margin-bottom:21px;color:#202935}
+mark{background:transparent;border-bottom:1px solid rgba(22,50,92,.3);color:var(--navy);cursor:pointer;padding-bottom:1px}
+
+.clean{margin:32px 0;padding:22px 26px;background:#F7F8F6;border-radius:4px}
+.clean .t{font-size:13.5px;color:var(--muted);margin-bottom:14px}
+.bands{display:grid;grid-template-columns:repeat(auto-fit,minmax(106px,1fr));gap:16px}
+.band .k{font-size:12.5px;color:var(--muted)}
+.band .v{font-family:var(--read);font-size:21px;margin-top:2px}
+.band .r{font-size:12px;color:var(--muted);margin-top:1px}
+.clean .verdict{font-family:var(--read);font-size:17px;line-height:1.55;margin-top:18px;
+  padding-top:16px;border-top:1px solid var(--hair);max-width:56ch}
+
+.say{margin:36px 0 32px}
+.say .t{font-size:13.5px;color:var(--muted);margin-bottom:12px}
+.say blockquote{font-family:var(--read);font-size:27px;line-height:1.42;color:var(--navy);max-width:31ch}
+.say .credit{font-size:13px;color:var(--muted);margin-top:14px;max-width:52ch;line-height:1.55}
+
+.acts{display:flex;gap:11px;flex-wrap:wrap;padding-top:26px;border-top:1px solid var(--hair)}
+.b{font-family:var(--ui);font-size:14px;padding:10px 20px;border-radius:3px;
+  border:1px solid var(--hair);background:transparent;color:var(--ink);cursor:pointer}
+.b.p{background:var(--navy);border-color:var(--navy);color:#fff}
+.b:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+
+.ev{padding:36px 28px;border-left:1px solid var(--hair);background:#FCFCFB}
+.ev h3{font-family:var(--read);font-size:18px;font-weight:400}
+.ev .n{font-size:13px;color:var(--muted);margin:4px 0 24px}
+.blk{margin-bottom:24px}
+.blk .src{font-size:11.5px;color:var(--muted);margin-bottom:8px;font-family:var(--num)}
+.quote{font-family:var(--read);font-size:15px;line-height:1.6;padding-left:13px;
+  border-left:2px solid var(--hair);color:#2A3441}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:6px 0;border-bottom:1px solid var(--hair);color:#2A3441}
+td.w{text-align:right;font-family:var(--num);font-size:12.5px;white-space:nowrap}
+tr.sum td{border-bottom:0;padding-top:9px;font-weight:600}
+tr.sum td.w{font-family:var(--read);font-size:16px}
+
+.unc{padding:34px 40px}
+.unc h2{font-family:var(--read);font-size:23px;font-weight:400}
+.unc .lead{font-family:var(--read);font-size:17px;color:var(--muted);max-width:62ch;line-height:1.62;margin:8px 0 4px}
+.item{padding:22px 0;border-top:1px solid var(--hair);margin-top:14px}
+.item:first-of-type{margin-top:22px}
+.item .q{font-family:var(--read);font-size:18px;line-height:1.5;max-width:62ch}
+.item .a{font-size:14px;color:var(--muted);margin-top:9px;max-width:64ch;line-height:1.6}
+.item .a strong{color:var(--ink);font-weight:500}
+
+.phones{display:flex;gap:30px;flex-wrap:wrap}
+.ph{width:300px}
+.scr{background:var(--sheet);border-radius:22px;height:600px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(22,32,46,.05),0 10px 30px -14px rgba(22,32,46,.2)}
+.pbar{height:38px;display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--hair);font-size:12.5px;color:var(--muted)}
+.pbody{padding:20px 18px;overflow:hidden}
+.pcap{font-family:var(--read);font-style:italic;font-size:14px;color:var(--muted);text-align:center;margin-top:12px}
+.pnm{font-family:var(--read);font-size:19px;line-height:1.25}
+.psub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.pline{font-family:var(--read);font-size:15px;line-height:1.55;margin-top:9px;color:#2A3441}
+.pdiv{height:1px;background:var(--hair);margin:17px 0}
+.pq{font-family:var(--read);font-size:19px;line-height:1.4;color:var(--navy)}
+.pbtn{background:var(--navy);color:#fff;border-radius:3px;padding:12px;text-align:center;font-size:14px;margin-top:16px}
+.pmini{font-size:12.5px;color:var(--muted);margin-top:14px}
+
+.foot{margin-top:56px;padding-top:26px;border-top:1px solid var(--hair);
+  font-family:var(--read);font-size:16.5px;line-height:1.68;color:var(--muted);max-width:70ch}
+.foot b{color:var(--ink);font-weight:500}
+
+@media (max-width:920px){
+  body{padding:26px 16px 80px}
+  .brief{grid-template-columns:1fr}
+  .body{padding:28px 22px}
+  .ev{border-left:0;border-top:1px solid var(--hair);padding:28px 22px}
+  .entry{grid-template-columns:1fr;padding:20px 22px}
+  .val{text-align:left;padding-top:0;margin-top:8px;font-size:14px}
+  .lh{padding:24px 22px 18px}
+  .head h2{font-size:27px}
+  .body p{font-size:17.5px}
+  .say blockquote{font-size:22px}
+  .unc{padding:26px 22px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <h1>Divergence Engine</h1>
+    <div class="sub">Priscilla Ong · Asia desk, Singapore and Hong Kong · Wednesday 26 August 2026</div>
+  </div>
+
+  <div class="caption">Your morning</div>
+
+  <div class="sheet">
+    <div class="lh">
+      <h2>Four conversations worth having this week</h2>
+      <p>Ordered by how soon it matters, not by portfolio size. Sixteen other clients have nothing that needs you today.</p>
+    </div>
+
+    <div class="entry first">
+      <div>
+        <div class="nm">Abdullah Al-Mansoori <span class="flag">asked you a question on 12 August</span></div>
+        <div class="sub2">49 · Balanced Growth · Gulf logistics and marine chartering</div>
+        <div class="line">He asked to be built away from the Gulf and away from shipping.
+          Look through the note he bought in June and 42% of the portfolio is shipping and
+          energy — while every mandate band is respected.</div>
+      </div>
+      <div class="val">USD 32.2m</div>
+    </div>
+
+    <div class="entry">
+      <div>
+        <div class="nm">Margarethe Voss-Brenner</div>
+        <div class="sub2">58 · Conservative · inherited in February</div>
+        <div class="line">Seventy-one per cent equity against a thirty per cent ceiling.
+          Nobody chose it — it arrived that way. Her inheritance tax instalment of EUR 3.4m
+          falls due before year end.</div>
+      </div>
+      <div class="val">USD 22.2m</div>
+    </div>
+
+    <div class="entry">
+      <div>
+        <div class="nm">Lau Chi Ming</div>
+        <div class="sub2">63 · Balanced · HKD 60m committed for mid-2027</div>
+        <div class="line">Golden Harbour is 29% of the portfolio, held three ways — a
+          perpetual, the shares, and an accumulator that doubles up as it falls.</div>
+      </div>
+      <div class="val">USD 26.5m</div>
+    </div>
+
+    <div class="entry">
+      <div>
+        <div class="nm">Aishah binti Rahman</div>
+        <div class="sub2">47 · Sustainable Balanced</div>
+        <div class="line">She believes the portfolio matches the sustainability policy her
+          family adopted in 2024. Two holdings are flagged excluded.</div>
+      </div>
+      <div class="val">USD 19.4m</div>
+    </div>
+  </div>
+
+  <div class="caption">What to know before you call him</div>
+
+  <div class="sheet brief">
+    <div class="body">
+      <div class="head">
+        <h2>Abdullah Al-Mansoori</h2>
+        <div class="role">Balanced Growth, advisory · USD 32.2m · client since 2014</div>
+        <div class="obj">His objective, as recorded: <strong>build wealth outside the Gulf
+          region and outside the shipping sector.</strong> His money was made in Gulf
+          logistics, port services and marine chartering.</div>
+      </div>
+
+      <p>Look through the note he bought in June and <mark>42% of his portfolio</mark> is
+      shipping and energy. A shipping fund, a shipping stock, an energy fund — and a note
+      whose underlying is <mark>a worst-of basket on two names he already owns</mark>.</p>
+
+      <p>It was 29% in December. The closure of the Strait in March took it to 34%, and the
+      note took it past 41% in June.</p>
+
+      <div class="clean">
+        <div class="t">Against his mandate, today</div>
+        <div class="bands">
+          <div class="band"><div class="k">Equity</div><div class="v">58.0%</div><div class="r">40–65</div></div>
+          <div class="band"><div class="k">Fixed income</div><div class="v">15.7%</div><div class="r">15–40</div></div>
+          <div class="band"><div class="k">Structured</div><div class="v">12.9%</div><div class="r">0–15</div></div>
+          <div class="band"><div class="k">Cash</div><div class="v">7.5%</div><div class="r">2–15</div></div>
+          <div class="band"><div class="k">Largest holding</div><div class="v">13.3%</div><div class="r">limit 15</div></div>
+        </div>
+        <div class="verdict">Every band is respected and no position breaches the
+          single-name limit. Nothing in the bank's monitoring will raise this.</div>
+      </div>
+
+      <p>On 12 August he asked what happens if the Strait reopens and normalises. Your note
+      from that meeting reads: <mark>we have not modelled this</mark>.</p>
+
+      <div class="clean">
+        <div class="t">If the Strait reopens — Brent back to 72.4, where it stood the day before the conflict</div>
+        <div class="bands">
+          <div class="band"><div class="k">Shipping fund</div><div class="v">−0.43m</div><div class="r">2.86 → 2.43</div></div>
+          <div class="band"><div class="k">Pacific Orient</div><div class="v">−0.72m</div><div class="r">3.68 → 2.95</div></div>
+          <div class="band"><div class="k">Energy majors</div><div class="v">−0.54m</div><div class="r">2.88 → 2.34</div></div>
+          <div class="band"><div class="k">The note</div><div class="v">−0.82m</div><div class="r">4.16 → 3.34</div></div>
+          <div class="band"><div class="k">Portfolio</div><div class="v">−7.8%</div><div class="r">about 2.5m</div></div>
+        </div>
+        <div class="verdict">And his charter rates fall in the same week. The
+          diversification he asked for in 2014 is exactly what would have covered this.</div>
+      </div>
+
+      <div class="say">
+        <div class="t">Worth opening with</div>
+        <blockquote>“You asked what happens if the Strait reopens. Around 2.5 million
+        comes off the portfolio — and your charter rates fall in the same week.”</blockquote>
+        <div class="credit">He raised this himself two weeks ago. Answering it is the
+        conversation — the concentration is what makes the answer uncomfortable.</div>
+      </div>
+
+      <div class="acts">
+        <button class="b p">Keep for the meeting</button>
+        <button class="b">Not useful</button>
+        <button class="b">Add a note</button>
+      </div>
+    </div>
+
+    <aside class="ev">
+      <h3>Where this comes from</h3>
+      <div class="n">Five sources. Nothing here is inferred.</div>
+
+      <div class="blk">
+        <div class="src">clients.csv · CL-0019</div>
+        <div class="quote">“Build wealth outside the Gulf region and outside the shipping
+        sector; fund a family office in Asia.”</div>
+      </div>
+
+      <div class="blk">
+        <div class="src">holdings.csv · 26 Aug 2026</div>
+        <table>
+          <tr><td>Asia Pacific Shipping</td><td class="w">8.88%</td></tr>
+          <tr><td>Pacific Orient Shipping</td><td class="w">11.41%</td></tr>
+          <tr><td>Global Energy Majors</td><td class="w">8.94%</td></tr>
+          <tr><td>Fixed Coupon Note, Basket C</td><td class="w">12.90%</td></tr>
+          <tr class="sum"><td>Combined</td><td class="w">42.13%</td></tr>
+        </table>
+      </div>
+
+      <div class="blk">
+        <div class="src">instruments.csv · SYN-SP-0505</div>
+        <div class="quote">Worst-of basket: Pacific Orient Shipping / Global Energy Majors
+        ADR / Bara Nusantara Energy</div>
+      </div>
+
+      <div class="blk">
+        <div class="src">market_context.csv · Brent crude</div>
+        <table>
+          <tr><td>27 Feb, pre-conflict</td><td class="w">72.4</td></tr>
+          <tr><td>31 Mar, Strait closed</td><td class="w">104.0</td></tr>
+          <tr class="sum"><td>26 Aug, today</td><td class="w">101.5</td></tr>
+        </table>
+      </div>
+
+      <div class="blk">
+        <div class="src">event_log.csv · 4 March 2026</div>
+        <div class="quote">Strait of Hormuz effectively closed. Brent surges past USD 120.
+        QatarEnergy declares force majeure on all exports.</div>
+      </div>
+
+      <div class="blk">
+        <div class="src">rm_notes.json · N-026 · 12 August 2026</div>
+        <div class="quote">“He asked for a view on what happens if the Strait reopens and
+        normalises. We have not modelled this.”</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="caption">Where we would not rely on ourselves</div>
+
+  <div class="sheet unc">
+    <h2>Three things we are not sure about</h2>
+    <p class="lead">These did not meet the bar for a brief. Leaving them out would be the
+    same as pretending we had not noticed.</p>
+
+    <div class="item">
+      <div class="q">We do not know whether Nordvind Industrial is in profit.</div>
+      <div class="a"><strong>What we would check.</strong> No cost basis came through with
+      Mrs Voss-Brenner's transfer, so the position carries no gain or loss. It is 18% of her
+      portfolio and one of the obvious places to fund the tax instalment from — which makes
+      this gap matter more than most.</div>
+    </div>
+
+    <div class="item">
+      <div class="q">The 42% figure treats the note as full exposure to all three names.</div>
+      <div class="a"><strong>What we would check.</strong> A worst-of basket is not the same
+      as owning three positions outright. The direction is not in doubt; the precise number
+      depends on how the desk models the payoff. We would rather show the working than round
+      it.</div>
+    </div>
+
+    <div class="item">
+      <div class="q">Private fund valuations are a quarter behind.</div>
+      <div class="a"><strong>We have not adjusted for it.</strong> That is how the industry
+      reports rather than an error, but it means the liquidity picture for the Fong sleeve
+      could be better or worse than it looks today.</div>
+    </div>
+  </div>
+
+  <div class="caption">The same thing, between meetings</div>
+
+  <div class="phones">
+    <div class="ph">
+      <div class="scr">
+        <div class="pbar">Wednesday 26 August</div>
+        <div class="pbody">
+          <div class="pnm">Abdullah Al-Mansoori</div>
+          <div class="psub">49 · Balanced Growth</div>
+          <div class="pline">He asked to be built away from shipping. Look through the note
+          and 42% of the portfolio is shipping and energy.</div>
+          <div class="pdiv"></div>
+          <div class="pnm">Margarethe Voss-Brenner</div>
+          <div class="psub">58 · Conservative</div>
+          <div class="pline">71% equity against a 30% ceiling. Nobody chose it — it arrived
+          that way.</div>
+          <div class="pdiv"></div>
+          <div class="pnm">Lau Chi Ming</div>
+          <div class="psub">63 · Balanced</div>
+          <div class="pline">One name held three ways, 29% of the portfolio.</div>
+        </div>
+      </div>
+      <div class="pcap">Your morning</div>
+    </div>
+
+    <div class="ph">
+      <div class="scr">
+        <div class="pbar">Abdullah Al-Mansoori</div>
+        <div class="pbody">
+          <div class="pline" style="margin-top:0">Look through the note he bought in June and
+          42% of his portfolio is shipping and energy — a fund, a stock, an energy fund, and
+          a note on two names he already owns.</div>
+          <div class="pline">Every mandate band is respected. Nothing in the bank's
+          monitoring will raise this.</div>
+          <div class="pdiv"></div>
+          <div class="psub">Worth opening with</div>
+          <div class="pq" style="margin-top:9px">“You asked what happens if the Strait
+          reopens. Around 2.5 million comes off — and your charter rates fall the same
+          week.”</div>
+          <div class="pbtn">Keep for the meeting</div>
+          <div class="pmini">Five sources · tap to read them</div>
+        </div>
+      </div>
+      <div class="pcap">The brief</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <b>What changed.</b> The earlier draft read like a trading console — dense rules,
+    monospace, a dark grid. This is a private bank, so the reference is a printed advisory
+    note: white sheets on a quiet ground, generous margins, and figures set in the same serif
+    as the prose rather than in code type. Monospace now appears only on the evidence panel,
+    where raw file names are the point.
+    <br><br>
+    <b>One panel earns its box.</b> The mandate figures sit in a tinted block because that is
+    the argument — every band respected, and still 42% one bet. Everything else is
+    deliberately quiet so that panel, and the sentence beneath it, are what a judge remembers.
+  </div>
+
+</div>
+</body>
+</html>

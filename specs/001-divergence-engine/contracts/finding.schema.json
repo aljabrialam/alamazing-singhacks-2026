@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Finding",
+  "description": "A detected divergence between what a client says, what their mandate permits, and what they hold.",
+  "type": "object",
+  "required": [
+    "client_id",
+    "kind",
+    "severity",
+    "confidence",
+    "headline",
+    "detail",
+    "evidence",
+    "events"
+  ],
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "D1",
+        "D2",
+        "D3",
+        "D4"
+      ],
+      "description": "D1 said-vs-held, D2 mandate, D3 hidden-when-split, D4 plan-vs-runway"
+    },
+    "severity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "headline": {
+      "type": "string",
+      "description": "One sentence, plain English, RM-facing. Must not contain 'recommend'."
+    },
+    "detail": {
+      "type": "string",
+      "description": "The reasoning. Names the person and their situation, not just the numbers."
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every claim must resolve to source rows.",
+      "items": {
+        "type": "object",
+        "required": [
+          "file",
+          "rows"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "examples": [
+              "holdings.csv",
+              "rm_notes.json"
+            ]
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "description": "event_log.csv ids only. The file is authoritative over model memory.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unsure_about": {
+      "type": "string",
+      "description": "What would change this answer. Empty string if nothing. Drives the uncertainty screen."
+    },
+    "classification": {
+      "enum": [
+        "drift",
+        "client_directed",
+        "inherited",
+        null
+      ],
+      "description": "D2 only. Same breach, three different conversations. 'inherited' covers a transferred-in portfolio nobody chose \u2014 see findings.md section 2."
+    },
+    "compliance_clean": {
+      "type": "boolean",
+      "description": "True when every mandate band is respected and the finding still stands. The strongest case for the product: existing controls see nothing."
+    },
+    "unanswered_question": {
+      "type": "object",
+      "description": "A question the client asked in rm_notes.json with no recorded answer. FR-017.",
+      "properties": {
+        "note_id": {
+          "type": "string"
+        },
+        "asked_on": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        }
+      }
+    },
+    "opening_line": {
+      "type": "string",
+      "description": "One sentence the RM could say aloud. The brief's worked example ends here; so does ours."
+    }
+  }
+}

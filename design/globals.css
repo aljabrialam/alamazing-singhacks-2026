@@ -1,0 +1,98 @@
+/* ============================================================
+   Divergence Engine — shadcn/ui theme
+   Replace web/app/globals.css with this after `npx shadcn@latest init`
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* shadcn tokens — HSL triples, no hsl() wrapper */
+    --background: 90 8% 91%;        /* #E7E9E5  soft sage-grey — the desk */
+    --foreground: 213 30% 13%;      /* #16202E  ink */
+
+    --card: 0 0% 100%;              /* pure white — a printed sheet */
+    --card-foreground: 213 30% 13%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 17% 10%;
+
+    --primary: 215 62% 22%;         /* #16325C  Julius Baer navy */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 90 8% 96%;
+    --secondary-foreground: 210 17% 10%;
+
+    --muted: 90 8% 96%;
+    --muted-foreground: 213 7% 46%; /* #6E7681 */
+
+    --accent: 90 8% 96%;
+    --accent-foreground: 215 62% 22%;
+
+    --destructive: 357 52% 42%;     /* #A4343A  used once per screen, at most */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 75 7% 88%;            /* #E2E3DF  soft hairline */
+    --input: 75 7% 88%;
+    --ring: 215 62% 22%;
+
+    --radius: 0.1875rem;            /* 3px — interactive elements only */
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  /* keyboard focus must stay visible */
+  :focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background; }
+}
+
+@layer utilities {
+  /* Three voices, three jobs.
+     read — what Priscilla reads. The brief, the findings, the opening line.
+     ui   — chrome, buttons, metadata.
+     num  — figures, hashes, evidence rows. Data only, never labels. */
+  .font-read { font-family: 'Newsreader', Georgia, serif; }
+  .font-ui   { font-family: 'Archivo', system-ui, sans-serif; }
+  .font-num  { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+  /* Brief prose. Serif gets a longer measure and more leading than sans. */
+  .prose-brief p {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.7;
+    max-width: 63ch;
+    margin-bottom: 21px;
+    color: #202935;
+  }
+
+  /* Sheets sit on the ground like paper on a desk. Two shadows, not one:
+     a tight contact shadow and a wide soft one. */
+  .sheet {
+    background: hsl(var(--card));
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(22,32,46,.05), 0 8px 24px -12px rgba(22,32,46,.14);
+  }
+
+  /* The payoff. This is where the boldness is spent — keep everything
+     around it quiet. */
+  .opening-line {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 27px;
+    line-height: 1.42;
+    max-width: 31ch;
+    color: hsl(var(--primary));
+  }
+
+  /* Figures must not jitter as they update. */
+  .tabular { font-variant-numeric: tabular-nums; }
+}
