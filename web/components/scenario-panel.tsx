@@ -77,13 +77,13 @@ export function ScenarioPanel({
       {/* The second-order effect. His words, not our inference. */}
       {finding.second_order && finding.second_order.notes.length > 0 && (
         <p className="font-read mt-6 max-w-[62ch] text-[16px] leading-[1.6] md:text-[17.5px]">
-          The same event reaches him twice. His wealth comes from{" "}
+          The same event reaches this client twice. Their wealth comes from{" "}
           {finding.second_order.source_of_wealth.replace(
             /^Entrepreneur - /,
             ""
           )}
-          , and in note {finding.second_order.notes[0].note_id} he said so
-          himself — that his operating business benefits from the same
+          , and in note {finding.second_order.notes[0].note_id} the client said so
+          directly — that their operating business benefits from the same
           conditions, and that the point of this portfolio was to be
           uncorrelated with it. A de-escalation takes value from the
           portfolio and from the business in the same week.

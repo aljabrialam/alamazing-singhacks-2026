@@ -1,7 +1,37 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.1.0 → 1.2.0
+Version change: 1.2.0 → 1.3.0
+Amended during the build window at 01:48 SGT, Saturday 5 September.
+
+MINOR: Principle XIV no longer pins the design system to a file path.
+
+The principle read "The design system exists at `.alamazing/mockup.html`
+and MUST be built against literally". That path is byte-identical (MD5
+e072cb21) to `design/mockup-visual.html`, which the rewritten
+`design/design-notes.md` demotes to **third** preference behind the new
+`design/mockup-jb.html`, marked Default.
+
+The principle's intent — build against the artifact, do not improvise —
+is unchanged and remains binding. What changed is that the artifact is
+now identified by **its role in a named table** rather than by a path,
+because a path goes stale silently and this one had. It is the second
+time a design-document conflict has had to be resolved inside a spec:
+spec 007 research R1 was the first.
+
+Rejected: leaving the principle as written and building against a
+different file anyway, which would have left the governing document
+asserting something false; and recording a Principle XIII exception,
+which is the right instrument for a one-off departure rather than for a
+permanent change of default.
+
+The amendment does not loosen the pin. There is still exactly one
+governing mockup at any moment and it is still named in writing — it
+simply stops being wrong when the default moves.
+
+---
+
+Previous report, version change 1.1.0 → 1.2.0
 Amended during the build window at 22:47 SGT, Friday 4 September.
 
 MINOR: two corrections to Technology Standards and Principle VII, both
@@ -403,8 +433,16 @@ is no technical-depth criterion on this track.**
 Architecture for its own sake earns nothing here. **One hour of rehearsal
 is worth one hour of features and MUST be budgeted as such.**
 
-The design system exists at `.alamazing/mockup.html` and MUST be built
-against literally rather than improvised.
+The design system exists in `design/` and is named in the mockup
+preference table at the head of `design/design-notes.md`. **The file that
+table marks as Default governs, and MUST be built against literally
+rather than improvised.** When the default changes, the design notes are
+the record of that change, and the specification acting on it MUST state
+which file it built against.
+
+At v1.3.0 the Default is `design/mockup-jb.html`. Specs 001–008 were
+built against `design/mockup-visual.html`, which is byte-identical to the
+`.alamazing/mockup.html` this principle previously named by path.
 
 **Rationale**: This inverts the usual hackathon instinct, which is why it
 is written down. Half this score is design and delivery; the freeze is
@@ -606,4 +644,4 @@ assumption, per Principle II.
 
 ---
 
-**Version**: 1.2.0 | **Ratified**: 2026-09-04 | **Last Amended**: 2026-09-04 22:47 SGT
+**Version**: 1.3.0 | **Ratified**: 2026-09-04 | **Last Amended**: 2026-09-05 01:48 SGT

@@ -19,6 +19,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Band, Caption, Sheet } from "@/components/sheet-section";
+import { ClientHero } from "@/components/client-hero";
 import { CollateralTrajectory } from "@/components/collateral-trajectory";
 import { Decisions } from "@/components/decisions";
 import { EvidenceColumn } from "@/components/evidence";
@@ -39,7 +40,7 @@ import {
   scenario,
   taxPosition,
 } from "@/lib/findings";
-import { money, shortDate, year } from "@/lib/format";
+import { shortDate, year } from "@/lib/format";
 
 export function generateStaticParams() {
   return clientIds().map((id) => ({ id }));
@@ -70,44 +71,35 @@ export default async function ClientBrief({
       <div>
         <Caption>The brief</Caption>
 
-        <Sheet>
-          {/* 1 — who he is */}
+        {/* 1 and 2 — who they are, and what they asked for. The navy
+            panel, projector scale. Spec 009. */}
+        <ClientHero
+          client={client}
+          exposure={exposure}
+          question={question}
+          snapshotDate={shortDate(snapshot)}
+        />
+
+        <Sheet className="mt-3.5">
           <Band first>
-            <div className="flex flex-wrap items-baseline justify-between gap-5">
-              <h2 className="font-read text-[26px] font-normal tracking-[-0.015em] md:text-[32px]">
-                {client.name}
-              </h2>
-              <div className="text-[13.5px] leading-[1.5] text-muted-foreground md:text-right">
-                {client.risk_profile} ·{" "}
-                {client.service_models.join(", ").toLowerCase()}
-                <br />
-                {money(client.aum_usd)} · client since{" "}
-                {year(client.client_since)}
-                {client.age ? <> · age {client.age}</> : null}
-              </div>
-            </div>
-
-            {/* The unanswered question, flagged once. Text beside the
-                colour, never colour alone. */}
-            {question?.unanswered_question && (
-              <div className="mt-3.5 inline-block rounded-[3px] bg-crest/[0.08] px-3.5 py-1.5 text-[13px] text-crest">
-                He asked you a question on{" "}
-                {shortDate(question.unanswered_question.asked_on)}. It has no
-                answer yet.
-              </div>
-            )}
-
-            {/* 2 — what he asked for, quoted */}
-            <p className="font-read mt-6 max-w-[56ch] text-[17px] leading-[1.6] text-prose md:text-[19px]">
-              {client.source_of_wealth.replace(/^Entrepreneur - /, "His money came from ")}
-              . What he asked us for, in {year(client.client_since)}, was{" "}
-              <b className="font-medium text-ink shadow-[inset_0_-8px_0_rgba(199,147,85,.22)]">
+            {/* Where the money came from. Written without a pronoun: this
+                renders for all twenty clients and the previous wording
+                said "His money came from" for every one of them, which
+                the book contradicts for several. Nothing in this sentence
+                needs to know the client's gender. */}
+            <p className="font-read max-w-[58ch] text-[17px] leading-[1.6] text-prose md:text-[18.5px]">
+              {client.source_of_wealth.replace(
+                /^Entrepreneur - /,
+                "The money came from "
+              )}
+              . What we were asked for, in {year(client.client_since)}, was{" "}
+              <b className="font-medium text-ink shadow-[inset_0_-8px_0_rgba(201,168,118,.30)]">
                 {client.objectives}
               </b>
               .
             </p>
 
-            {/* The four-into-one figure */}
+            {/* The four-into-one figure, and the one orchestrated moment */}
             {exposure && (
               <ExposureFigure
                 finding={exposure}
@@ -154,11 +146,11 @@ export default async function ClientBrief({
             </Band>
           )}
 
-          {/* What he said, against what he holds */}
+          {/* What was said, against what is held */}
           {said && (
             <Band>
-              <h3 className="font-read text-[20px] font-normal">
-                What he said, against what he holds
+              <h3 className="font-read text-[22px] font-normal">
+                What was said, against what is held
               </h3>
               <p className="font-read mt-3 max-w-[62ch] text-[16px] leading-[1.65] text-prose md:text-[17.5px]">
                 {said.detail}
@@ -170,7 +162,7 @@ export default async function ClientBrief({
           {/* Liquidity, where it constrains something */}
           {runway.length > 0 && (
             <Band>
-              <h3 className="font-read text-[20px] font-normal">
+              <h3 className="font-read text-[22px] font-normal">
                 What is already committed
               </h3>
               {runway.map((finding, index) => (
@@ -187,8 +179,8 @@ export default async function ClientBrief({
           {/* The profile, against the client's own plans. Spec 008. */}
           {profile && (
             <Band>
-              <h3 className="font-read text-[20px] font-normal">
-                What the profile says, against what he has planned
+              <h3 className="font-read text-[22px] font-normal">
+                What the profile says, against what is planned
               </h3>
               <p className="font-read mt-3 max-w-[62ch] text-[16px] leading-[1.65] text-prose md:text-[17.5px]">
                 {profile.detail}
@@ -200,7 +192,7 @@ export default async function ClientBrief({
           {/* The tax position at domicile. Reports; never optimises. Spec 008. */}
           {tax && (
             <Band>
-              <h3 className="font-read text-[20px] font-normal">
+              <h3 className="font-read text-[22px] font-normal">
                 The tax position, at domicile
               </h3>
               <p className="font-read mt-3 max-w-[62ch] text-[16px] leading-[1.65] text-prose md:text-[17.5px]">
@@ -222,9 +214,9 @@ export default async function ClientBrief({
             </Band>
           )}
 
-          {/* 6 and 7 — the opening line, and she decides */}
+          {/* 6 and 7 — the opening line, and the RM decides */}
           {client.brief?.opening_line && (
-            <div className="bg-navy px-6 py-9 text-white md:px-11 md:py-10">
+            <div className="jb-rule bg-jb-deep px-6 py-9 text-white md:px-11 md:py-10">
               <div className="mb-3.5 text-[13px] opacity-70">
                 Worth opening with
               </div>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wealth Intelligence — Julius Bär</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --jb-navy:#14284B;      /* primary — read from their deck */
+  --jb-deep:#0C1B33;      /* darker panels */
+  --jb-red:#C8102E;       /* the rule. Used as a line, never a fill */
+  --ground:#EAECEF;       /* cool corporate grey */
+  --sheet:#FFFFFF;
+  --ink:#101821;
+  --muted:#6B7280;
+  --hair:#E3E5E8;
+  --safe:#2E6B52;
+  --e1:#C9A876; --e2:#B8945B; --e3:#A37F46; --e4:#8A6934;   /* one hue, four tints */
+  --read:'Newsreader',Georgia,serif;
+  --ui:'Archivo',system-ui,sans-serif;
+  --ease:cubic-bezier(.22,.8,.28,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--ui);
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* the red rule — their signature edge treatment */
+.topline{height:3px;background:var(--jb-red)}
+
+.bar{background:var(--sheet);border-bottom:1px solid var(--hair)}
+.barin{max-width:1140px;margin:0 auto;padding:18px 24px;
+  display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.wordmark{display:flex;align-items:baseline;gap:14px}
+.wordmark .jb{font-family:var(--read);font-size:23px;letter-spacing:.01em;color:var(--jb-navy)}
+.wordmark .div{width:1px;height:20px;background:var(--hair)}
+.wordmark .prod{font-size:14px;color:var(--muted);letter-spacing:.02em}
+.deskline{font-size:13.5px;color:var(--muted)}
+
+.wrap{max-width:1140px;margin:0 auto;padding:26px 24px 120px}
+
+/* ---------- hero ---------- */
+.hero{background:var(--jb-navy);color:#fff;border-radius:3px;
+  padding:44px 48px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--jb-red)}
+.flagline{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;
+  border:1px solid rgba(200,16,46,.5);color:#F2B8C0;padding:7px 14px;border-radius:2px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--jb-red)}
+.hero h1{font-family:var(--read);font-size:46px;font-weight:400;
+  letter-spacing:-.02em;margin:20px 0 8px;line-height:1.08}
+.hero .sub{font-size:14.5px;color:rgba(255,255,255,.58)}
+.quotebox{margin-top:30px;padding-left:22px;border-left:2px solid rgba(201,168,118,.6);max-width:52ch}
+.quotebox .lab{font-size:12.5px;color:rgba(255,255,255,.52);margin-bottom:8px}
+.quotebox .q{font-family:var(--read);font-size:22px;line-height:1.5;color:#F0EEEA}
+.quotebox .q b{color:var(--e1);font-weight:400}
+.heronum{position:absolute;right:48px;bottom:38px;text-align:right}
+.heronum .big{font-family:var(--read);font-size:80px;line-height:.9;color:var(--e1);
+  font-variant-numeric:tabular-nums}
+.heronum .cap{font-size:13px;color:rgba(255,255,255,.58);margin-top:8px;max-width:19ch}
+
+/* ---------- sections ---------- */
+.sec{background:var(--sheet);border-radius:3px;margin-top:14px;
+  border:1px solid var(--hair)}
+.sec .pad{padding:34px 48px 38px}
+.eyebrow{font-size:13px;color:var(--muted);margin-bottom:6px}
+.sec h2{font-family:var(--read);font-size:26px;font-weight:400;letter-spacing:-.01em}
+.sec .lede{font-family:var(--read);font-size:18.5px;line-height:1.65;color:#26303C;
+  max-width:62ch;margin-top:13px}
+
+/* ---------- merge ---------- */
+.stage{margin-top:28px}
+.four{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;transition:gap .7s var(--ease)}
+.four.merged{gap:0}
+.blk{border-radius:2px;padding:17px 17px 19px;color:#fff;
+  transition:background .7s var(--ease),border-radius .7s var(--ease)}
+.four.merged .blk{border-radius:0;background:var(--e3)!important}
+.blk .cls{font-size:11.5px;opacity:.8}
+.blk .nm{font-size:13.5px;line-height:1.35;margin-top:5px;min-height:36px}
+.blk .pc{font-family:var(--read);font-size:26px;margin-top:9px;font-variant-numeric:tabular-nums}
+.four.merged .blk .cls,.four.merged .blk .nm{opacity:0;transition:opacity .35s}
+.mergebar{margin-top:12px;height:0;overflow:hidden;transition:height .55s var(--ease) .25s}
+.mergeinner{background:var(--e4);border-radius:2px;height:72px;display:flex;
+  align-items:center;justify-content:space-between;padding:0 26px;color:#fff}
+.mergeinner .l{font-family:var(--read);font-size:19.5px;max-width:46ch;line-height:1.35}
+.mergeinner .r{font-family:var(--read);font-size:36px;font-variant-numeric:tabular-nums}
+.reveal{margin-top:22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.rbtn{font-family:var(--ui);font-size:14.5px;padding:12px 22px;border-radius:2px;
+  border:1px solid var(--jb-navy);background:var(--jb-navy);color:#fff;cursor:pointer}
+.rbtn:focus-visible{outline:2px solid var(--jb-navy);outline-offset:3px}
+.rhint{font-family:var(--read);font-style:italic;font-size:16px;color:var(--muted);
+  opacity:0;transition:opacity .5s var(--ease) .5s;max-width:52ch}
+.rhint.on{opacity:1}
+
+/* ---------- bands ---------- */
+.brow{display:grid;grid-template-columns:150px 1fr 62px;gap:18px;align-items:center;margin-bottom:15px}
+.brow .lab{font-size:14px}
+.track{position:relative;height:25px;background:#F2F3F5;border-radius:2px}
+.ok{position:absolute;top:0;bottom:0;background:rgba(46,107,82,.13);border-radius:2px}
+.pin{position:absolute;top:-4px;bottom:-4px;width:3px;background:var(--safe);border-radius:1px;
+  transform:scaleY(0);transition:transform .45s var(--ease)}
+.pin.on{transform:scaleY(1)}
+.brow .num{font-family:var(--read);font-size:18px;text-align:right;font-variant-numeric:tabular-nums}
+.verdict{margin-top:24px;padding:20px 24px;background:rgba(46,107,82,.07);
+  border-left:2px solid var(--safe);font-family:var(--read);font-size:19.5px;
+  line-height:1.55;max-width:64ch}
+.verdict b{color:var(--safe);font-weight:500}
+
+/* ---------- scenario ---------- */
+.askbox{background:#F6F7F8;border-left:2px solid var(--jb-red);padding:19px 23px;
+  margin-top:8px;max-width:64ch}
+.askbox .who{font-size:12.5px;color:var(--muted);margin-bottom:7px}
+.askbox .q{font-family:var(--read);font-size:18px;line-height:1.55;font-style:italic}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(126px,1fr));gap:12px;margin-top:24px}
+.scell{padding:15px 16px;border:1px solid var(--hair);border-radius:2px}
+.scell .k{font-size:12.5px;color:var(--muted);min-height:32px;line-height:1.35}
+.scell .v{font-family:var(--read);font-size:22px;margin-top:5px;color:var(--jb-red);
+  font-variant-numeric:tabular-nums}
+.scell .c{font-size:11.5px;color:var(--muted);margin-top:3px}
+.scell.tot{background:var(--jb-navy);border-color:var(--jb-navy)}
+.scell.tot .k,.scell.tot .c{color:rgba(255,255,255,.66)}
+.scell.tot .v{color:#fff}
+.also{font-family:var(--read);font-size:19px;line-height:1.6;margin-top:22px;max-width:62ch}
+
+/* ---------- say ---------- */
+.say{background:var(--jb-deep);color:#fff;border-radius:3px;margin-top:14px;
+  padding:42px 48px;position:relative;overflow:hidden}
+.say::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--jb-red)}
+.say .lab{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:15px}
+.say blockquote{font-family:var(--read);font-size:33px;line-height:1.38;max-width:30ch}
+.say .why{font-size:14.5px;color:rgba(255,255,255,.64);margin-top:20px;max-width:56ch;line-height:1.6}
+.acts{display:flex;gap:11px;flex-wrap:wrap;margin-top:28px}
+.b{font-family:var(--ui);font-size:14.5px;padding:12px 22px;border-radius:2px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff}
+.b.p{background:#fff;color:var(--jb-navy);border-color:#fff;font-weight:500}
+.b:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+/* ---------- evidence ---------- */
+.egrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px;margin-top:20px}
+.ecard{border:1px solid var(--hair);border-radius:2px;padding:15px 16px}
+.ecard .s{font-size:11.5px;color:var(--muted);margin-bottom:9px}
+.ecard .q{font-family:var(--read);font-size:15px;line-height:1.55;color:#26303C}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:6px 0;border-bottom:1px solid var(--hair);color:#26303C}
+td.w{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.sum td{border-bottom:0;padding-top:9px;font-weight:600}
+tr.sum td.w{font-family:var(--read);font-size:17px}
+
+/* ---------- list ---------- */
+.row{padding:21px 48px;border-top:1px solid var(--hair);display:grid;
+  grid-template-columns:3px 1fr 116px;gap:20px;align-items:start;cursor:pointer;transition:background .2s}
+.row:hover{background:#FAFBFC}
+.tag{width:3px;min-height:50px;background:var(--hair)}
+.tag.hi{background:var(--jb-red)}
+.rn{font-family:var(--read);font-size:20px}
+.rs{font-size:12.5px;color:var(--muted);margin-top:3px}
+.rl{font-family:var(--read);font-size:16.5px;line-height:1.55;margin-top:10px;max-width:66ch;color:#26303C}
+.ra{font-family:var(--read);font-size:16px;color:var(--muted);text-align:right}
+
+.foot{margin-top:52px;padding-top:24px;border-top:1px solid var(--hair);
+  font-family:var(--read);font-size:16.5px;line-height:1.68;color:var(--muted);max-width:70ch}
+.foot b{color:var(--ink);font-weight:500}
+
+@media (max-width:900px){
+  .wrap{padding:16px 14px 70px}
+  .hero{padding:30px 22px 148px}
+  .hero h1{font-size:32px}
+  .heronum{left:22px;right:auto;bottom:26px;text-align:left}
+  .heronum .big{font-size:58px}
+  .sec .pad,.say{padding:24px 22px 28px}
+  .four{grid-template-columns:repeat(2,1fr)}
+  .say blockquote{font-size:24px}
+  .brow{grid-template-columns:100px 1fr 52px;gap:10px}
+  .row{padding:19px 22px;grid-template-columns:3px 1fr}
+  .ra{text-align:left;margin-top:8px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.pin{transform:scaleY(1)}}
+</style>
+</head>
+<body>
+
+<div class="topline"></div>
+<div class="bar"><div class="barin">
+  <div class="wordmark">
+    <span class="jb">Julius Bär</span>
+    <span class="div"></span>
+    <span class="prod">Wealth Intelligence</span>
+  </div>
+  <div class="deskline">Priscilla Ong · Asia desk, Singapore and Hong Kong · 26 August 2026</div>
+</div></div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="flagline"><span class="dot"></span> He asked you a question on 12 August. It has no answer yet.</span>
+    <h1>Abdullah Al-Mansoori</h1>
+    <div class="sub">49 · Balanced Growth, advisory · USD 32.2m · client since 2014</div>
+    <div class="quotebox">
+      <div class="lab">His objective, on file since 2014</div>
+      <div class="q">“Build wealth <b>outside the Gulf region</b> and <b>outside the shipping sector</b>.”</div>
+    </div>
+    <div class="heronum">
+      <div class="big" id="bignum">42.1%</div>
+      <div class="cap">of the portfolio is shipping and energy</div>
+    </div>
+  </div>
+
+  <div class="sec"><div class="pad">
+    <div class="eyebrow">Why nobody has seen it</div>
+    <h2>Four positions. Four asset classes.</h2>
+    <div class="lede">On any allocation report these are four different things — an equity
+    fund, a single stock, another equity fund, and a structured product.</div>
+
+    <div class="stage">
+      <div class="four" id="four">
+        <div class="blk" style="background:var(--e1)"><div class="cls">Equity fund</div>
+          <div class="nm">Asia Pacific Shipping and Logistics</div><div class="pc">8.9%</div></div>
+        <div class="blk" style="background:var(--e2)"><div class="cls">Single stock</div>
+          <div class="nm">Pacific Orient Shipping</div><div class="pc">11.4%</div></div>
+        <div class="blk" style="background:var(--e3)"><div class="cls">Equity fund</div>
+          <div class="nm">Global Energy Majors</div><div class="pc">8.9%</div></div>
+        <div class="blk" style="background:var(--e4)"><div class="cls">Structured product</div>
+          <div class="nm">Fixed Coupon Note, Basket C</div><div class="pc">12.9%</div></div>
+      </div>
+      <div class="mergebar" id="mergebar"><div class="mergeinner">
+        <div class="l">One bet, held four ways. The note’s underlying is a worst-of basket
+        on two names he already owns.</div>
+        <div class="r">42.1%</div>
+      </div></div>
+      <div class="reveal">
+        <button class="rbtn" id="rbtn">Look through the note</button>
+        <span class="rhint" id="rhint">They were always the same colour. Only the labels differed.</span>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="pad">
+    <div class="eyebrow">Against his mandate, today</div>
+    <h2>Everything is inside its limits</h2>
+    <div style="margin-top:26px">
+      <div class="brow"><div class="lab">Equity</div>
+        <div class="track"><div class="ok" style="left:40%;right:35%"></div><div class="pin" data-d="0" style="left:58%"></div></div>
+        <div class="num">58.0</div></div>
+      <div class="brow"><div class="lab">Fixed income</div>
+        <div class="track"><div class="ok" style="left:15%;right:60%"></div><div class="pin" data-d="90" style="left:15.7%"></div></div>
+        <div class="num">15.7</div></div>
+      <div class="brow"><div class="lab">Structured products</div>
+        <div class="track"><div class="ok" style="left:0;right:85%"></div><div class="pin" data-d="180" style="left:12.9%"></div></div>
+        <div class="num">12.9</div></div>
+      <div class="brow"><div class="lab">Cash</div>
+        <div class="track"><div class="ok" style="left:2%;right:85%"></div><div class="pin" data-d="270" style="left:7.5%"></div></div>
+        <div class="num">7.5</div></div>
+      <div class="brow"><div class="lab">Largest holding</div>
+        <div class="track"><div class="ok" style="left:0;right:85%"></div><div class="pin" data-d="360" style="left:13.3%"></div></div>
+        <div class="num">13.3</div></div>
+    </div>
+    <div class="verdict"><b>Every band respected. No single-name breach.</b>
+    Nothing in the bank’s monitoring will raise this — and he is still 42% one bet.</div>
+  </div></div>
+
+  <div class="sec"><div class="pad">
+    <div class="eyebrow">What could happen next</div>
+    <h2>If the Strait reopens</h2>
+    <div class="askbox">
+      <div class="who">Your note, 12 August 2026 · N-026</div>
+      <div class="q">“He asked for a view on what happens if the Strait reopens and
+      normalises. We have not modelled this.”</div>
+    </div>
+    <div class="sgrid">
+      <div class="scell"><div class="k">Shipping fund</div><div class="v">−0.43m</div><div class="c">2.86 → 2.43</div></div>
+      <div class="scell"><div class="k">Pacific Orient</div><div class="v">−0.72m</div><div class="c">3.68 → 2.95</div></div>
+      <div class="scell"><div class="k">Energy majors</div><div class="v">−0.54m</div><div class="c">2.88 → 2.34</div></div>
+      <div class="scell"><div class="k">The note</div><div class="v">−0.82m</div><div class="c">4.16 → 3.34</div></div>
+      <div class="scell tot"><div class="k">Portfolio</div><div class="v">−7.8%</div><div class="c">about 2.5m</div></div>
+    </div>
+    <div class="also">And his charter rates fall in the same week. A de-escalation — good
+    news for almost everyone — costs him twice. The diversification he asked for in 2014
+    is exactly what would have covered this.</div>
+  </div></div>
+
+  <div class="say">
+    <div class="lab">Worth opening with</div>
+    <blockquote>“You asked what happens if the Strait reopens. Around 2.5 million comes
+    off the portfolio — and your charter rates fall in the same week.”</blockquote>
+    <div class="why">He raised this himself two weeks ago. Answering it is the
+    conversation; the concentration is what makes the answer uncomfortable.</div>
+    <div class="acts">
+      <button class="b p">Keep for the meeting</button>
+      <button class="b">Not useful</button>
+      <button class="b">Add a note</button>
+    </div>
+  </div>
+
+  <div class="sec"><div class="pad">
+    <div class="eyebrow">Every sentence above traces to a row</div>
+    <h2>Where this comes from</h2>
+    <div class="egrid">
+      <div class="ecard"><div class="s">clients.csv · CL-0019 · objectives</div>
+        <div class="q">“Build wealth outside the Gulf region and outside the shipping sector; fund a family office in Asia.”</div></div>
+      <div class="ecard"><div class="s">holdings.csv · 26 Aug 2026</div>
+        <table>
+          <tr><td>SYN-EQ-0025</td><td class="w">8.88%</td></tr>
+          <tr><td>SYN-ST-0104</td><td class="w">11.41%</td></tr>
+          <tr><td>SYN-EQ-0008</td><td class="w">8.94%</td></tr>
+          <tr><td>SYN-SP-0505</td><td class="w">12.90%</td></tr>
+          <tr class="sum"><td>Combined</td><td class="w">42.13%</td></tr>
+        </table></div>
+      <div class="ecard"><div class="s">instruments.csv · SYN-SP-0505</div>
+        <div class="q">Worst-of basket: Pacific Orient Shipping / Global Energy Majors ADR / Bara Nusantara Energy</div></div>
+      <div class="ecard"><div class="s">event_log.csv · 4 March 2026 · Severe</div>
+        <div class="q">Strait of Hormuz effectively closed. Brent surges past USD 120. QatarEnergy declares force majeure.</div></div>
+      <div class="ecard"><div class="s">market_context.csv · BRENT_USD_BBL</div>
+        <table>
+          <tr><td>27 Feb, pre-conflict</td><td class="w">72.40</td></tr>
+          <tr class="sum"><td>26 Aug, today</td><td class="w">101.50</td></tr>
+        </table></div>
+      <div class="ecard"><div class="s">rm_notes.json · N-025 · 15 April 2026</div>
+        <div class="q">“He said the point of the Asia portfolio was to be uncorrelated with the Gulf business. It currently is not.”</div></div>
+    </div>
+  </div></div>
+
+  <div class="sec">
+    <div class="pad" style="padding-bottom:20px">
+      <div class="eyebrow">Your morning</div>
+      <h2>Four conversations worth having</h2>
+      <div class="lede" style="font-size:17px">Sixteen other clients have nothing that needs you today.</div>
+    </div>
+    <div class="row"><div class="tag hi"></div>
+      <div><div class="rn">Abdullah Al-Mansoori</div>
+        <div class="rs">49 · Balanced Growth · asked you a question on 12 August</div>
+        <div class="rl">42% shipping and energy, against an objective of staying out of both — and every mandate band respected.</div></div>
+      <div class="ra">USD 32.2m</div></div>
+    <div class="row"><div class="tag hi"></div>
+      <div><div class="rn">Margarethe Voss-Brenner</div>
+        <div class="rs">58 · Conservative · inherited in February</div>
+        <div class="rl">71% equity against a 30% ceiling. Nobody chose it. EUR 3.4m of inheritance tax falls due before year end.</div></div>
+      <div class="ra">USD 22.2m</div></div>
+    <div class="row"><div class="tag"></div>
+      <div><div class="rn">Lau Chi Ming</div>
+        <div class="rs">63 · Balanced · HKD 60m committed for mid-2027</div>
+        <div class="rl">Golden Harbour is 29% of the portfolio across a perpetual, the shares, and an accumulator that doubles up as it falls.</div></div>
+      <div class="ra">USD 26.5m</div></div>
+    <div class="row"><div class="tag"></div>
+      <div><div class="rn">Aishah binti Rahman</div>
+        <div class="rs">47 · Sustainable Balanced</div>
+        <div class="rl">She believes the portfolio matches the sustainability policy her family adopted in 2024. Two holdings are flagged excluded.</div></div>
+      <div class="ra">USD 19.4m</div></div>
+  </div>
+
+  <div class="foot">
+    <b>Positioned as a Julius Bär product, not a startup app.</b> Their own visual
+    language: navy, a thin red rule at the edge of every dark panel, near-square corners,
+    generous white. The header carries the wordmark beside the product name the way an
+    internal tool would. That framing is itself an answer to “differentiates Julius Baer’s
+    digital offering”.
+    <br><br>
+    <b>Colours are read from their challenge deck, not a brand guide.</b> Navy, red rule,
+    white. If a real brand asset is available before Saturday, swap the wordmark — do not
+    invent a logo.
+    <br><br>
+    <b>One orchestrated moment.</b> The four blocks merge on click, at the point in the
+    pitch where you say “look through the note”. One CSS class toggle. Everything else on
+    the page is still.
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var four=document.getElementById('four'),bar=document.getElementById('mergebar'),
+      btn=document.getElementById('rbtn'),hint=document.getElementById('rhint'),
+      big=document.getElementById('bignum'),done=false;
+  btn.addEventListener('click',function(){
+    if(done){four.classList.remove('merged');bar.style.height='0';
+      hint.classList.remove('on');btn.textContent='Look through the note';
+      big.textContent='42.1%';done=false;return;}
+    four.classList.add('merged');
+    setTimeout(function(){bar.style.height='72px';},250);
+    hint.classList.add('on');btn.textContent='Reset';done=true;
+  });
+  var pins=document.querySelectorAll('.pin');
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){pins.forEach(function(p){
+      setTimeout(function(){p.classList.add('on');},+p.dataset.d);});io.disconnect();}});},
+    {threshold:.4});
+  var v=document.querySelector('.verdict'); if(v) io.observe(v);
+})();
+</script>
+</body>
+</html>

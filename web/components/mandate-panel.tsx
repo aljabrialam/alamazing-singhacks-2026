@@ -14,6 +14,7 @@
  * which is true and is the point; per-row scaling would make them the
  * same width and flatter the tight one. research.md R4.
  */
+import { BandReveal } from "@/components/band-reveal";
 import type { ClientRecord } from "@/lib/findings";
 import { pct } from "@/lib/format";
 
@@ -31,8 +32,8 @@ export function MandatePanel({ client }: { client: ClientRecord }) {
         portfolio actually holds.
       </div>
 
-      <div>
-        {bands.map((band) => {
+      <BandReveal>
+        {bands.map((band, index) => {
           const breached = band.verdict !== "within";
           const left = Math.max(0, Math.min(100, band.min_pct));
           const width = Math.max(
@@ -66,18 +67,19 @@ export function MandatePanel({ client }: { client: ClientRecord }) {
                     left: `${left}%`,
                     width: `${width}%`,
                     background: breached
-                      ? "rgba(164,52,58,.12)"
+                      ? "rgba(200,16,46,.10)"
                       : "rgba(46,107,82,.13)",
                   }}
                 />
-                {/* where the portfolio actually sits */}
+                {/* Where the portfolio actually sits. `.pin` draws in
+                    once on first scroll; the stagger is the row INDEX,
+                    an ordinal rather than a figure. */}
                 <div
-                  className="absolute -top-[3px] -bottom-[3px] w-[2.5px] rounded-[2px]"
+                  className="pin absolute -top-[3px] -bottom-[3px] w-[3px] rounded-[1px]"
                   style={{
-                    left: `calc(${pin}% - 1.25px)`,
-                    background: breached
-                      ? "var(--crest)"
-                      : "var(--safe)",
+                    left: `calc(${pin}% - 1.5px)`,
+                    background: breached ? "var(--crest)" : "var(--safe)",
+                    ["--pin-delay" as string]: `${index * 90}ms`,
                   }}
                 />
               </div>
@@ -88,15 +90,16 @@ export function MandatePanel({ client }: { client: ClientRecord }) {
             </div>
           );
         })}
-      </div>
+      </BandReveal>
 
       {/* The verdict. The tinted block — where the boldness goes. */}
       <div
-        className="mt-6 max-w-[62ch] rounded-[4px] px-5 py-4.5"
+        className="mt-6 max-w-[64ch] rounded-[2px] border-l-2 px-6 py-5"
         style={{
           background: panel.clean
             ? "rgba(46,107,82,.07)"
-            : "rgba(164,52,58,.06)",
+            : "rgba(200,16,46,.06)",
+          borderLeftColor: panel.clean ? "var(--safe)" : "var(--crest)",
         }}
       >
         <p className="font-read text-[16px] leading-[1.55] md:text-[17.5px]">

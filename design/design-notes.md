@@ -1,5 +1,52 @@
 # Design notes
 
+**Three mockups, in order of preference:**
+
+| File | When |
+|---|---|
+| `mockup-jb.html` | **Default.** Julius Bär branded — navy, red rule, wordmark header |
+| `mockup-demo.html` | Same interaction, neutral brand |
+| `mockup-visual.html` | Same argument, static. Faster to build |
+| `mockup.html` (quiet) | Prose-led fallback if behind at 15:00 |
+
+## Julius Bär framing
+
+The header carries the wordmark beside the product name, the way an
+internal bank tool would. Dark panels take a 3px red rule on their left
+edge; the page takes one across the top. Corners are 2–3px, not rounded.
+
+**This framing is itself an answer to "differentiates Julius Baer's digital
+offering"** — it reads as something already inside the bank rather than a
+startup pitching at it.
+
+**Colours are read from their challenge deck, not a brand guide.** Navy
+`#14284B`, red `#C8102E`, white. If a real brand asset surfaces before
+Saturday, swap the wordmark — **do not invent a logo**. A text wordmark is
+honest; a fabricated mark is not.
+
+## The one orchestrated moment
+
+The four blocks merge into one bar when the button is pressed — at the
+exact point in the pitch where you say "look through the note". That is
+the whole product in two seconds, and it happens *while you are talking*.
+
+Implementation: one CSS class toggle, `.merged` on the container. In React
+that is `useState(false)` and a `className` ternary. No animation library,
+nothing to debug at 15:00.
+
+The button resets on second press so the demo can be rehearsed repeatedly
+and re-run if the first take is fumbled.
+
+**Everything else is still.** The band pins draw in once on scroll, and
+that is it. Motion used once is a reveal; motion used everywhere is noise.
+
+## Projector scale
+
+46px client name · 82px headline figure · 34px opening line · tabular
+numerals throughout so figures do not jitter. Test from three metres
+before Saturday — the room is the constraint, not the laptop.
+
+
 **Reference:** a printed advisory note from a Swiss private bank. Not a
 dashboard, not a trading console.
 

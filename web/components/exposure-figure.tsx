@@ -7,12 +7,69 @@
  *
  * Full instrument names, not the mockup's abbreviations: the screen and
  * the evidence panel must agree about what a position is called, and the
- * evidence panel is the trust story. research.md R3.
+ * evidence panel is the trust story. spec 007 research.md R3.
+ *
+ * **This stays a server component.** It does every computation — sorting,
+ * formatting, building the sentence — and hands finished strings to
+ * `ExposureMerge`, which owns nothing but a boolean. The client boundary
+ * sits below the arithmetic on purpose (spec 009 research.md R3).
  */
 import type { Finding } from "@/lib/findings";
 import { pct } from "@/lib/format";
+import { ExposureMerge, type MergeBlock } from "@/components/exposure-merge";
 
-const TINTS = ["bg-e1", "bg-e2", "bg-e3", "bg-e4"];
+/** One hue, four tints, each with the text colour that clears AA on it.
+ *  The mockup sets white on all four; that is 2.25:1 on the lightest.
+ *  research.md R6 carries the measurements. */
+const TINTS = [
+  { bg: "var(--e1)", fg: "var(--on-e1)" },
+  { bg: "var(--e2)", fg: "var(--on-e2)" },
+  { bg: "var(--e3)", fg: "var(--on-e3)" },
+  { bg: "var(--e4)", fg: "var(--on-e4)" },
+];
+
+/** Small counts read better as words in a sentence a banker says aloud
+ *  (design notes, Copy). Falls back to the digits rather than inventing a
+ *  word it does not have. */
+const WORDS = [
+  "no",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+];
+const spell = (n: number) => WORDS[n] ?? String(n);
+
+/**
+ * What the blocks have in common, in one sentence.
+ *
+ * Both counts are derived. The previous version read "a worst-of basket
+ * on two names he already owns. It is one bet, held four ways" — with
+ * "two", "four" and "he" all typed by hand. It renders for five clients
+ * and was wrong on three of them, including asserting "he" about a client
+ * the book records as a woman. It was right for the demo client, which is
+ * why it survived review.
+ *
+ * **Written with no pronoun at all** rather than by reading the gender
+ * column: nothing in this sentence needs to know, and a system that
+ * reaches for a pronoun it does not need will eventually get one wrong.
+ */
+function mergeSentence(members: number, duplicate?: Finding): string {
+  const held = `It is one bet, held ${spell(members)} ways.`;
+  if (!duplicate) return `One theme, held ${spell(members)} ways.`;
+
+  const names = duplicate.duplicated_instrument_ids?.length ?? 0;
+  if (names === 0) return held;
+
+  return (
+    `The note references ${spell(names)} ` +
+    `${names === 1 ? "name" : "names"} already held outright. ${held}`
+  );
+}
 
 export function ExposureFigure({
   finding,
@@ -28,60 +85,51 @@ export function ExposureFigure({
 
   const classes = finding.asset_classes ?? [];
 
+  // Everything below is computed here, on the server, and passed down as
+  // strings. The merge component receives no Finding and no number.
+  const blocks: MergeBlock[] = members.map((position, index) => {
+    const tint = TINTS[index % TINTS.length];
+    return {
+      id: position.instrument_id,
+      assetClass: position.asset_class,
+      name: position.instrument_name,
+      pctLabel: pct(position.w, 1),
+      bg: tint.bg,
+      fg: tint.fg,
+    };
+  });
+
   return (
     <div className="mt-8">
       <div className="mb-3 flex flex-wrap justify-between gap-2 text-[12.5px] text-muted-foreground">
         <span>
-          {members.length} positions. {classes.length}{" "}
+          {spell(members.length)} positions. {spell(classes.length)}{" "}
           {classes.length === 1 ? "asset class" : "asset classes"}. Looks
           diversified.
         </span>
         <span className="tabular">{snapshotDate}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
-        {members.map((position, index) => (
-          <div
-            key={position.instrument_id}
-            className={`rounded-[4px] px-3.5 py-3.5 text-white ${
-              TINTS[index % TINTS.length]
-            }`}
-          >
-            <div className="min-h-[32px] text-[11.5px] leading-[1.35] opacity-[0.82]">
-              {position.instrument_name}
-            </div>
-            <div className="font-read mt-1.5 text-[24px] tabular">
-              {pct(position.w, 1)}
-            </div>
-            <div className="mt-0.5 text-[11px] opacity-[0.78]">
-              {position.asset_class}
-            </div>
-          </div>
-        ))}
-      </div>
+      <ExposureMerge
+        blocks={blocks}
+        combinedLabel={pct(finding.theme_pct ?? 0, 1)}
+        sentence={mergeSentence(members.length, duplicate)}
+        mergedBg="var(--e3)"
+        mergedFg="var(--on-e3)"
+        barBg="var(--e4)"
+        barFg="var(--on-e4)"
+        /* "Look through the note" is the line the presenter says — but
+           only a client holding a structured product has a note to look
+           through. For a plain sector concentration the button has to say
+           what it actually does. */
+        buttonLabel={
+          duplicate ? "Look through the note" : "Show it as one position"
+        }
+        resetLabel="Reset"
+        hint="They were always the same colour. Only the labels differed."
+      />
 
-      <div className="my-3.5 flex justify-center gap-1.5">
-        {members.map((position) => (
-          <span
-            key={position.instrument_id}
-            className="h-[22px] w-px bg-hair"
-            aria-hidden
-          />
-        ))}
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-5 rounded-[4px] bg-gradient-to-r from-e1 to-e4 px-5 py-4.5 text-white">
-        <div className="font-read max-w-[36ch] text-[20px] leading-[1.35]">
-          {duplicate
-            ? "The note’s underlying is a worst-of basket on two names he already owns. It is one bet, held four ways."
-            : `One theme, held ${members.length} ways.`}
-        </div>
-        <div className="font-read whitespace-nowrap text-[40px] leading-none tabular md:text-[44px]">
-          {pct(finding.theme_pct ?? 0, 1)}
-        </div>
-      </div>
-
-      <p className="mt-3 max-w-[66ch] text-[13px] leading-[1.6] text-muted-foreground">
+      <p className="mt-4 max-w-[66ch] text-[13px] leading-[1.6] text-muted-foreground">
         {finding.theme} — {finding.headline}
       </p>
     </div>

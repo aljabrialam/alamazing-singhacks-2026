@@ -45,7 +45,7 @@ export default function CallList() {
 
       <Sheet>
         <div className="px-6 py-6 md:px-9">
-          <h2 className="font-read text-[21px] font-normal">
+          <h2 className="font-read text-[26px] font-normal tracking-[-0.01em]">
             {briefed}{" "}
             {briefed === 1 ? "conversation" : "conversations"} worth having
             this week
@@ -70,19 +70,19 @@ export default function CallList() {
               >
                 <Link
                   href={`/client/${entry.client_id}`}
-                  className="grid grid-cols-[4px_1fr] items-start gap-4 px-6 py-5 hover:bg-secondary/60 md:grid-cols-[4px_1fr_108px] md:gap-[18px] md:px-9"
+                  className="grid grid-cols-[3px_1fr] items-start gap-5 px-6 py-5 hover:bg-secondary/60 md:grid-cols-[3px_1fr_116px] md:gap-5 md:px-9"
                 >
                   {/* Colour never carries meaning alone — the row's own
                       text says whether there is anything to raise. */}
                   <span
                     aria-hidden
-                    className={`min-h-[46px] w-[4px] self-stretch rounded-[2px] ${
+                    className={`min-h-[50px] w-[3px] self-stretch rounded-[2px] ${
                       nothing ? "bg-hair" : "bg-crest"
                     }`}
                   />
 
                   <div>
-                    <div className="font-read text-[18px] md:text-[19px]">
+                    <div className="font-read text-[19px] md:text-[20px]">
                       {entry.name}
                     </div>
                     <div className="mt-0.5 text-[12.5px] text-muted-foreground">
@@ -106,7 +106,7 @@ export default function CallList() {
                     )}
                   </div>
 
-                  {/* The AUM column drops below 920px. */}
+                  {/* The AUM column drops below 900px. */}
                   <div className="font-read hidden text-right text-[15px] text-muted-foreground tabular md:block">
                     {money(entry.aum_usd)}
                   </div>
@@ -117,11 +117,21 @@ export default function CallList() {
         </ol>
       </Sheet>
 
+      {/* The thesis, stated without pointing at a rank or a pronoun.
+          The earlier wording read "the portfolio at the top of this list
+          ... the opposite of what he asked for", which was wrong twice:
+          the ranking is derived, so the top of the list is whoever the
+          model ranked first that day — currently a client the book
+          records as a woman — and the objective-contradiction finding
+          belongs to a client sitting third. Naming a position in a
+          derived list inside static copy is the same class of error as
+          hard-coding a figure. */}
       <p className="font-read mt-13 max-w-[70ch] border-t border-hair pt-6 text-[15.5px] leading-[1.68] text-muted-foreground md:text-[16.5px]">
         Every bank checks the portfolio against the mandate. Nobody checks it
-        against what the client actually <b className="font-medium text-ink">said</b> —
-        so the portfolio at the top of this list passes every control and is
-        still the opposite of what he asked for.
+        against what the client actually{" "}
+        <b className="font-medium text-ink">said</b> — so a portfolio on this
+        list can pass every control the bank runs and still be the opposite
+        of what was asked for.
       </p>
     </div>
   );

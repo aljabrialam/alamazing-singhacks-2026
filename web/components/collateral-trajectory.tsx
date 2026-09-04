@@ -65,7 +65,7 @@ export function CollateralTrajectory({ finding }: { finding: Finding }) {
                   style={{
                     width: `${(point.ltv_pct / scale) * 100}%`,
                     background: near
-                      ? "rgba(164,52,58,.55)"
+                      ? "rgba(200,16,46,.50)"
                       : "rgba(46,107,82,.35)",
                   }}
                 />
@@ -107,7 +107,7 @@ export function CollateralTrajectory({ finding }: { finding: Finding }) {
             {trajectory.collateral_driven_rises
               .reduce((total, rise) => total + rise.ltv_rise_pp, 0)
               .toFixed(2)}{" "}
-            percentage points. The collateral is shrinking underneath him —
+            percentage points. The collateral is shrinking underneath the loan —
             and it is the same concentration reported above.
           </p>
         )}

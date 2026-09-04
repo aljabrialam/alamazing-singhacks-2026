@@ -1,14 +1,18 @@
 /* ============================================================
    Divergence Engine — theme
 
-   Ported from .alamazing/globals.css to Tailwind v4 syntax. The token
-   VALUES come from .alamazing/mockup.html where the two design documents
-   disagree — see specs/007-workbench/research.md R1. The run sheet
-   identifies the visual mockup as the intended direction rather than an
-   alternative, so it governs where it specifies.
+   Spec 009. The token VALUES now come from design/mockup-jb.html, which
+   design/design-notes.md marks as Default. Principle XIV was amended to
+   v1.3.0 to name the governing mockup by role rather than by path —
+   specs/009-jb-branded-workbench/research.md R1 records why.
 
-   Reference: a printed advisory note from a Swiss private bank. Not a
-   dashboard, not a trading console.
+   Julius Bär framing: navy, a thin red rule at the edge of every dark
+   panel, near-square corners, generous white. It reads as something
+   already inside the bank rather than a startup pitching at it, which is
+   itself an answer to "differentiates Julius Baer's digital offering".
+
+   Colours are read from their challenge deck, not a brand guide. No
+   claim is made that these are official brand values.
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -18,25 +22,56 @@
 
 
 :root {
-  /* --- the palette, from the mockup --- */
-  --ground: #f0f1ed;        /* the desk. soft sage-grey, deliberately not warm cream */
-  --sheet: #ffffff;         /* paper. pure white reads as printed, not as a UI panel */
-  --ink: #131b26;
-  --navy: #16325c;          /* the one accent */
-  --crest: #a4343a;         /* urgency. once per screen at most */
-  --safe: #2e6b52;          /* a band respected */
-  --muted-ink: #6e7681;
-  --hair: #e4e5e1;          /* dividers, softer than a rule */
-  --prose: #26303c;
+  /* --- the palette, from design/mockup-jb.html --- */
+  --ground: #EAECEF;        /* the desk. cool corporate grey, not warm cream */
+  --sheet: #FFFFFF;         /* paper. pure white reads as printed, not as a UI panel */
+  --ink: #101821;
+  --navy: #14284B;          /* the brand navy, read from their deck */
+  --jb-deep: #0C1B33;       /* the darkest panel — the opening line sits here */
+  --jb-red: #C8102E;        /* THE RULE. Used as a line, never as a fill. */
+  --safe: #2E6B52;          /* a band respected */
+  --muted-ink: #6B7280;
+  --hair: #E3E5E8;          /* dividers, softer than a rule */
+  --prose: #26303C;
 
-  /* Exposure: one hue, four tints. Four positions that are one bet. */
-  --e1: #c79355;
-  --e2: #b58141;
-  --e3: #a0702f;
-  --e4: #8a5e23;
+  /* Urgency collapses onto the brand red rather than carrying a second
+     oxblood beside it. The design notes allow urgency "once per screen at
+     most", and two reds on one page is one too many. #C8102E on white
+     measures 5.88:1, so nothing is lost to contrast. */
+  --crest: #C8102E;
+
+  /* Exposure: one hue, four tints. Four positions that are one bet.
+     The ramp is the argument, not decoration — see --on-e* below. */
+  --e1: #C9A876;
+  --e2: #B8945B;
+  --e3: #A37F46;
+  --e4: #8A6934;
+
+  /* Text on each tint, chosen by measurement rather than by eye.
+     mockup-jb.html sets white on all four; on the lighter two that is
+     2.25:1 and 2.83:1, which fails AA *and* AA-large — on the graphic
+     that carries the whole demo. Ratios against each tint:
+
+         tint      white   dark ink   used
+         --e1      2.25      7.96     ink
+         --e2      2.83      6.32     ink
+         --e3      3.70      4.84     ink   <- the merged state
+         --e4      5.06      3.53     white
+
+     The ramp is NOT darkened to make white work: that would compress four
+     values into one dark band and destroy the four-tints-of-one-hue
+     relationship, which is doing real communicative work here.
+     research.md R6. */
+  --on-e1: var(--ink);
+  --on-e2: var(--ink);
+  --on-e3: var(--ink);
+  --on-e4: #FFFFFF;
+
+  /* The one easing curve, for the one moment. */
+  --ease: cubic-bezier(.22, .8, .28, 1);
 
   /* --- shadcn tokens --- */
-  --radius: 0.1875rem;      /* 3px, interactive elements only */
+  --radius: 0.125rem;       /* 2px. Design notes: corners are 2-3px, not rounded. */
   --background: var(--ground);
   --foreground: var(--ink);
   --card: var(--sheet);
@@ -45,11 +80,11 @@
   --popover-foreground: var(--ink);
   --primary: var(--navy);
   --primary-foreground: #ffffff;
-  --secondary: #f6f7f4;
+  --secondary: #F2F3F5;
   --secondary-foreground: var(--ink);
-  --muted: #f6f7f4;
+  --muted: #F6F7F8;
   --muted-foreground: var(--muted-ink);
-  --accent: #f6f7f4;
+  --accent: #F6F7F8;
   --accent-foreground: var(--navy);
   --destructive: var(--crest);
   --destructive-foreground: #ffffff;
@@ -91,6 +126,12 @@
   --color-e2: var(--e2);
   --color-e3: var(--e3);
   --color-e4: var(--e4);
+  --color-on-e1: var(--on-e1);
+  --color-on-e2: var(--on-e2);
+  --color-on-e3: var(--on-e3);
+  --color-on-e4: var(--on-e4);
+  --color-jb-deep: var(--jb-deep);
+  --color-jb-red: var(--jb-red);
 
   --radius-sm: calc(var(--radius) - 1px);
   --radius-md: var(--radius);
@@ -134,10 +175,27 @@
      look like paper rather than a card component. */
   .sheet {
     background: var(--sheet);
-    border-radius: 5px;
+    border-radius: 3px;      /* 2-3px. Near-square, the way their panels are. */
+    border: 1px solid var(--hair);
     box-shadow:
-      0 1px 2px rgba(19, 27, 38, 0.05),
-      0 10px 28px -14px rgba(19, 27, 38, 0.16);
+      0 1px 2px rgba(16, 24, 33, 0.04),
+      0 10px 28px -14px rgba(16, 24, 33, 0.14);
+  }
+
+  /* The red rule on the left edge of every dark panel — their signature
+     edge treatment. A line, never a fill. */
+  .jb-rule {
+    position: relative;
+    overflow: hidden;
+  }
+  .jb-rule::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--jb-red);
   }
 
   /* Section captions read as annotations on a desk, which is the
@@ -164,20 +222,63 @@
      everything around it quiet. */
   .opening-line {
     font-family: var(--font-read);
-    font-size: 29px;
-    line-height: 1.4;
-    max-width: 32ch;
+    font-size: 33px;
+    line-height: 1.38;
+    max-width: 30ch;
   }
 
   /* Figures must not jitter as they update. */
   .tabular { font-variant-numeric: tabular-nums; }
+
+  /* --- projector scale -------------------------------------------------
+     "Test from three metres before Saturday — the room is the constraint,
+     not the laptop." (design notes). research.md R5 records the audit of
+     every size that changed and why the merge figure got *smaller*: the
+     headline moved to the hero at 80px, so a second 44px figure lower
+     down was competing with it. One headline number per screen. */
+  .hero-name {
+    font-family: var(--font-read);
+    font-size: 46px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+  .hero-figure {
+    font-family: var(--font-read);
+    font-size: 80px;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-/* Prose steps down on small screens; the opening line stays large — it is
-   the point on any screen. */
-@media (max-width: 920px) {
+@layer utilities {
+  /* --- the one scroll reveal ------------------------------------------
+     The band markers draw in once, then stay. "Motion used once is a
+     reveal; motion used everywhere is noise." (design notes)
+
+     The stagger is --pin-delay, set inline per row from the row INDEX —
+     an ordinal, not a figure, so Principle XI is untouched.
+
+     These start hidden, so a visitor without JavaScript would see the
+     mandate panel — the element carrying the whole argument — with no
+     markers at all. layout.tsx carries a <noscript> block that forces
+     them visible. research.md R4 records why that beat the alternatives. */
+  .pin {
+    transform: scaleY(0);
+    transition: transform 0.45s var(--ease) var(--pin-delay, 0ms);
+  }
+  [data-reveal="seen"] .pin { transform: scaleY(1); }
+}
+
+/* Prose steps down on small screens. The opening line steps down too but
+   stays the largest thing on the page — it is the point on any screen.
+   900px rather than 920px: the governing mockup's media query is written
+   at 900px and it governs (research.md R1, R5). */
+@media (max-width: 900px) {
   .prose-brief p { font-size: 17.5px; }
-  .opening-line { font-size: 23px; }
+  .opening-line { font-size: 24px; }
+  .hero-name { font-size: 32px; }
+  .hero-figure { font-size: 58px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -185,4 +286,6 @@
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+  /* The final state, not merely a fast transition to it. */
+  .pin { transform: scaleY(1); transition: none; }
 }
