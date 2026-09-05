@@ -6,8 +6,8 @@ voice-over later.
 
 | File | What |
 |---|---|
-| `out/divergence-demo-captioned.mp4` | **Play this to a room with no sound.** 1920×1300 — 1080p picture with a 220px caption band beneath it. |
-| `out/divergence-demo.mp4` | The clean master. 2560×1440, no captions, no audio track. |
+| `out/divergence-demo-captioned.mp4` | **The deliverable.** 1920×1300 — 1080p picture with a 220px caption band beneath it. Readable with no sound, and the file to add the voice-over to. |
+| `out/divergence-demo.mp4` | The clean master. 2560×1440, no captions, no audio track. Kept as the source for re-composing. |
 | `out/divergence-demo.srt` | Soft-subtitle sidecar, same lines and cues. |
 | `narration.md` | Voice-over prompt — 13 lines with start cues. |
 | `out/beats.json` | The real start cue of every beat, written at record time. |
@@ -77,5 +77,13 @@ also gets the project's own typefaces and brand colours instead of Arial.
 
 ## Adding a voice-over
 
-Hand `narration.md` and the **clean** master to a voice/post tool. It
-asks for one calm narrator, −16 LUFS, and the video track untouched.
+Hand `narration.md` and **`out/divergence-demo-captioned.mp4`** to a
+voice/post tool.
+
+Narrating the captioned cut rather than the clean master is deliberate:
+the spoken line and the on-screen line then reinforce each other, which
+survives a noisy room and a projector at the back of a hall. It also
+makes "read verbatim" enforceable rather than stylistic — the words are
+on screen, so any paraphrase is visible. `narration.mjs` writes that
+constraint into the prompt, and probes the finished file for its own
+resolution and duration so the prompt cannot describe a different video.
