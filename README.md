@@ -14,11 +14,11 @@ Not a dashboard. The interesting failures in private banking are not limit breac
        width="640">
 </a>
 
-*The whole walkthrough, captions on screen. It is a real browser session
-against the live deployment, not a mock-up — recorded with Playwright, so
-it can be re-recorded from the current build in one command. The soft
-navy ring is a capture aid to direct the eye; nothing else about the page
-is altered. [How it is made](demo/README.md).*
+*The whole walkthrough in two and a half minutes. It is a real browser
+session against the live deployment, not a mock-up — recorded with
+Playwright, so it can be re-recorded from the current build in one
+command. The soft navy ring is a capture aid to direct the eye; nothing
+else about the page is altered. [How it is made](demo/README.md).*
 
 ---
 
@@ -95,7 +95,7 @@ contacts a client and never moves any money.
 | | |
 |---|---|
 | **Live app** | [web-aljs-projects.vercel.app](https://web-aljs-projects.vercel.app) |
-| **Demo video** | [youtu.be/q_8llE6ZkaU](https://youtu.be/q_8llE6ZkaU) — 2:30, captions on screen, no audio needed |
+| **Demo video** | [youtu.be/q_8llE6ZkaU](https://youtu.be/q_8llE6ZkaU) — 2:30 |
 | **Challenge** | SingHacks 2026 · Julius Baer, Wealth Intelligence · solo build |
 | **What it is** | Nine detectors that find divergence between what a client said, what their mandate permits, and what they actually hold — each finding carrying the source rows behind it |
 | **Problem solved** | Bank systems only raise an alarm when a rule is broken. A portfolio can respect every allowed range for each asset type (its *mandate bands*), stay under every cap on how much can sit in one company (its *single-name limits*), and still be 42% one bet against what the client asked for — and nothing in the bank will say so |
@@ -357,7 +357,7 @@ Each of these is recorded in the relevant spec's `research.md` with the query th
 ## The workbench
 
 *[Watch it instead](https://youtu.be/q_8llE6ZkaU) — 2:30, every screen in
-order, captions on screen.*
+order.*
 
 Three screens, reading one file. It is deliberately designed to feel like a **printed note a banker reads before a meeting** — not a dashboard and not a trading screen. Priscilla reads it in a lift, on a phone, five minutes before she sees the client.
 

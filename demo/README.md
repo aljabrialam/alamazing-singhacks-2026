@@ -4,7 +4,7 @@ A silent 2:30 screen recording of the deployed workbench, plus the
 narration — burned in below the picture, and as a cue sheet for adding a
 voice-over later.
 
-**Published: https://youtu.be/q_8llE6ZkaU** — the captioned cut, as-is.
+**Published: https://youtu.be/q_8llE6ZkaU**
 
 | File | What |
 |---|---|
