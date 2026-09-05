@@ -103,9 +103,9 @@ contacts a client and never moves any money.
 | **Model** | `claude-opus-5`, **24 calls in the whole system**, all at build time, all committed. It reads prose and writes prose. **It never counts** — every figure comes from pandas |
 | **Core rule** | `event_log.csv` outranks the model. Where the model's recollection and the file disagree, the file wins, and explanations cite events by date from the file only |
 | **Hero finding** | **42.13%** of one client's portfolio is a single shipping-and-energy bet, against a 2014 objective of *"outside the Gulf region and outside the shipping sector"* — with **every mandate band respected** |
-| **Status** | All 9 specs shipped. 108 tests green, 53 findings, gates `g1`–`g3` tagged. See [Specs](#specs) |
+| **Status** | 108 tests green · 53 findings across nine checks · built spec-first, all nine shipped |
 | **Stack** | Python 3 + pandas (pipeline), Next.js 16 + TypeScript + Tailwind + shadcn/ui (workbench), pytest |
-| **Production** | [docs/production-feasibility.md](docs/production-feasibility.md) — security, the AI exposure surface, cloud deployment, compliance, scale and cost |
+| **Running it for real** | [docs/production-feasibility.md](docs/production-feasibility.md) — what the AI is shown, where it would be hosted, security, data protection, cost at scale |
 
 ## The problem
 
@@ -237,17 +237,17 @@ flowchart LR
   style SRC fill:#161B22,stroke:#30363D,color:#E6EDF3
 ```
 
-Three things this diagram is making explicit, because each is a judged claim:
+Three things the diagram is making explicit:
 
 **`data/` has one arrow out.** Only `load.py` reads the filesystem. No detector can half-see a changed file mid-build.
 
 **The model's only input is prose.** `rm_notes.json` and the objectives text reach `claims.py`; nothing else does. No holdings row, no weight, no figure. Its output is committed to `derived/` and read back at build time — **the dotted arrow makes no call.**
 
-**`findings.json` is the only thing the web layer gets.** No `/api`, no server actions, no route handlers — verified, not assumed. The pipeline is a build-time step, so there is nothing to host and nothing to fail on stage. In a bank this is an overnight batch against core banking; today it reads a folder, in production it reads an adapter.
+**`findings.json` is the only thing the web layer gets.** No `/api`, no server actions, no route handlers — verified, not assumed. The pipeline is a build-time step, so there is nothing to host and nothing that can fail while someone is reading. In a bank this is an overnight batch against core banking; today it reads a folder, in production it reads an adapter.
 
 ### The model reads and writes. It never counts.
 
-This is the architectural spine and the answer to half the questions a banking judge will ask.
+This is the architectural spine, and the reason the rest of it is trustworthy.
 
 | The model does | The model never does |
 |---|---|
@@ -256,7 +256,7 @@ This is the architectural spine and the answer to half the questions a banking j
 | Weigh which client needs a conversation soonest | Compute a weight, total or delta |
 | Write four paragraphs and one opening line | Receive a raw client record or a holdings row |
 
-**24 calls in the whole system** — 20 claim extractions, 3 briefs, 1 ranking. All at build time. All committed to `derived/*.json` alongside the prompt, the model id and the settings that produced them. **The determinism test runs with the API key removed and produces byte-identical output**, which is the proof that the demo cannot vary.
+**24 calls in the whole system** — 20 claim extractions, 3 briefs, 1 ranking. All at build time. All committed to `derived/*.json` alongside the prompt, the model id and the settings that produced them. **The determinism test runs with the API key removed and produces byte-identical output** — the same inputs always give the same findings.
 
 Two guards make fabrication structurally hard. A claim whose quoted words do not appear in the source text is **dropped**. A brief containing the word *"recommend"* is **rejected, not edited** — silently rewriting model output would make the committed artifact a fiction.
 
@@ -268,7 +268,7 @@ Two guards make fabrication structurally hard. A claim whose quoted words do not
 | **D2** | Mandate classification | A portfolio outside its agreed ranges, and *why*: the market moved it there (**drift**), the client asked for it (**client-directed**), or — a third answer the brief does not name — **nobody chose it**, because it arrived that way |
 | **D3** | Hidden when split | A single bet that only becomes visible once packaged products are opened up and holdings are added across every account |
 | **D4** | Money already promised | A bill with a due date, against what could actually be sold in time. Also traces any loan secured against the portfolio — if the holdings fall, the loan gets riskier, and past a threshold the bank can force a sale |
-| **D5** | The unanswered question | Something the client asked with no recorded answer. Twenty lines, and it converts the demo from analytics to advisory |
+| **D5** | The unanswered question | Something the client asked with no recorded answer. Twenty lines of code, and it is the difference between reporting on a portfolio and advising a person |
 | **D6** | Scenario | What happens if a named market series returns to a past level. Arithmetic over stored prices — no forecast, no volatility assumption |
 | **D7** | What happened, and why | Whether the portfolio grew because markets moved or because the client paid more in. Those are different things, and one is not performance |
 | **D9** | Tax position | Paper profits and losses across everything the client holds, judged against where they are taxed rather than where they live — the two differ for seven of the twenty. Reports; never optimises |
@@ -450,19 +450,81 @@ The word *"recommend"* appears nowhere in the RM-facing copy — *"worth raising
 
 ## Running this in a bank
 
-Most teams skip this section. It is a quarter of the score.
+This is how it would run inside a bank. It reads the bank's own systems
+overnight and hands the relationship manager a finished note in the
+morning — nothing runs while someone is reading it.
 
-> This runs as an overnight batch against the bank's own systems — holdings from core banking, notes from CRM, events from research. Today it reads a folder; in production it reads an adapter. The detectors take a book and a date; nothing in them names a sector.
->
-> The detection logic is **production-shaped**: deterministic, auditable, evidence-carrying, no live inference. What is not built is the integration layer and the deployment controls — known work, not unknowns.
->
-> First deployment would be the look-through and the scenario, because they run on holdings and prices alone and need no notes. The notes layer comes second, once the CRM is worth reading.
->
-> The real dependency is note quality. This works because Priscilla records what clients *said*, not just what was decided. An RM who writes "annual review, all fine" gives the notes detector nothing. That is change management, not engineering.
+*What is built today is the middle of this picture. The prototype reads a
+folder of files rather than live bank systems, and the section below says
+plainly which parts are real and which are design.*
 
-**Never "production ready".** The phrase is prohibited by this project's own constitution, because it would be false.
+```mermaid
+flowchart LR
+  A["<b>The bank's own systems</b><br/><small>holdings · mandates<br/>notes · market events</small>"]
+  B["<b>Overnight</b><br/>ordinary code does<br/>all the arithmetic<br/><small>nine checks, every figure<br/>traced to a record</small>"]
+  C["<b>AI writes the sentences</b><br/><small>never the numbers<br/>no client name, no account</small>"]
+  D["<b>A finished note</b><br/><small>one file, no live system<br/>behind the bank's own login</small>"]
+  E(["<b>The relationship manager</b><br/>keeps it · rejects it<br/>adds a note"])
 
-**→ [Production feasibility](docs/production-feasibility.md)** goes through this properly, because *Technical & Operational Feasibility* is a quarter of the score and this paragraph is not an answer to it. It covers what the model actually sees at each of the three call sites (measured from the code, not summarised), where inference would run on AWS / GCP / Azure and what happens if compliance vetoes external inference entirely, pseudonymisation and prompt injection, the security control set, Swiss banking secrecy and FINMA / EU AI Act positioning, scaling to 100,000 clients with the cost arithmetic shown, and a phased rollout in which **no client-identifying data reaches any model until phase 3**.
+  A --> B
+  B -->|"figures"| D
+  B -->|"prose only"| C
+  C -->|"wording"| D
+  D --> E
+
+  style B fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style D fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style C fill:#2A1614,stroke:#8B3A34,color:#E6EDF3
+  style E fill:#14284B,stroke:#C8102E,color:#E6EDF3
+```
+
+Four things in that picture matter most.
+
+**Every number is calculated by ordinary code, never by the AI.** The two
+paths above are separate on purpose. The AI is handed prose and hands back
+prose; it is never asked to add anything up. So if it is wrong, the result
+is a clumsy sentence, not a wrong figure.
+
+**The AI can be switched off entirely and the product still works.** The
+briefs become plainer, assembled from the findings rather than written. The
+figures do not change at all. That matters because it turns the hardest
+question a bank asks about AI — *what if we can't approve it?* — into a
+short one.
+
+**Nothing is ever sent to a client, and no money moves.** There is no code
+that could do either. The system suggests; the relationship manager
+decides, and can reject anything.
+
+**The AI would never see a client's name or account.** Names are swapped
+for placeholders before anything is sent and put back afterwards, and the
+model runs inside the bank's own environment rather than on the open
+internet. This part is design, not built — in the prototype the name does
+go to the model, and the [long version](docs/production-feasibility.md)
+says so and explains what would change.
+
+### What is built, and what is not
+
+| | |
+|---|---|
+| **Built and tested** | The nine checks, all the arithmetic, the evidence trail, the workbench |
+| **Not built** | Connecting to real bank systems, logins, and the security plumbing a bank would require |
+
+Today it reads a folder of files; in a bank it would read the same data
+from core banking and the CRM. That is known work rather than an open
+question — but it is not done, and this project's own rules forbid it from
+ever being called "production ready", because that would not be true.
+
+The one real dependency is the quality of the notes. This works because
+Priscilla writes down what clients *said*, not only what was decided. An
+adviser who writes "annual review, all fine" gives it nothing to work
+with. That is a habit, not a piece of software.
+
+**[→ Production feasibility](docs/production-feasibility.md)** is the long
+version, for anyone who needs it: exactly what the AI is shown, how it
+would be hosted on AWS, Google Cloud or Azure, the security controls, the
+data-protection and regulatory position, what it costs at a hundred
+thousand clients, and a four-phase rollout in which no client's personal
+details reach an AI model until phase three.
 
 ## Project structure
 
@@ -492,27 +554,6 @@ alamazing-singhacks-2026/
                                checked against
 ```
 
-## Specs
-
-Built spec-first: every feature goes through `/speckit.specify → /speckit.plan → /speckit.tasks → implement`, and **no spec starts until the previous one's acceptance figure is verified** — not until its code exists.
-
-| # | Spec | Model? | Status |
-|---|---|---|---|
-| — | [Constitution](.specify/memory/constitution.md) | — | v1.2.0, amended twice during the build |
-| 000 | [Data layer](specs/000-data-layer/) | no | Shipped · `g1` |
-| 001 | [Look-through concentration](specs/001-look-through/) | no | Shipped |
-| 002 | [Said vs held](specs/002-said-vs-held/) | **yes** | Shipped |
-| 003 | [Mandate classification](specs/003-mandate-classification/) | no | Shipped |
-| 004 | [Liquidity and the unanswered question](specs/004-liquidity-unanswered/) | no | Shipped |
-| 005 | [Scenario](specs/005-scenario/) | no | Shipped · `g2` |
-| 006 | [Briefs and build](specs/006-briefs-build/) | **yes** | Shipped |
-| 007 | [The workbench](specs/007-workbench/) | no | Shipped · `g3` |
-| 008 | [Explanation, collateral, tax, life events](specs/008-explanation-collateral-tax-life/) | no | Shipped — four detectors from an audit against the official brief |
-
-**Seven of nine specs need no model at all.**
-
-Each spec directory carries a `research.md` recording every question that had to be answered from the data before code was written, with the query that answered it. That is where the four reference-document errors and two shipped defects are documented — including the two the constitution itself needed, which is why it is at v1.2.0 rather than v1.0.0.
-
 ## Getting started
 
 ```bash
@@ -535,19 +576,6 @@ cd web && npm install && npm run dev
 The build reads committed model output from `derived/` and **makes no model call** — it completes with no API key set. Regenerating briefs, claims or the ranking is an explicit action, never a side effect of running the pipeline.
 
 `.env.local` holds the Anthropic key for regeneration only. Never committed — see `.gitignore`.
-
-## What we did not do
-
-Honest scope, decided in advance and written into the constitution rather than rationalised afterwards:
-
-- **No chat interface.** Not in the three minutes.
-- **No authentication or database.** One hardcoded RM; JSON on disk.
-- **No real market data.** `market_context.csv` is sufficient and authoritative.
-- **No portfolio optimiser.** Not the contribution — and Priscilla decides, not us.
-- **No separate mobile app.** Responsive web is the same demo at a fraction of the cost.
-- **No charts without a finding attached.** Decoration.
-- **Not all twenty clients in depth.** The brief instructs the opposite. Three are briefed; the other seventeen get the mandate and look-through checks so the call list is real rather than a mock of three.
-- **Not CL-0012.** He is the brief's own worked example, so every team will demo him. Avoiding him is a deliberate choice, not an oversight.
 
 ## A short glossary
 
