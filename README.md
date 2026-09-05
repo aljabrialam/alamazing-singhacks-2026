@@ -196,7 +196,7 @@ flowchart LR
   subgraph BUILD["pipeline/ — build time. pandas computes every figure"]
     L["load.py<br/><small>the Book. joins once.<br/>records imperfections,<br/>never drops a row</small>"]
     W["client_weights<br/><small>recomputed from<br/>market_value_usd</small>"]
-    D["six detectors<br/><small>D1 said-vs-held · D2 mandate<br/>D3 look-through · D4 runway<br/>D5 unanswered · D6 scenario</small>"]
+    D["nine detectors<br/><small>D1 said-vs-held · D2 mandate<br/>D3 look-through · D4 runway+collateral<br/>D5 unanswered · D6 scenario<br/>D7 explanation · D9 tax · D10 life events</small>"]
     MD["mandate.py · fx.py<br/><small>shared arithmetic</small>"]
   end
 

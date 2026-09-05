@@ -21,6 +21,69 @@ re-verified at procurement; availability and regional coverage change, and
 
 ---
 
+## 0. The target architecture, in one picture
+
+Everything inside the outer boundary is the bank's own tenancy. **No
+client data crosses it**, and the inference endpoint is inside it too —
+that is the whole point of §3.
+
+```mermaid
+flowchart LR
+  subgraph BANK["── the bank's cloud tenancy · in-region · no internet egress ──"]
+    direction LR
+
+    SRC["<b>Source systems</b> · read-only<br/><small>core banking — holdings, transactions<br/>mandate master — bands, limits<br/><b>instrument master — underlying_reference</b><br/>CRM — RM notes, free text<br/>market data · event feed</small>"]
+
+    subgraph BATCH["nightly batch · private subnets · workload identity · no keys"]
+      direction TB
+      CALC["<b>pandas</b><br/>every figure computed here<br/><small>nine detectors + evidence rows</small>"]
+      TOK["Tokenisation shim<br/><small>names → CLIENT_A · AUM → band</small>"]
+      HYD["Re-hydrate locally<br/><small>tokens → real names</small>"]
+      CALC -->|"prose only<br/>no figures"| TOK
+      TOK --> HYD
+    end
+
+    LLM["<b>Inference</b><br/><small>Bedrock / Vertex / Azure<br/>private endpoint · in-region<br/>no retention · no training</small>"]
+
+    ART["<b>Immutable artefacts</b> · per RM<br/><small>derived/*.json + prompt, model id, settings<br/>findings.json — the only thing the browser reads</small>"]
+    WEB["Static workbench<br/><small>behind the bank's IdP<br/>no API · no database</small>"]
+    AUD["Immutable audit log · WORM<br/><small>prompt hash · model id · tokens · outcome</small>"]
+  end
+
+  RM(["Relationship manager<br/><small>keeps · rejects · annotates</small>"])
+
+  SRC --> CALC
+  TOK -->|"prompt"| LLM
+  LLM -->|"completion"| TOK
+  CALC ==>|"<b>figures</b>"| ART
+  HYD -->|"prose"| ART
+  ART --> WEB --> RM
+  LLM -.-> AUD
+  CALC -.-> AUD
+
+  style CALC fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style ART fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style LLM fill:#2A1614,stroke:#8B3A34,color:#E6EDF3
+  style TOK fill:#1F2937,stroke:#D29922,color:#E6EDF3
+  style HYD fill:#1F2937,stroke:#D29922,color:#E6EDF3
+  style AUD fill:#111827,stroke:#6B7280,color:#E6EDF3
+  style RM fill:#14284B,stroke:#C8102E,color:#E6EDF3
+```
+
+**Read the arrows, not the boxes.** Three properties fall out of the
+shape:
+
+- Only **one path** reaches the inference box. It carries prose with no
+  figures and no names in it, over a private endpoint inside the tenancy.
+- The thick **figures** arrow runs from `pandas` straight to the artefacts,
+  bypassing the model entirely. The **prose** arrow goes the long way round.
+  **Figures and prose never share a path**, so a compromised or misbehaving
+  model cannot alter a number.
+- Nothing points back into the source systems. There is no write path, so
+  the blast radius of any failure is read-only.
+
+---
+
 ## 1. What is already production-shaped, and what is not
 
 The distinction matters because it separates *known work* from *unknowns*,
@@ -102,7 +165,70 @@ model never receives a raw client record."* True — but name plus AUM plus
 age across a whole book is arguably the most sensitive single payload in
 the system, because it is a **list**.
 
-### 2.4 Payload sizes, measured
+### 2.4 One night, in sequence
+
+Where each control actually fires. Note that **every rejection path is a
+`pandas`-side or code-side check, never a model-side one** — the model is
+never asked to police itself.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant S as Scheduler
+  participant B as Batch job<br/>(no human creds)
+  participant D as Source systems
+  participant P as pandas<br/>detectors
+  participant T as Tokenisation<br/>shim
+  participant M as Inference<br/>(in-tenancy)
+  participant A as Audit log<br/>(WORM)
+  participant W as Static<br/>workbench
+
+  S->>B: 02:00 — trigger, after core banking EOD
+  B->>D: read holdings, mandates, notes, events
+  D-->>B: the Book
+  Note over B,D: read-only. no write path exists
+
+  B->>P: compute every figure
+  P-->>B: 9 detectors → findings + evidence rows
+  Note over P: ALL arithmetic ends here.<br/>Nothing below this line<br/>can change a number.
+
+  rect rgb(20, 40, 75)
+    Note over T,M: the only place client prose meets a model
+    B->>T: objectives + note text
+    T->>T: names → CLIENT_A, AUM → band
+    T->>M: prompt (no figures, no names)
+    M-->>T: extracted claims
+    T->>A: prompt hash, model id, settings, tokens, latency
+  end
+
+  B->>P: ground each claim against source text
+  P-->>B: reject claims whose words are absent
+  Note over B,P: _quote_is_grounded()<br/>an injected claim dies here
+
+  B->>T: findings summaries (whitelist) + notes
+  T->>M: draft 3 briefs, rank the book
+  M-->>T: prose
+  T->>B: re-hydrate names locally
+
+  B->>P: validate every date cited
+  P-->>B: reject dates absent from event_log.csv
+  Note over B,P: the file outranks the model
+
+  B->>B: write derived/*.json + findings.json
+  B->>A: artefact hashes, per-RM partition
+  B->>W: publish per-RM artefact
+
+  W->>W: serve to RM behind IdP
+  Note over W: no inference on the request path.<br/>an outage serves the last<br/>committed artefact
+```
+
+**What a reviewer should take from this.** The two model interactions are
+bracketed on both sides — tokenised going in, validated coming out — and
+neither bracket asks the model's permission. Steps 11–12 and 17–18 are
+deterministic code, and both are already implemented and tested in the
+current build.
+
+### 2.5 Payload sizes, measured
 
 | Call | Prompt | Payload | Notes |
 |---|---|---|---|
@@ -201,9 +327,41 @@ the cached entry, or an empty list, and never raises. *"A missing key
 degrades the product; it does not break it."* That property was built for
 a hackathon contingency and is exactly what a compliance veto needs.
 
+```mermaid
+flowchart TB
+  Q{"Compliance approves<br/>third-party inference<br/>in-tenancy?"}
+
+  Q -->|"yes"| A["Full product<br/><small>Bedrock / Vertex / Azure<br/>private endpoint</small>"]
+  Q -->|"no"| B{"Self-hosted<br/>open-weight model<br/>in the bank's GPUs?"}
+
+  B -->|"yes"| C["Claims: self-hosted model<br/><small>quality drops; the grounding<br/>check makes it tolerable</small>"]
+  B -->|"no"| D["Claims: skipped<br/><small>claims.py returns cache<br/>or empty. never raises</small>"]
+
+  C --> E
+  D --> E
+
+  E["Briefs: templated prose<br/>from the findings<br/><small>less fluent, fully deterministic</small>"]
+  E --> F["Ranking: detector severity<br/><small>already computed</small>"]
+
+  F --> G["<b>Still a working<br/>divergence engine</b><br/><small>every figure unchanged:<br/>all arithmetic is pandas</small>"]
+  A --> G
+
+  UNCH["Unaffected by any branch:<br/>nine detectors · 42.13% look-through<br/>mandate bands · scenario · evidence trail<br/><small>108 tests, none of which<br/>read a model output</small>"]
+  UNCH -.-> G
+
+  style A fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style G fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style UNCH fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style D fill:#2A1614,stroke:#8B3A34,color:#E6EDF3
+  style C fill:#1F2937,stroke:#D29922,color:#E6EDF3
+  style E fill:#1F2937,stroke:#D29922,color:#E6EDF3
+```
+
 **This is the strongest feasibility argument in the document:** the AI is
 load-bearing for *fluency*, not for *correctness*. A bank can switch it
-off and still have a working divergence engine.
+off and still have a working divergence engine. Every green box above is
+reachable without any external model, and the grep that proves it is in
+§1: no test in the suite reads `derived/`.
 
 ---
 
@@ -477,11 +635,48 @@ Sequenced by dependency, so each phase is independently useful.
 | **3. Notes layer** | CRM notes, claim extraction, briefs | Gate: note quality assessed on a real sample, and §4.2 controls signed off. This is where the AI exposure actually begins. |
 | **4. Second desk, second region** | Multi-region residency | Gate: residency controls proven preventive, not just detective. |
 
+```mermaid
+flowchart LR
+  subgraph NOAI["Phases 1–2 · NO client data reaches any model"]
+    direction TB
+    P1["<b>Phase 1 — one desk</b><br/>look-through + scenario<br/><small>holdings · instruments<br/>mandates · market data</small><br/><br/><b>Delivers the 42.13% finding</b><br/><small>needs no notes, no CRM</small>"]
+    P1G{"Gate:<br/>what % of structured products<br/>have usable<br/>underlying_reference?"}
+    P2["<b>Phase 2</b><br/>mandate · liquidity<br/>explanation · tax<br/><small>+ transactions, cash needs,<br/>facilities</small>"]
+    P2G{"Gate:<br/>figures reconcile to the<br/>bank's own reporting<br/>to the cent"}
+    P1 --> P1G --> P2 --> P2G
+  end
+
+  subgraph AI["Phase 3+ · AI exposure begins here"]
+    direction TB
+    P3["<b>Phase 3</b><br/>CRM notes · claim extraction<br/>briefs<br/><small>the first client prose<br/>to reach a model</small>"]
+    P3G{"Gate:<br/>note quality on a real sample<br/>+ §4.2 controls signed off<br/>+ DPIA"}
+    P4["<b>Phase 4</b><br/>second desk, second region"]
+    P4G{"Gate:<br/>residency controls proven<br/><b>preventive</b>, not detective"}
+    P3 --> P3G --> P4 --> P4G
+  end
+
+  P2G ==>|"only now"| P3
+
+  style P1 fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style P2 fill:#0F2A22,stroke:#2E6B52,color:#E6EDF3
+  style P3 fill:#2A1614,stroke:#8B3A34,color:#E6EDF3
+  style P4 fill:#2A1614,stroke:#8B3A34,color:#E6EDF3
+  style P1G fill:#1F2937,stroke:#D29922,color:#E6EDF3
+  style P2G fill:#1F2937,stroke:#D29922,color:#E6EDF3
+  style P3G fill:#1F2937,stroke:#D29922,color:#E6EDF3
+  style P4G fill:#1F2937,stroke:#D29922,color:#E6EDF3
+```
+
 **Phases 1 and 2 involve no client-identifying data reaching any model at
 all** — claim extraction and briefs are Phase 3. A bank can therefore get
 the differentiating capability into production before resolving the hardest
 AI governance question, which is the sequencing a risk committee will
 prefer.
+
+Note where the gates sit. Two of the four are **measurements a bank can
+take in Phase 1 before committing to anything** — look-through coverage
+and figure reconciliation. §11 lists them as the two of three
+unknowns that are cheaply resolvable, and this is where.
 
 ---
 
