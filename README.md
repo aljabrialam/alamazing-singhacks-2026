@@ -6,7 +6,19 @@ A wealth intelligence layer for a relationship manager with twenty clients and a
 
 Not a dashboard. The interesting failures in private banking are not limit breaches — they are portfolios that pass every check and are still wrong.
 
-**[→ Open the live workbench](https://web-aljs-projects.vercel.app)**
+**[→ Open the live workbench](https://web-aljs-projects.vercel.app)** · **[→ Watch the 2½-minute demo](https://youtu.be/q_8llE6ZkaU)**
+
+<a href="https://youtu.be/q_8llE6ZkaU">
+  <img src="https://img.youtube.com/vi/q_8llE6ZkaU/maxresdefault.jpg"
+       alt="Watch the demo — Divergence Engine, 2 minutes 30 seconds"
+       width="640">
+</a>
+
+*The whole walkthrough, captions on screen. It is a real browser session
+against the live deployment, not a mock-up — recorded with Playwright, so
+it can be re-recorded from the current build in one command. The soft
+navy ring is a capture aid to direct the eye; nothing else about the page
+is altered. [How it is made](demo/README.md).*
 
 ---
 
@@ -83,6 +95,7 @@ contacts a client and never moves any money.
 | | |
 |---|---|
 | **Live app** | [web-aljs-projects.vercel.app](https://web-aljs-projects.vercel.app) |
+| **Demo video** | [youtu.be/q_8llE6ZkaU](https://youtu.be/q_8llE6ZkaU) — 2:30, captions on screen, no audio needed |
 | **Challenge** | SingHacks 2026 · Julius Baer, Wealth Intelligence · solo build |
 | **What it is** | Nine detectors that find divergence between what a client said, what their mandate permits, and what they actually hold — each finding carrying the source rows behind it |
 | **Problem solved** | Bank systems only raise an alarm when a rule is broken. A portfolio can respect every allowed range for each asset type (its *mandate bands*), stay under every cap on how much can sit in one company (its *single-name limits*), and still be 42% one bet against what the client asked for — and nothing in the bank will say so |
@@ -109,7 +122,7 @@ Abdullah Al-Mansoori, 49, made his money in **Gulf logistics, port services and 
 
 > Build wealth **outside the Gulf region** and **outside the shipping sector**; fund a family office in Asia.
 
-Today, four holdings look like textbook diversification — two funds, one company's shares, and a *structured note* (a bank-issued product whose payout is tied to the performance of other named companies). Four holdings, three different categories.
+Today, four holdings look like textbook diversification — two funds, one company's shares, and a *structured note* (a bank-issued product whose payout is tied to the performance of other named companies). **Four holdings, three kinds of instrument, and only two asset classes** — which is exactly why a report grouped by asset class shows nothing worth looking at.
 
 | Position | Asset class | Weight |
 |---|---|---|
@@ -342,6 +355,9 @@ The sharpest one: `SYN-ST-0107` Nordvind Industrial AB carries **no cost basis**
 Each of these is recorded in the relevant spec's `research.md` with the query that found it.
 
 ## The workbench
+
+*[Watch it instead](https://youtu.be/q_8llE6ZkaU) — 2:30, every screen in
+order, captions on screen.*
 
 Three screens, reading one file. It is deliberately designed to feel like a **printed note a banker reads before a meeting** — not a dashboard and not a trading screen. Priscilla reads it in a lift, on a phone, five minutes before she sees the client.
 

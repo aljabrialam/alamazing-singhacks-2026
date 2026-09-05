@@ -4,6 +4,8 @@ A silent 2:30 screen recording of the deployed workbench, plus the
 narration — burned in below the picture, and as a cue sheet for adding a
 voice-over later.
 
+**Published: https://youtu.be/q_8llE6ZkaU** — the captioned cut, as-is.
+
 | File | What |
 |---|---|
 | `out/divergence-demo-captioned.mp4` | **The deliverable.** 1920×1300 — 1080p picture with a 220px caption band beneath it. Readable with no sound, and the file to add the voice-over to. |
