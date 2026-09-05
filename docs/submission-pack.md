@@ -17,6 +17,7 @@ Four criteria, 25% each. No technical-depth criterion exists.
 | Accept/dismiss | | ● | | ●●● |
 | S3 uncertain | ●● | | ●● | ● |
 | README | | | ●●● | ●● |
+| [Production feasibility](production-feasibility.md) | | | ●●● | ●●● |
 | Demo video | ●● | ●● | | ●● |
 
 **Testing:** three things only — determinism test, traceability, and the

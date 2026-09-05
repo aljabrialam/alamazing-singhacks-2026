@@ -105,6 +105,7 @@ contacts a client and never moves any money.
 | **Hero finding** | **42.13%** of one client's portfolio is a single shipping-and-energy bet, against a 2014 objective of *"outside the Gulf region and outside the shipping sector"* — with **every mandate band respected** |
 | **Status** | All 9 specs shipped. 108 tests green, 53 findings, gates `g1`–`g3` tagged. See [Specs](#specs) |
 | **Stack** | Python 3 + pandas (pipeline), Next.js 16 + TypeScript + Tailwind + shadcn/ui (workbench), pytest |
+| **Production** | [docs/production-feasibility.md](docs/production-feasibility.md) — security, the AI exposure surface, cloud deployment, compliance, scale and cost |
 
 ## The problem
 
@@ -460,6 +461,8 @@ Most teams skip this section. It is a quarter of the score.
 > The real dependency is note quality. This works because Priscilla records what clients *said*, not just what was decided. An RM who writes "annual review, all fine" gives the notes detector nothing. That is change management, not engineering.
 
 **Never "production ready".** The phrase is prohibited by this project's own constitution, because it would be false.
+
+**→ [Production feasibility](docs/production-feasibility.md)** goes through this properly, because *Technical & Operational Feasibility* is a quarter of the score and this paragraph is not an answer to it. It covers what the model actually sees at each of the three call sites (measured from the code, not summarised), where inference would run on AWS / GCP / Azure and what happens if compliance vetoes external inference entirely, pseudonymisation and prompt injection, the security control set, Swiss banking secrecy and FINMA / EU AI Act positioning, scaling to 100,000 clients with the cost arithmetic shown, and a phased rollout in which **no client-identifying data reaches any model until phase 3**.
 
 ## Project structure
 
