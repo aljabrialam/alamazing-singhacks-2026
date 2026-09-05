@@ -1,16 +1,23 @@
 /**
- * The read-aloud script, as a phone-readable PDF.
+ * The pitch script — a phone-readable PDF.
  *
  *   node script.mjs   →   out/pitch-script.pdf
  *
- * Sized 820×1460 so it fills a phone screen in portrait with no
- * pinch-zooming, and set at 30px so it is readable at arm's length under
- * stage lights. Every block is `break-inside: avoid`, so a slide's words
- * never split across two pages — the point of this document is that you
- * can lose your place and find it again in one glance.
+ * The plan is: say the intro, play the 2:30 video, take questions. So the
+ * intro is the only thing that has to be read out, and the budget is
+ * unforgiving:
  *
- * Figures in the script match deck/build.mjs, which matches
- * web/public/findings.json. Say them as written.
+ *     3:00 slot − 2:30 video − ~6s to introduce and click play = 24s
+ *     at 150 wpm, unhurried → 60 words
+ *
+ * The build fails if the intro is over 60 words. Everything after page 2
+ * is for the two minutes of questions, which is now the longer half of
+ * the slot.
+ *
+ * 820×1460 portrait: fills a phone screen with no pinch-zooming. Every
+ * block is `break-inside: avoid` so nothing splits across a page.
+ *
+ * Figures match deck/build.mjs, which match web/public/findings.json.
  */
 import { chromium } from "playwright";
 import { mkdirSync, readFileSync } from "node:fs";
@@ -21,138 +28,134 @@ mkdirSync(OUT, { recursive: true });
 
 const W = 820;
 const H = 1460;
+const WORD_BUDGET = 60;
 
 /* ------------------------------------------------------------------ */
-/* the script. `say` is read verbatim. Timings are cumulative.         */
+/* THE INTRO — the only thing you have to say. Read it as written.    */
 /* ------------------------------------------------------------------ */
 
-const beats = [
-  {
-    n: 1,
-    at: "0:00",
-    slide: "Title — Divergence Engine",
-    say: [
-      "Good evening.",
-      "Every bank checks a portfolio against the mandate. **Nobody checks it against what the client actually said.**",
-      "I'll show you one client where those two things are opposites — and every control in the bank says he is fine.",
-    ],
-  },
-  {
-    n: 2,
-    at: "0:20",
-    slide: "The problem",
-    say: [
-      "Bank systems raise an alarm when a rule is broken. That works.",
-      "What they cannot catch is a portfolio that follows **every** rule and is still the wrong portfolio for the person who owns it — because there is no alarm to raise.",
-      "Priscilla here looks after **twenty** families. She can properly watch about **three**.",
-    ],
-  },
-  {
-    n: 3,
-    at: "0:42",
-    slide: "Abdullah Al-Mansoori",
-    say: [
-      "Abdullah Al-Mansoori made his money in Gulf shipping — ports, cargo, chartering vessels.",
-      "When he opened his account in **2014** he asked for one thing, and the bank wrote it down: build wealth **outside the Gulf, and outside shipping.**",
-      "His business already rises and falls with Gulf shipping. He wanted a cushion — not a second copy of the same bet.",
-    ],
-  },
-  {
-    n: 4,
-    at: "1:04",
-    slide: "Four holdings. Two asset classes. One bet.",
-    say: [
-      "Today, **forty-two per cent** of his portfolio is shipping and energy.",
-      "It hides because it is four separate holdings, sitting in only **two** asset classes. And one of them is a structured note whose basket references **two companies he already owns outright.**",
-      "So it looks like a fourth investment. It is the same bet, bought twice.",
-      "Look through it, and it is **forty-two point one three per cent.**",
-    ],
-  },
-  {
-    n: 5,
-    at: "1:32",
-    slide: "Everything is inside its limits",
-    key: true,
-    say: [
-      "Here is the part that matters.",
-      "**Every mandate band is respected.** His largest position is thirteen point three per cent, against a fifteen per cent limit. There is no breach anywhere.",
-      "**Nothing in the bank's monitoring would ever raise this.**",
-      "That gap — between compliant, and what the client actually asked for — is the whole product.",
-    ],
-  },
-  {
-    n: 6,
-    at: "2:00",
-    slide: "If the Strait reopens",
-    say: [
-      "And it is urgent.",
-      "On the **twelfth of August** he asked what happens if the Middle East calms down. The note in the file says: **we have not modelled this.** Nobody got back to him.",
-      "So we did. If oil returns to pre-conflict levels he loses about **two and a half million** — **on good news.** And his charter rates fall in the same week.",
-    ],
-  },
-  {
-    n: 7,
-    at: "2:24",
-    slide: "The AI reads and writes. It never counts.",
-    say: [
-      "On trust. The AI reads and writes — **it never counts.**",
-      "Every figure is ordinary code. **A hundred and eight tests**, and not one of them reads an AI output.",
-      "Every finding carries the file and the row it came from. And **Priscilla decides** — the system never contacts a client, and never moves money.",
-    ],
-  },
-  {
-    n: 8,
-    at: "2:44",
-    slide: "Running it inside a bank",
-    say: [
-      "It runs as an overnight batch. No live model, no database.",
-      "And **seven of the twenty** clients are reported as having nothing to raise — because a system that finds something wrong with everyone gets ignored by Thursday.",
-      "Thank you.",
-    ],
-  },
+const intro = [
+  "Every bank checks a portfolio against the mandate. **Nobody checks it against what the client actually said.**",
+  "This client asked us, in 2014, to keep his money **out of Gulf shipping.** Today **forty-two per cent** of it is shipping and energy — and **every control in the bank passes.**",
+  "Nothing flags it. Let me show you.",
 ];
 
-/* If the mind goes blank — three sentences, from memory, any slide. */
-const rescue = [
-  "Every bank checks the portfolio against the mandate. Nobody checks it against what the client **said**.",
-  "This client asked to stay out of Gulf shipping. Forty-two per cent of his portfolio is shipping and energy — and **every single control passes.**",
-  "We find that, show the records it came from, and hand the banker a sentence to open the call.",
-];
+/** One sentence for when the video ends and the room is silent. */
+const afterVideo =
+  "Every figure in that came from the bank's own records, and the relationship manager decides what to do with it. Happy to take questions.";
+
+/** If the mind goes blank — one sentence, from memory. */
+const rescue =
+  "This client asked to stay out of shipping. Forty-two per cent of his portfolio is shipping and energy, every single control passes, and so nobody at the bank has noticed.";
 
 const qa = [
   {
-    q: "How is this different from existing risk or compliance tools?",
-    a: "Those fire when a rule breaks. This one finds the portfolios where **no rule breaks** and it is still wrong. On this client every band passes — that is the point, not a coincidence.",
+    group: "The product",
+    items: [
+      {
+        q: "How is this different from existing risk or compliance tools?",
+        a: "Those fire when a rule breaks. This finds the portfolios where **no rule breaks** and it is still wrong. On this client every band passes — that is the point, not a coincidence.",
+      },
+      {
+        q: "Why did nobody at the bank see it?",
+        a: "Three reasons. It is spread over four holdings so none looks large. They sit in only **two** asset classes, so a report grouped by asset class shows nothing odd. And one is a structured note whose basket references **two names he already owns** — on paper a fourth investment, in reality the same bet twice.",
+      },
+      {
+        q: "Would a relationship manager actually use it?",
+        a: "It gives her three things: who to call first, what is wrong, and a sentence to open with. And **seven of the twenty** clients are reported as having nothing to raise — a system that flags everyone gets ignored by Thursday.",
+      },
+      {
+        q: "What is the business case?",
+        a: "One conversation that would not otherwise have happened, with a client holding thirty-two million. The AI costs about **thirteen dollars per client per year** at the ceiling.",
+      },
+    ],
   },
   {
-    q: "Can the AI make up a number?",
-    a: "No. It never sees arithmetic and never produces one. Every figure is computed in Python and tested. If the AI is wrong you get a clumsy sentence, not a wrong figure.",
+    group: "The AI",
+    items: [
+      {
+        q: "Can the AI make up a number?",
+        a: "No. It never does arithmetic and never produces a figure. Everything is computed in Python and tested — **a hundred and eight tests**, none of which read an AI output. If the AI is wrong you get a clumsy sentence, not a wrong figure.",
+      },
+      {
+        q: "Would compliance allow it?",
+        a: "It can be **switched off entirely** and the numbers do not change — the briefs just get plainer. In production it runs inside the bank's own cloud and never sees a client's name or account.",
+      },
+      {
+        q: "How do you stop it hallucinating?",
+        a: "Two checks in code, not in the prompt. Any claim whose words are not in the source note is dropped. Any date it cites that is not in the event log is rejected — the file outranks the model.",
+      },
+      {
+        q: "Is it deterministic?",
+        a: "Yes. AI output is generated once, committed to disk with the prompt and settings that produced it, and read back. Same inputs, same findings, every run. There is a test for it.",
+      },
+    ],
   },
   {
-    q: "Would a bank's compliance team allow the AI?",
-    a: "It can be switched off entirely and the numbers do not change — briefs just get plainer. In production it runs inside the bank's own cloud, and never sees a client's name or account.",
+    group: "Running it for real",
+    items: [
+      {
+        q: "What is not built?",
+        a: "Live connections to bank systems, logins and entitlements, and the security plumbing a bank requires. Known work — and I have not done it. The detection logic and all the arithmetic are built and tested.",
+      },
+      {
+        q: "How would you deploy it?",
+        a: "An overnight batch in the bank's own cloud — AWS, Google or Azure — with the model behind a private endpoint. No live model, no database, nothing on the request path. There is a written design for it in the repository.",
+      },
+      {
+        q: "What would you need from the bank?",
+        a: "Two things, and I would measure both before promising anything. Whether the instrument data records **what a structured product references** — that gates the whole look-through. And whether relationship managers write down what clients *said*, not only what was decided.",
+      },
+      {
+        q: "Does it scale?",
+        a: "It is a batch, parallel by client. At a hundred thousand clients it is roughly **thirteen dollars per client per year**, and most nights far less, because clients whose notes have not changed are skipped.",
+      },
+    ],
   },
   {
-    q: "What if the relationship manager's notes are poor?",
-    a: "Then the notes detector gets nothing, and I would say so rather than pretend. That is change management, not engineering. The look-through and the scenario need no notes at all — they would go live first.",
+    group: "Scope",
+    items: [
+      {
+        q: "Why this client and not the one in the brief?",
+        a: "The brief's own worked example will be demoed by every team. I picked the client where the finding is invisible to every existing control.",
+      },
+      {
+        q: "Does it contact the client, or trade?",
+        a: "Never. There is no code that could. It suggests; the relationship manager keeps it, rejects it, or adds a note.",
+      },
+      {
+        q: "Did you use real client data?",
+        a: "No — the synthetic dataset from the challenge. Twenty clients, five snapshots.",
+      },
+    ],
   },
-  {
-    q: "Does it scale?",
-    a: "It is an overnight batch, parallel by client. At a hundred thousand clients the AI cost is roughly **thirteen dollars per client per year** at the ceiling, and most nights it is far less because unchanged clients are skipped.",
-  },
-  {
-    q: "What is not built?",
-    a: "The live connections to bank systems, logins, and the security plumbing a bank requires. Known work — and I have not done it. The detection logic and all the arithmetic are built and tested.",
-  },
-  {
-    q: "Why this client and not the one in the brief?",
-    a: "The brief's own worked example will be demoed by every team. I picked the client where the finding is invisible to every existing control.",
-  },
+];
+
+const ready = [
+  "Video file **open and paused on frame one** — the local file, not a browser tab. Do not rely on the wifi.",
+  "Screen mirroring set to **mirror, not extend**, so you can read this phone while they watch the video.",
+  "Live app open in a second tab: **web-aljs-projects.vercel.app** — for questions.",
+  "Deck open as a third tab, in case the video will not play at all.",
+  "The video has **no audio track**. If the room asks about sound, that is by design — the captions carry it.",
 ];
 
 /* ------------------------------------------------------------------ */
 
-const bold = (t) => t.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+const bold = (t) =>
+  t.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>");
+const words = (t) => t.replace(/\*/g, "").split(/\s+/).filter(Boolean).length;
+
+const introWords = intro.reduce((n, l) => n + words(l), 0);
+const introSecs = Math.round((introWords / 150) * 60);
+console.log(
+  `intro: ${introWords} words ≈ ${introSecs}s   (budget ${WORD_BUDGET} words / 24s)`
+);
+if (introWords > WORD_BUDGET) {
+  console.error(
+    `  !! intro is ${introWords - WORD_BUDGET} words over budget — it eats into the video`
+  );
+  process.exit(1);
+}
 
 const html = `<!doctype html><html><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
@@ -163,143 +166,144 @@ const html = `<!doctype html><html><head><meta charset="utf-8">
 *{margin:0;padding:0;box-sizing:border-box}
 body{width:${W}px;font-family:var(--ui);color:var(--ink);background:#fff;
   -webkit-font-smoothing:antialiased}
-.page{width:${W}px;min-height:${H}px;padding:60px 56px 70px;position:relative;
-  page-break-after:always;break-after:page}
+.page{width:${W}px;min-height:${H}px;padding:56px 54px 66px;position:relative;
+  page-break-after:always;break-after:page;display:flex;flex-direction:column}
 .page:last-child{page-break-after:auto;break-after:auto}
 .topline{position:absolute;left:0;top:0;width:100%;height:7px;background:var(--red)}
+.wm{font-size:21px;color:var(--muted);margin-bottom:22px;letter-spacing:.02em}
+.deep{background:var(--deep);color:#fff}
+.deep .wm{color:rgba(255,255,255,.5)}
 
-/* cover */
-.cover{background:var(--deep);color:#fff}
-.cover .kicker{font-size:24px;color:rgba(255,255,255,.55);margin-bottom:20px}
-.cover h1{font-family:var(--read);font-size:76px;font-weight:400;line-height:1.03;
-  letter-spacing:-.02em}
-.cover .sub{font-family:var(--read);font-size:32px;line-height:1.45;
-  color:rgba(255,255,255,.8);margin-top:34px}
-.plan{margin-top:46px;border-top:1px solid rgba(255,255,255,.18);padding-top:26px}
-.plan div{display:flex;justify-content:space-between;font-size:25px;
-  padding:11px 0;color:rgba(255,255,255,.78);border-bottom:1px solid rgba(255,255,255,.08)}
-.plan b{font-weight:500;color:#fff}
-.tip{margin-top:40px;border-left:4px solid var(--e1);padding-left:22px;
-  font-family:var(--read);font-size:27px;line-height:1.5;color:rgba(255,255,255,.85)}
+.kicker{font-size:24px;color:var(--e1);font-weight:600;margin-bottom:14px;
+  letter-spacing:.06em}
+h1{font-family:var(--read);font-size:56px;font-weight:400;line-height:1.06;
+  letter-spacing:-.02em;margin-bottom:34px}
+p.say{font-family:var(--read);font-size:40px;line-height:1.5;margin-bottom:30px}
+p.say b{font-weight:500;background:rgba(201,168,118,.34);padding:0 4px}
+.deep p.say b{background:rgba(201,168,118,.22);color:var(--e1)}
+.then{margin-top:auto;border-top:2px solid var(--red);padding-top:24px;
+  font-size:26px;line-height:1.5}
+.then b{font-weight:600}
 
-h2{font-family:var(--read);font-size:44px;font-weight:400;margin-bottom:8px;
+.clock{display:flex;gap:10px;margin:26px 0 6px}
+.cell{flex:1;border:1px solid var(--hair);border-radius:3px;padding:16px 12px;
+  text-align:center}
+.cell .t{font-family:var(--read);font-size:30px;font-variant-numeric:tabular-nums}
+.cell .k{font-size:18px;color:var(--muted);margin-top:4px;line-height:1.35}
+.cell.hi{background:var(--navy);border-color:var(--navy);color:#fff}
+.cell.hi .k{color:rgba(255,255,255,.72)}
+
+h2{font-family:var(--read);font-size:44px;font-weight:400;margin-bottom:10px;
   letter-spacing:-.015em}
-.beat{break-inside:avoid;page-break-inside:avoid;margin-bottom:52px}
-.hdr{display:flex;align-items:baseline;gap:18px;border-bottom:2px solid var(--hair);
-  padding-bottom:14px;margin-bottom:26px}
-.num{font-family:var(--read);font-size:52px;color:var(--e1);line-height:1;
-  min-width:56px}
-.at{font-size:26px;color:var(--red);font-variant-numeric:tabular-nums;font-weight:500}
-.on{font-size:23px;color:var(--muted);line-height:1.35}
-.beat.key .hdr{border-bottom-color:var(--red)}
-.beat.key .num{color:var(--red)}
-p.say{font-family:var(--read);font-size:31px;line-height:1.58;margin-bottom:22px}
-p.say b{font-weight:500;background:rgba(201,168,118,.28);padding:0 3px}
-.pause{font-size:22px;color:var(--muted);font-style:italic;margin:-8px 0 22px}
-
-.panel{background:#F4F6F8;border-left:5px solid var(--navy);padding:32px 34px;
-  break-inside:avoid}
+.note{font-size:23px;color:var(--muted);line-height:1.45;margin-bottom:26px;
+  font-style:italic}
+.panel{background:#F4F6F8;border-left:5px solid var(--navy);padding:28px 30px;
+  break-inside:avoid;page-break-inside:avoid;margin-top:28px}
 .panel.red{border-left-color:var(--red);background:#FDF3F4}
-.panel h3{font-family:var(--read);font-size:36px;font-weight:400;margin-bottom:18px}
-.panel p{font-family:var(--read);font-size:30px;line-height:1.55;margin-bottom:18px}
-.panel p:last-child{margin-bottom:0}
-.panel p b{font-weight:500;background:rgba(201,168,118,.3);padding:0 3px}
-
-.qa{break-inside:avoid;page-break-inside:avoid;margin-bottom:40px;
-  border-bottom:1px solid var(--hair);padding-bottom:32px}
-.qa .q{font-family:var(--read);font-size:31px;line-height:1.4;margin-bottom:14px}
-.qa .q::before{content:'Q  ';color:var(--red);font-weight:500}
-.qa .a{font-size:26px;line-height:1.55;color:#2A3441}
-.qa .a::before{content:'A  ';color:var(--safe);font-weight:600}
+.panel h3{font-family:var(--read);font-size:32px;font-weight:400;margin-bottom:15px}
+.panel p{font-family:var(--read);font-size:29px;line-height:1.55}
+.panel p b{font-weight:500;background:rgba(201,168,118,.32);padding:0 3px}
+.grp{font-size:21px;color:var(--red);font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;margin:34px 0 18px;padding-bottom:8px;
+  border-bottom:2px solid var(--hair)}
+.qa{break-inside:avoid;page-break-inside:avoid;margin-bottom:28px}
+.qa .q{font-family:var(--read);font-size:28px;line-height:1.38;margin-bottom:10px}
+.qa .q::before{content:'Q ';color:var(--red);font-weight:500}
+.qa .a{font-size:24px;line-height:1.55;color:#2A3441}
+.qa .a::before{content:'A ';color:var(--safe);font-weight:600}
 .qa .a b{font-weight:600}
-.pg{position:absolute;right:56px;bottom:30px;font-size:21px;color:var(--muted);
+ol{list-style:none;counter-reset:c}
+ol li{counter-increment:c;font-size:26px;line-height:1.5;margin-bottom:22px;
+  padding-left:46px;position:relative;break-inside:avoid}
+ol li::before{content:counter(c);position:absolute;left:0;top:0;
+  font-family:var(--read);font-size:28px;color:var(--e1)}
+ol li b{font-weight:600}
+.pg{position:absolute;right:54px;bottom:26px;font-size:20px;color:var(--muted);
   font-variant-numeric:tabular-nums}
-.cover .pg{color:rgba(255,255,255,.4)}
-.wm{font-size:21px;color:var(--muted);margin-bottom:26px;letter-spacing:.02em}
+.deep .pg{color:rgba(255,255,255,.4)}
 </style></head><body>
 
-<!-- cover -->
-<div class="page cover">
-  <div class="kicker">SingHacks 2026 · Julius Bär, Wealth Intelligence</div>
-  <h1>Read this<br/>out loud.</h1>
-  <div class="sub">Three minutes, eight slides. The words are written to be
-  read exactly as they are. If you lose your place, the <b>highlighted</b>
-  words are the ones that matter.</div>
-  <div class="plan">
-    ${beats
-      .map(
-        (b) =>
-          `<div><span><b>${b.n}</b> &nbsp; ${b.slide}</span><span>${b.at}</span></div>`
-      )
-      .join("\n    ")}
-    <div><span>Q &amp; A</span><span>2:00</span></div>
+<!-- 1 — the intro. The only thing that has to be said. -->
+<div class="page deep">
+  <div class="wm">SingHacks 2026 · Julius Bär, Wealth Intelligence</div>
+  <div class="kicker">SAY THIS — THEN PLAY THE VIDEO</div>
+  <h1>Divergence Engine</h1>
+  ${intro.map((l) => `<p class="say">${bold(l)}</p>`).join("\n  ")}
+  <div class="then">
+    <b>→ Now play the video.</b> 2:30. It runs itself — say nothing over it.<br/>
+    <span style="color:rgba(255,255,255,.55)">${introWords} words ·
+    about ${introSecs} seconds · you have 24.</span>
   </div>
-  <div class="tip">Slides <b>4</b> and <b>5</b> are the argument. If you are
-  running long, hurry slides 2 and 7 — never those two.</div>
   <div class="pg">1</div>
 </div>
 
-<!-- the script -->
+<!-- 2 — the plan and the safety nets -->
 <div class="page">
   <div class="topline"></div>
-  <div class="wm">The script · read verbatim</div>
-  ${beats
+  <div class="wm">The three minutes</div>
+  <h2>The plan.</h2>
+  <div class="clock">
+    <div class="cell"><div class="t">0:00</div><div class="k">Intro<br/>~${introSecs}s</div></div>
+    <div class="cell hi"><div class="t">0:25</div><div class="k">The video<br/>2:30</div></div>
+    <div class="cell"><div class="t">2:55</div><div class="k">One line,<br/>then stop</div></div>
+  </div>
+
+  <div class="panel">
+    <h3>When the video ends</h3>
+    <p>${bold(afterVideo)}</p>
+  </div>
+
+  <div class="panel red">
+    <h3>If your mind goes blank</h3>
+    <p>${bold(rescue)}</p>
+    <p style="font-size:24px;margin-top:16px;color:#4A5462">Then play the video.
+    It makes the argument without you.</p>
+  </div>
+
+  <div class="panel">
+    <h3>If you forget a figure</h3>
+    <p>Say <b>“about forty per cent”</b>. Never guess a decimal — the exact
+    number is <b>42.13%</b>, and it is on screen anyway.</p>
+  </div>
+  <div class="pg">2</div>
+</div>
+
+<!-- 3 — questions -->
+<div class="page">
+  <div class="topline"></div>
+  <div class="wm">Two minutes of questions · the longer half of your slot</div>
+  <h2>Q &amp; A</h2>
+  <div class="note">One or two sentences, then stop. A short answer invites the
+  next question; a long one uses up your two minutes. “I don't know — I'd have
+  to check” is a good answer here.</div>
+  ${qa
     .map(
-      (b) => `<div class="beat${b.key ? " key" : ""}">
-    <div class="hdr">
-      <div class="num">${b.n}</div>
-      <div>
-        <div class="at">${b.at}</div>
-        <div class="on">Slide: ${b.slide}</div>
-      </div>
-    </div>
-    ${b.say.map((l) => `<p class="say">${bold(l)}</p>`).join("\n    ")}
+      (g) => `<div class="grp">${g.group}</div>
+  ${g.items
+    .map(
+      (x) => `<div class="qa">
+    <div class="q">${bold(x.q)}</div>
+    <div class="a">${bold(x.a)}</div>
   </div>`
+    )
+    .join("\n  ")}`
     )
     .join("\n  ")}
 </div>
 
-<!-- rescue -->
+<!-- last — have ready -->
 <div class="page">
   <div class="topline"></div>
-  <div class="wm">If your mind goes blank</div>
-  <h2>Say these three things.</h2>
-  <p class="pause">Any slide, any order. This is the whole pitch. Then stop
-  and ask if they would like the detail.</p>
-  <div class="panel red">
-    ${rescue.map((l) => `<p>${bold(l)}</p>`).join("\n    ")}
-  </div>
-  <div style="margin-top:46px" class="panel">
-    <h3>And if you forget a number</h3>
-    <p>Say <b>“about forty per cent”</b> rather than guess a decimal. The
-    exact figure is on the slide behind you, and the judges can read it.</p>
-    <p>Never invent a figure you are not sure of. <b>“It is on the slide —
-    forty-two point one three”</b> is a fine thing to say.</p>
-  </div>
-</div>
-
-<!-- Q&A -->
-<div class="page">
-  <div class="topline"></div>
-  <div class="wm">Two minutes of questions · short answers</div>
-  <h2>Q &amp; A</h2>
-  <p class="pause">Answer in one or two sentences, then stop. A short answer
-  invites the next question; a long one uses your two minutes.</p>
-  <div style="margin-top:30px">
-    ${qa
-      .map(
-        (x) => `<div class="qa">
-      <div class="q">${bold(x.q)}</div>
-      <div class="a">${bold(x.a)}</div>
-    </div>`
-      )
-      .join("\n    ")}
-  </div>
-  <div class="panel" style="margin-top:10px">
-    <h3>If you do not know</h3>
-    <p><b>“I don't know — I'd have to check.”</b> That is a good answer here.
-    The whole project is built on not inventing figures, so saying it out
-    loud is consistent, not weak.</p>
+  <div class="wm">Before you walk up</div>
+  <h2>Have this ready.</h2>
+  <div class="note">The video is the pitch. Everything here exists to protect it.</div>
+  <ol>
+    ${ready.map((l) => `<li>${bold(l)}</li>`).join("\n    ")}
+  </ol>
+  <div class="panel">
+    <h3>The one thing to remember</h3>
+    <p>You only have to say <b>three sentences</b>. The video does the rest,
+    and it cannot forget its lines.</p>
   </div>
 </div>
 
@@ -307,31 +311,10 @@ p.say b{font-weight:500;background:rgba(201,168,118,.28);padding:0 3px}
 
 /* ------------------------------------------------------------------ */
 
-const words = beats.flatMap((b) => b.say).join(" ").replace(/\*\*/g, "");
-const count = words.split(/\s+/).length;
-const secs = Math.round((count / 150) * 60); // 150 wpm, unhurried
-
-console.log(`script: ${count} words ≈ ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")} at 150 wpm`);
-if (secs > 195) {
-  console.error(`  !! over three minutes with no margin — trim the script`);
-  process.exitCode = 1;
-}
-
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H } });
 await page.setContent(html, { waitUntil: "load" });
 await page.evaluate(() => document.fonts.ready);
-
-// Optional visual check: SHOT_PAGES=1 writes one PNG per page so the
-// page breaks can be inspected. A beat split across two pages defeats the
-// purpose of the document.
-if (process.env.SHOT_PAGES) {
-  const pages = await page.$$(".page");
-  for (const [i, el] of pages.entries()) {
-    await el.screenshot({ path: join(OUT, `script-p${i + 1}.png`) });
-  }
-  console.log(`  wrote ${pages.length} page PNGs`);
-}
 
 const pdf = join(OUT, "pitch-script.pdf");
 await page.pdf({
@@ -343,22 +326,22 @@ await page.pdf({
 });
 await browser.close();
 
-// `break-inside: avoid` on .beat and .qa keeps a block off a page
-// boundary. That cannot be checked from the DOM — on screen the document
-// is one continuous flow with no page breaks, so measuring against the
-// page height reports splits that the paged output does not have. It is
-// verified by rendering the PDF:
+// `break-inside: avoid` keeps a question off a page boundary. That cannot
+// be checked from the DOM — on screen the document is one continuous flow
+// with no page breaks, so measuring against the page height describes a
+// layout that does not exist. Verified by rendering the PDF:
 //
-//   python3 -c "import pypdfium2 as p, pathlib; d=p.PdfDocument('out/pitch-script.pdf'); \
-//     [pg.render(scale=.55).to_pil().save(f'out/pdfpages/p{i:02d}.png') for i,pg in enumerate(d,1)]"
-//
-// Last checked: 8 pages, no beat or question split across a break.
-const pages = (readFileSync(pdf).toString("latin1").match(/\/Type\s*\/Page[^s]/g) || []).length;
+//   python3 -c "import pypdfium2 as p, pathlib; \
+//     pathlib.Path('out/pdfpages').mkdir(exist_ok=True); \
+//     d=p.PdfDocument('out/pitch-script.pdf'); \
+//     [g.render(scale=.55).to_pil().save(f'out/pdfpages/p{i:02d}.png') \
+//      for i,g in enumerate(d,1)]"
+const pages = (
+  readFileSync(pdf).toString("latin1").match(/\/Type\s*\/Page[^s]/g) || []
+).length;
 if (pages < 4) {
   console.error(`  !! PDF has ${pages} page(s) — pagination failed`);
   process.exit(1);
 }
 console.log(`  pdf ${pages} pages`);
-
-if (process.exitCode) process.exit(1);
 console.log(pdf);

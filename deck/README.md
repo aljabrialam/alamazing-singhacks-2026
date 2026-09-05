@@ -9,7 +9,7 @@ carries the argument and works as a fallback if the video will not play.
 | `out/divergence-deck.pdf` | Submission, and reading. One page per slide. |
 | `out/divergence-deck.pptx` | Presenting. |
 | `out/speaker-notes.md` | One line per slide, and what to cut if you run long. |
-| `out/pitch-script.pdf` | **The words, to read out loud.** Portrait, sized for a phone. |
+| `out/pitch-script.pdf` | **The 56-word intro, then the questions.** Portrait, sized for a phone. |
 
 ## Built as HTML, not in PowerPoint
 
@@ -48,16 +48,24 @@ clients, 108 tests.
 ## The read-aloud script
 
 `out/pitch-script.pdf` is 820×1460 — portrait, so it fills a phone screen
-with no pinch-zooming, at 31px so it reads at arm's length. Eight pages:
-the running order, the script itself, a three-sentence fallback for a
-blank moment, and seven likely questions with short answers.
+with no pinch-zooming, and set at 40px for the words that get spoken.
 
-The words in it are meant to be read exactly as written. Key phrases are
-highlighted so a lost place can be found in one glance, and every block
-is `break-inside: avoid` so a slide's words never split across a page.
+The running order is: **say the intro, play the video, take questions.**
+So the intro is the only thing that has to be read out, and the arithmetic
+leaves no room to be vague about it:
 
-The script is checked against 150 words per minute and the build fails
-above 3:15. It currently runs **442 words ≈ 2:57**.
+```
+3:00 slot − 2:30 video − ~6s to introduce and press play = 24s
+at 150 wpm, unhurried                                    = 60 words
+```
+
+The build **fails** if the intro goes over 60 words. It currently runs
+**56 words, about 22 seconds.**
+
+Six pages: the intro, the timing plan with three safety nets, fifteen
+likely questions grouped by theme, and a checklist for before you walk
+up. Since the speaking part is now 22 seconds, the questions are the
+longer half of the slot and most of the document.
 
 ## Rebuilding
 
