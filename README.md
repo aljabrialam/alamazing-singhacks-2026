@@ -606,6 +606,99 @@ first appear too — this is for anyone reading out of order.
 | **Snapshot** | A dated photograph of every holding. This dataset has five, from December to August, which is what makes change and cause visible |
 | **Evidence** | For us, a specific thing: the file, the row identifiers and the values behind a statement. A finding without it is not shown |
 
+## How this was built
+
+One person, about twelve hours, in an unfamiliar domain. That should not
+have been enough — private banking has too many ways to be confidently
+wrong. What made it work was writing the specification before the code,
+every time, without exception.
+
+**There is more specification in this repository than there is code.**
+
+| | |
+|---|---|
+| Specification and research | **11,987 lines** across 58 documents |
+| Python | 8,574 lines |
+| Commits | 42, with three gates tagged at the moment they passed |
+
+That ratio looks inefficient. It was the opposite, and here is the
+mechanism.
+
+### Nothing gets built until the number is verified
+
+Every feature went through the same four steps: write the specification,
+plan it, break it into tasks, then implement. And each one begins with a
+`research.md` — a document that answers, **from the data**, every question
+the code would otherwise have to guess at. The query that answered it is
+recorded beside the answer.
+
+The rule was that no feature could start until the previous one's expected
+figure had been checked against the actual data. Not until its code
+worked — until the *number* was confirmed. So the code was always written
+towards a figure that was already known to be true.
+
+### What that caught
+
+This is not a theory. Twice, the research phase found something wrong
+before a line of code was written.
+
+**Three portfolios are custody accounts.** While researching the mandate
+work, checking a column that had not mattered yet turned up something the
+already-shipped concentration check had got wrong. From that research
+document, at the time:
+
+> *This is the significant find, and it is a live defect.* … Applying
+> strategic asset allocation bands to a custody account is a category
+> error: the bank holds the assets, the client directs them, and nobody
+> is managing them to a band.
+
+A whole feature had been built, tested and passing on a misunderstanding.
+The specification for the *next* feature is what found it.
+
+**A reference figure that contradicted its own rule.** One of the source
+documents described a client's cash position as "tight". Working it out
+from the data, by that document's own definition, she covers the bill five
+times over. The real finding was sharper than the one we were handed — and
+we would have inherited the wrong one if we had started from the code.
+
+Four catches of this kind are in the record, each in the research
+document that found it: two figures in the reference material that were
+wrong or self-contradictory, and two bugs in work already shipped and
+passing its tests — the custody accounts above, and a column that marks
+which holdings are exempt from the single-position limit, which the first
+version ignored.
+
+### The rules were written down first, and they bit
+
+A [constitution](.specify/memory/constitution.md) of fifteen principles
+sits above every specification — things like *the AI reads and writes, it
+never counts*, and *never invent a figure; if the data does not support a
+number, say so*. Nine specific conditions have to hold before anything is
+called finished, including that every finding carries the records behind
+it and that anything uncertain is written down rather than dropped.
+
+The test of a rule is whether it ever costs you something. These did.
+
+It was amended **three times mid-build**, each time because reality
+contradicted it rather than because it was inconvenient. One rule required
+a setting that turned out not to exist on any current AI model; it was
+replaced with a stronger guarantee. Another pinned the visual design to a
+filename that stopped being the right file. Each amendment is recorded at
+the top of the document with its reasoning and the time it was made — so
+the rules cannot quietly drift to match whatever was built.
+
+### Why it matters for a bank
+
+The same discipline is what makes this deployable rather than a demo. The
+reason every figure can be traced to a record, the reason the AI cannot
+touch the arithmetic, and the reason a wrong number gets caught by a test
+instead of by a client — all of that comes from deciding the constraints
+in writing, up front, when it is still cheap to change your mind.
+
+**And the record is public.** The specifications, the research, the
+amendments and the corrections are all in this repository, unrewritten.
+Including the parts where we were wrong.
+
 ## Further reading
 
 - Governing principles — 15 articles every spec is checked against: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
