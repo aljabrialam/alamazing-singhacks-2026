@@ -9,6 +9,7 @@ carries the argument and works as a fallback if the video will not play.
 | `out/divergence-deck.pdf` | Submission, and reading. One page per slide. |
 | `out/divergence-deck.pptx` | Presenting. |
 | `out/speaker-notes.md` | One line per slide, and what to cut if you run long. |
+| `out/pitch-script.pdf` | **The words, to read out loud.** Portrait, sized for a phone. |
 
 ## Built as HTML, not in PowerPoint
 
@@ -44,11 +45,26 @@ mandate bands within range, the largest position at 13.30% against a 15%
 limit, −2,513,211 and −7.80% on the scenario, 53 findings across 20
 clients, 108 tests.
 
+## The read-aloud script
+
+`out/pitch-script.pdf` is 820×1460 — portrait, so it fills a phone screen
+with no pinch-zooming, at 31px so it reads at arm's length. Eight pages:
+the running order, the script itself, a three-sentence fallback for a
+blank moment, and seven likely questions with short answers.
+
+The words in it are meant to be read exactly as written. Key phrases are
+highlighted so a lost place can be found in one glance, and every block
+is `break-inside: avoid` so a slide's words never split across a page.
+
+The script is checked against 150 words per minute and the build fails
+above 3:15. It currently runs **442 words ≈ 2:57**.
+
 ## Rebuilding
 
 ```bash
 cd deck
 npm i && npx playwright install chromium
 pip3 install python-pptx
-node build.mjs
+node build.mjs      # slides -> pdf + pptx
+node script.mjs     # the read-aloud script -> pdf
 ```
