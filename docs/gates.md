@@ -8,6 +8,7 @@ but not tagged did not pass.
 | G1 — Data | 21:59 | g1 |
 | G2 — Findings | 23:43 | g2 |
 | G3 — Screens | 00:32 | g3 |
+| G4 — Submitted | 14:50 Sat | g4 |
 
 ## Repository visibility — Principle XV, recorded honestly
 
