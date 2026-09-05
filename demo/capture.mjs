@@ -30,7 +30,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const SITE = process.env.DEMO_URL ?? "https://web-bdqvc2a3d-aljs-projects.vercel.app";
+const SITE = process.env.DEMO_URL ?? "https://web-aljs-projects.vercel.app";
 const HERO = "CL-0019";
 const OUT = join(import.meta.dirname, "out");
 const RAW = join(OUT, "raw");

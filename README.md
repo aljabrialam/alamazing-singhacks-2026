@@ -6,7 +6,7 @@ A wealth intelligence layer for a relationship manager with twenty clients and a
 
 Not a dashboard. The interesting failures in private banking are not limit breaches — they are portfolios that pass every check and are still wrong.
 
-**[→ Open the live workbench](https://web-o0k86prrh-aljs-projects.vercel.app)**
+**[→ Open the live workbench](https://web-aljs-projects.vercel.app)**
 
 ---
 
@@ -82,7 +82,7 @@ contacts a client and never moves any money.
 
 | | |
 |---|---|
-| **Live app** | [web-o0k86prrh-aljs-projects.vercel.app](https://web-o0k86prrh-aljs-projects.vercel.app) |
+| **Live app** | [web-o0k86prrh-aljs-projects.vercel.app](https://web-aljs-projects.vercel.app) |
 | **Challenge** | SingHacks 2026 · Julius Baer, Wealth Intelligence · solo build |
 | **What it is** | Nine detectors that find divergence between what a client said, what their mandate permits, and what they actually hold — each finding carrying the source rows behind it |
 | **Problem solved** | Bank systems only raise an alarm when a rule is broken. A portfolio can respect every allowed range for each asset type (its *mandate bands*), stay under every cap on how much can sit in one company (its *single-name limits*), and still be 42% one bet against what the client asked for — and nothing in the bank will say so |

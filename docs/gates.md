@@ -11,7 +11,7 @@ but not tagged did not pass.
 
 ## Deployment
 
-Production: https://web-o0k86prrh-aljs-projects.vercel.app
+Production: https://web-aljs-projects.vercel.app
 
 Static only. There is no backend to deploy — the Python pipeline is a
 build-time step and `web/public/findings.json` is committed, so Vercel

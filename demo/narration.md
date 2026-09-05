@@ -24,7 +24,7 @@ strictest requirement in the prompt.
 The band is part of the picture. Do not crop it, cover it, redraw it,
 replace it with your own subtitles, or add a second caption layer.
 
-The recording above the band is a real browser session against https://web-bdqvc2a3d-aljs-projects.vercel.app —
+The recording above the band is a real browser session against https://web-aljs-projects.vercel.app —
 not a mock-up. The soft navy ring around elements is a capture aid added
 by the recording script to direct the eye; it is not part of the product.
 
